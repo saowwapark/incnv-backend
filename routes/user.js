@@ -52,7 +52,8 @@ router.post('/login', (req, res, next) => {
         token: token,
         // 'expiresIn' in numeric value is interpreted as secondes count
         // (but string value "3600" will mean millisecond)
-        expiresIn: 3600
+        expiresIn: 3600,
+        userId: fetchedUser._id
       });
     })
     .catch(err => {
