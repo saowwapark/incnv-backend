@@ -1,9 +1,15 @@
-const Sequelize = require('sequelize/index');
+const mysql = require('mysql2');
 
-const sequelize = new Sequelize('inCNV', 'root', 'glk;4k8', {
-    dialect: 'mysql',
-    host: 'localhost'
-  });
-  
+const dbConfig = {
+  connectionLimit: 10,
+  host: '127.0.0.1',
+  user: 'root',
+  password: 'glk;4k8',
+  database: 'inCNV',
+  supportBigNumbers: true,
+  bigNumberStrings: true
+};
 
-module.exports = sequelize;
+const pool = mysql.createPool(dbConfig);
+
+module.exports = pool.promise();

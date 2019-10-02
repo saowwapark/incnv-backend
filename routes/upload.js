@@ -11,9 +11,9 @@ const router = express.Router();
 // app.use(express.static('./../file-system'));
 
 const MIME_TYPE_MAP = {
-  'text/x-vcard': 'vcf',
   'application/vnd.realvnc.bed': 'bed',
-  'text/plain': 'txt'
+  'text/plain': 'txt',
+  'text/x-vcard': 'vcf'
 };
 
 // Set Storage Engine
@@ -27,37 +27,33 @@ const storage = multer.diskStorage({
     cb(error, 'file-system/uploads');
   },
   filename: (req, file, cb) => {
-    const name = file.originalname
-      .toLowerCase()
-      .split(' ')
-      .join('-');
+    const name = file.originalname.
+      toLowerCase().
+      split(' ').
+      join('-');
     const ext = MIME_TYPE_MAP[file.mimetype];
-    cb(null, name + '-' + Date.now() + '.' + ext);
+    cb(null, `${name}-${Date.now()}.${ext}`);
   }
 });
 
-router.post(
-  '',
-  multer({ storage: storage }).single('file'),
-  (req, res, next) => {
-    console.log(req.body);
-    // const url = req.protocol + '://' + req.get('host');
-    // const post = new Post({
-    //   uploadData: req.body.uploadData,
-    //   file: req.body.file,
-    //   filePath: url + '/uploads/' + req.file.filename
-    // });
-    // post.save().then(createdPost => {
-    //   res.status(201).json({
-    //     message: 'Post added successfully',
-    //     post: {
-    //       ...createdPost,
-    //       id: createdPost._id
-    //     }
-    //   });
-    // });
-  }
-);
+router.post('', multer({ storage }).single('file'), (req, res, next) => {
+  console.log(req.body);
+  // const url = req.protocol + '://' + req.get('host');
+  // const post = new Post({
+  //   uploadData: req.body.uploadData,
+  //   file: req.body.file,
+  //   filePath: url + '/uploads/' + req.file.filename
+  // });
+  // post.save().then(createdPost => {
+  //   res.status(201).json({
+  //     message: 'Post added successfully',
+  //     post: {
+  //       ...createdPost,
+  //       id: createdPost._id
+  //     }
+  //   });
+  // });
+});
 
 /*
 router.put(

@@ -4,17 +4,11 @@ const bodyParser = require('body-parser');
 const express = require('express');
 
 /** My Own Imports **/
-const sequelize = require('./util/database');
 const userRoutes = require('./routes/user');
-const User = require('./models/user');
-
 const uploadRoutes = require('./routes/upload');
+const samplesetRoutes = require('./routes/sampleset');
 
 const app = express();
-
-sequelize.sync({ force: true }).catch(err => {
-  console.log(err);
-});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,5 +29,6 @@ app.use((req, res, next) => {
 
 app.use('/api/user', userRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/sampleset', samplesetRoutes);
 
 module.exports = app;
