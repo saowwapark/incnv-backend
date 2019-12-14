@@ -1,0 +1,32 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/src/app.ts",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+    },
+     {
+      "type": "node",
+      "request": "launch",
+      "name": "Map DGV_37",
+      "program": "${workspaceFolder}/src/databases/dgv_grch37/map-table.js",
+      // "preLaunchTask": "tsc: build - tsconfig-db.json",
+      // "outFiles": ["${workspaceFolder}/src/databases/dgv_grch37/map-table.js"]
+     
+      
+    }, 
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Create Ensembl_37",
+      "program": "${workspaceFolder}/src/databases/ensembl_grch37/create-db/map-datasource.js",
+    }
+  ]
+}
