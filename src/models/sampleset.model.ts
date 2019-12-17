@@ -1,6 +1,5 @@
 import { AuthenResDto } from '../dto/authen.dto';
 import { samplesetDao } from '../databases/incnv/dao/sampleset.dao';
-import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { HttpException } from '../exceptions/http.exception';
 

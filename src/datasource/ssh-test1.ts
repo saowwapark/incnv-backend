@@ -33,21 +33,14 @@ const sshStream = new Promise((resolve, reject) => {
     });
 });
 
-let testPool;
-(async function() {
-  const stream = await sshStream;
-  //    stream
-  //      .on('close', function() {
-  //        console.log('TCP :: CLOSED');
-  //        conn.end();
-  //      })
-  //      .on('data', function(data) {
-  //        console.log('TCP :: DATA: ' + data);
-  //      });
-  testPool = mysql.createPool({ ...testConfig, stream: stream });
-  const sql = `SELECT * FROM kan_table_1 limit 10`;
-  console.log(sql);
-  testPool.query(sql).then(value => {
-    console.log(value);
-  });
+const stream = (async function() {
+  console.log('test in stream');
+  return await sshStream;
 })();
+
+const sql = `SELECT * FROM kan_table_1 limit 10`;
+console.log(sql);
+const testPool = mysql.createPool({ ...testConfig, stream: stream });
+testPool.query(sql).then(value => {
+  console.log(value);
+});

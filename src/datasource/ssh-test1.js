@@ -45,6 +45,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var _this = this;
 exports.__esModule = true;
 var mysql = require("mysql2/promise");
 var ssh = require("ssh2");
@@ -64,14 +65,6 @@ var sshStream = new Promise(function (resolve, reject) {
             if (err)
                 throw err;
             resolve(stream);
-            stream
-                .on('close', function () {
-                console.log('TCP :: CLOSED');
-                conn.end();
-            })
-                .on('data', function (data) {
-                console.log('TCP :: DATA: ' + data);
-            });
         });
     })
         .connect({
@@ -81,24 +74,34 @@ var sshStream = new Promise(function (resolve, reject) {
         privateKey: require('fs').readFileSync('/Users/saowwapark/.ssh/id_rsa')
     });
 });
-var testPool;
-(function () {
+var createPools = function () { return __awaiter(_this, void 0, void 0, function () {
+    var stream, testPool;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, sshStream];
+            case 1:
+                stream = _a.sent();
+                testPool = mysql.createPool(__assign({}, testConfig, { stream: stream }));
+                return [2 /*return*/, { testPool: testPool }];
+        }
+    });
+}); };
+var stream = (function () {
     return __awaiter(this, void 0, void 0, function () {
-        var stream, sql;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, sshStream];
-                case 1:
-                    stream = _a.sent();
-                    console.log(stream);
-                    testPool = mysql.createPool(__assign({}, testConfig, { stream: stream }));
-                    sql = "SELECT * FROM kan_table_1 limit 10";
-                    console.log(sql);
-                    testPool.query(sql).then(function (value) {
-                        console.log(value);
-                    });
-                    return [2 /*return*/];
+                case 0:
+                    console.log('test in stream');
+                    return [4 /*yield*/, sshStream];
+                case 1: return [2 /*return*/, _a.sent()];
             }
         });
     });
 })();
+var sql = "SELECT * FROM kan_table_1 limit 10";
+console.log(sql);
+var testPool = mysql.createPool(__assign({}, testConfig, { stream: stream }));
+testPool.query(sql).then(function (value) {
+    console.log(value);
+});
+//# sourceMappingURL=ssh-test1.js.map

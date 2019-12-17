@@ -1,112 +1,68 @@
-import * as bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
+/** Third Party Packages **/
+import http from 'http';
 import express from 'express';
-import * as path from 'path';
-import multer from 'multer';
-import mkdirp from 'mkdirp';
-//import * as cors from 'cors';
+import { App } from './app';
 
-// Use Only Dev
-import logger from 'morgan';
-import errorHandler = require('errorhandler');
-import methodOverride = require('method-override');
+import * as config from './config';
 
-/**
- * The server.
- *
- * @class Server
- */
-export class Server {
-  public app: express.Application;
-  /**
-   * Bootstrap the application.
-   *
-   * @class Server
-   * @method bootstrap
-   * @static
-   * @return {ng.auto.IInjectorService} Returns the newly created injector for this app.
-   */
-  public static bootstrap(): Server {
-    return new Server();
-  }
-  /**
-   * Constructor.
-   *
-   * @class Server
-   * @constructor
-   */
-  constructor() {
-    //create expressjs application
-    this.app = express();
+class Server {
+  port: number;
+  hostname: string;
+  server: http.Server;
 
-    //configure application
+  constructor(port, hostname, app) {
+    this.port = this.normalizePort(port);
+    this.hostname = hostname;
+
+    // create server according to setting application
+    this.server = http.createServer(app);
+    this.server.listen(this.port, this.hostname);
     this.config();
   }
 
-  /**
-   * Configure application
-   *
-   * @class Server
-   * @method config
-   */
-  public config() {
-    // add static paths
-    this.app.use(express.static(path.join(__dirname, 'public')));
+  config() {
+    this.server.on('error', this.onError);
+  }
 
-    // path
-    mkdirp.sync(path.join(__dirname, 'file-system', 'uploads'));
+  private onError(error) {
+    if (error.syscall !== 'listen') {
+      throw error;
+    }
+    const bind =
+      typeof this.port === 'string' ? 'pipe ' + this.port : 'port ' + this.port;
+    switch (error.code) {
+      case 'EACCES':
+        console.error(bind + ' requires elevated privileges');
+        process.exit(1);
+        break;
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use');
+        process.exit(1);
+        break;
+      default:
+        throw error;
+    }
+  }
 
-    // use logger middlware
-    this.app.use(logger('dev'));
+  private normalizePort(val) {
+    var port = parseInt(val, 10);
 
-    // use json form parser middlware
-    this.app.use(bodyParser.json());
+    if (isNaN(port)) {
+      // named pipe
+      return val;
+    }
 
-    // use query string parser middlware
-    // setup application to parse data that is sent as form-data
-    this.app.use(
-      bodyParser.urlencoded({
-        extended: false
-      })
-    );
+    if (port >= 0) {
+      // port number
+      return port;
+    }
 
-    // user CORS
-    this.app.use(
-      (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction
-      ) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader(
-          'Access-Control-Allow-Headers',
-          'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-        );
-        res.setHeader(
-          'Access-Control-Allow-Methods',
-          'GET, POST, PATCH, PUT, DELETE, OPTIONS'
-        );
-        next();
-      }
-    );
-    // use cookie parser middleware
-    this.app.use(cookieParser('SECRET_GOES_HERE'));
-
-    // use override middlware
-    this.app.use(methodOverride());
-
-    // catch 404 and forward to error handler
-    this.app.use(function(
-      err: any,
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ) {
-      err.status = 404;
-      next(err);
-    });
-
-    //error handling
-    this.app.use(errorHandler());
+    return false;
   }
 }
+
+// setting application
+const app: express.Application = App.bootstrap().app;
+// create server
+const server = new Server(config.port, config.host, app).server;
+module.exports = server;

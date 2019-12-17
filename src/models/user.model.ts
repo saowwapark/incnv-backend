@@ -1,6 +1,6 @@
 import { AuthenResDto } from '../dto/authen.dto';
 import { userDao } from '../databases/incnv/dao/user.dao';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { HttpException } from '../exceptions/http.exception';
 export class UserModel {

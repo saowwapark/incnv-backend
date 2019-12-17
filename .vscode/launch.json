@@ -25,8 +25,9 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Create Ensembl_37",
-      "program": "${workspaceFolder}/src/databases/ensembl_grch37/create-db/map-datasource.js",
+      "name": "ssh",
+      "program": "${workspaceFolder}/src/datasource/ssh-test1.ts",
+      "preLaunchTask": "tsc"
     }
   ]
 }

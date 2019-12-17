@@ -131,16 +131,13 @@ const main = async () => {
 
   if (!allChrs.includes(chr)) throw ('Chromosome Error, Please use 1, 2, 3 ... x, y, or all.')
 
-  try {
+ 
     if(chr === 'all') {
       await mapAllChrs(reference);
     } else {
       await mapOneChr(reference, chr);
     }
-  } catch(err) {
-     printMemoryUsage();
-    console.log(err);
-  }
+
   
 }
 

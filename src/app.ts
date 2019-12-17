@@ -1,71 +1,94 @@
-/** Third Party Packages **/
-import http from 'http';
-import { Server } from './server';
-import { errorMiddleware } from './middleware/error.middleware';
+import * as bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import * as path from 'path';
+import mkdirp from 'mkdirp';
+
+// Use Only Dev
+import logger from 'morgan';
+import errorHandler = require('errorhandler');
+import methodOverride = require('method-override');
 
 /** My Own Imports **/
 import indexRoute from './routes/routes.index';
-const app = Server.bootstrap().app;
+import { errorMiddleware } from './middleware/error.middleware';
 
-const port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
+export class App {
+  public app: express.Application;
 
-const server = http.createServer(app);
-
-server.on('error', onError);
-server.on('listening', onListening);
-server.listen(port);
-
-indexRoute(app);
-app.use(errorMiddleware);
-module.exports = app;
-
-/******************************** Global Funciton for This File ****************************/
-
-/**
- * Normalize a port into a number, string, or false.
- */
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
+  public static bootstrap(): App {
+    return new App();
   }
 
-  if (port >= 0) {
-    // port number
-    return port;
+  constructor() {
+    //create expressjs application
+    this.app = express();
+
+    //configure application
+    this.config();
   }
 
-  return false;
-}
+  public config() {
+    // add static paths
+    this.app.use(express.static(path.join(__dirname, 'public')));
 
-/**
- * Event listener for HTTP server "error" event.
- */
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
+    // path
+    mkdirp.sync(path.join(__dirname, 'file-system', 'uploads'));
+
+    // use logger middlware
+    this.app.use(logger('dev'));
+
+    // use json form parser middlware
+    this.app.use(bodyParser.json());
+
+    // use query string parser middlware
+    // setup application to parse data that is sent as form-data
+    this.app.use(
+      bodyParser.urlencoded({
+        extended: false
+      })
+    );
+
+    // user CORS
+    this.app.use(
+      (
+        req: express.Request,
+        res: express.Response,
+        next: express.NextFunction
+      ) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader(
+          'Access-Control-Allow-Headers',
+          'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+        );
+        res.setHeader(
+          'Access-Control-Allow-Methods',
+          'GET, POST, PATCH, PUT, DELETE, OPTIONS'
+        );
+        next();
+      }
+    );
+    // use cookie parser middleware
+    this.app.use(cookieParser('SECRET_GOES_HERE'));
+
+    // use override middlware
+    this.app.use(methodOverride());
+
+    // catch 404 and forward to error handler
+    this.app.use(function(
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ) {
+      err.status = 404;
+      next(err);
+    });
+
+    //error handling
+    this.app.use(errorHandler());
+
+    indexRoute(this.app);
+    this.app.use(errorMiddleware);
   }
-  const bind = typeof port === 'string' ? 'pipe ' + port : 'port ' + port;
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-/**
- * Event listener for HTTP server "listening" event.
- */
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + port;
 }
