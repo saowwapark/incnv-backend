@@ -2,9 +2,19 @@ import { reformatCnvToolResultController } from './../controllers/reformat-cnv-t
 import express from 'express';
 const router = express.Router();
 
-router.get(
-  '/:uploadCnvToolResultId',
-  reformatCnvToolResultController.getReformatCnvToolResults
-);
+router
+  .put(
+    '/:reformatCnvToolResultId',
+    reformatCnvToolResultController.editReformatCnvToolResult
+  )
+  .delete('', reformatCnvToolResultController.deleteReformatCnvToolResults)
+  .get(
+    '/upload-cnv-tool-results/:uploadCnvToolResultId',
+    reformatCnvToolResultController.getReformatCnvToolResults
+  )
+  .delete(
+    '/upload-cnv-tool-results/:uploadCnvToolResultId',
+    reformatCnvToolResultController.deleteReformatByUploadId
+  );
 
 export default router;

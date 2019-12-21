@@ -48,9 +48,10 @@ export class SamplesetController {
     res.status(200).end();
   };
 
-  public deleteSampleset = async (req, res) => {
-    const samplesetId = req.params.samplesetId;
-    await samplesetDao.deleteSampleset(samplesetId);
+  public deleteSamplesets = async (req: express.Request, res) => {
+    const samplesetIds = req.body.samplesetIds;
+    console.log(samplesetIds);
+    await samplesetDao.deleteSamplesets(samplesetIds);
     res.status(200).end();
   };
 

@@ -34,7 +34,7 @@ export class ReformatCnvToolResultDao {
       ) VALUES (?, ?, ?, ?, ?, ?)`,
         post
       );
-      console.log(sql);
+      // console.log(sql);
       const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
       return resultSetHeader.insertId;
     } catch (err) {
@@ -67,7 +67,7 @@ export class ReformatCnvToolResultDao {
       ) VALUES ?`,
         [posts]
       );
-      console.log(sql);
+      // console.log(sql);
       const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
       return resultSetHeader.insertId;
     } catch (err) {
@@ -76,14 +76,35 @@ export class ReformatCnvToolResultDao {
     }
   }
 
+  public async getTotalCount(uploadCnvToolResultId) {
+    const sql = mysql.format(
+      `SELECT COUNT(*) AS total_count
+    FROM reformat_cnv_tool_result
+    WHERE upload_cnv_tool_result_id = ?`,
+      [uploadCnvToolResultId]
+    );
+    console.log(sql);
+    const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
+
+    return rows[0].total_count;
+  }
+
   public async getReformatCnvToolResults(
-    uploadCnvToolResultId: number
+    uploadCnvToolResultId: number,
+    sort: string,
+    order: string,
+    pageNumber: number,
+    pageSize: number
   ): Promise<ReformatCnvToolResultDto[]> {
+    pageNumber = pageNumber || 0;
+    pageSize = pageSize;
+    const initialPos = pageNumber * pageSize;
     const sql = mysql.format(
       `SELECT * FROM reformat_cnv_tool_result
     WHERE upload_cnv_tool_result_id = ?
-    ORDER BY sample_name, chromosome, start_basepair`,
-      [uploadCnvToolResultId]
+    ORDER BY sample_name, chromosome, start_basepair
+    LIMIT ?, ? `,
+      [uploadCnvToolResultId, initialPos, pageSize]
     );
     console.log(sql);
     const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
@@ -95,7 +116,39 @@ export class ReformatCnvToolResultDao {
     return reformatCnvToolResults;
   }
 
-  public async deleteReformatCnvToolResult(
+  public async deleteReformatCnvToolResults(reformatIds: number[]) {
+    const sql = mysql.format(
+      `DELETE FROM reformat_cnv_tool_result
+               WHERE reformat_cnv_tool_result_id IN (?)`,
+      reformatIds
+    );
+    console.log(sql);
+    const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
+  }
+
+  public editReformatCnvToolResult = async (
+    reformatCnvToolResult: ReformatCnvToolResultDto
+  ) => {
+    const reformat = reformatCnvToolResult;
+    const post = [
+      reformat.sampleName,
+      reformat.chromosome,
+      reformat.startBasepair,
+      reformat.endBasepair,
+      reformat.cnvType,
+      reformat.reformatCnvToolResultId
+    ];
+    const sql = mysql.format(
+      `UPDATE reformat_cnv_tool_result
+           SET sample_name = ?, chromosome = ?, start_basepair = ?, end_basepair = ?, cnv_type = ? 
+           WHERE reformat_cnv_tool_result_id = ?`,
+      post
+    );
+    console.log(sql);
+    const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
+  };
+
+  public async deleteReformatByUploadId(
     uploadCnvToolResultId: number
   ): Promise<number> {
     const sql = mysql.format(

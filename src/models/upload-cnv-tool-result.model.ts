@@ -2,6 +2,7 @@ import { UploadCnvToolResultDto } from '../databases/incnv/dto/upload-cnv-tool-r
 import { uploadCnvToolResultDao } from '../databases/incnv/dao/upload-cnv-tool-result.dao';
 import { tabFileMappingDao } from '../databases/incnv/dao/tab-file-mapping.dao';
 import { reformatCnvToolResultModel } from './reformat-cnv-tool-result.model';
+import fs from 'fs';
 
 export class UploadCnvToolResultModel {
   public addUploadCnvToolResult = async (
@@ -23,6 +24,12 @@ export class UploadCnvToolResultModel {
         filePath,
         tabFileMapping
       );
+      fs.unlink(filePath, err => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+      });
       return uploadCnvToolResultId;
     } catch (err) {
       await uploadCnvToolResultDao.deleteUploadCnvToolResult(

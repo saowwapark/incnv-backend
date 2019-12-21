@@ -9,11 +9,11 @@ router
 
   .post('', samplesetController.addSampleset)
 
+  .delete('', samplesetController.deleteSamplesets)
+
   .put('/:samplesetId', samplesetController.editSampleset)
 
-  .delete('/:samplesetId', samplesetController.deleteSampleset)
-
-  .get('/id-name', samplesetController.getIdAndName)
+  .get('/id-names', samplesetController.getIdAndName)
 
   .get('/count-samplesets', samplesetController.countSampleset)
 

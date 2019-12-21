@@ -74,7 +74,7 @@ export class SamplesetDao {
     return samplesets;
   };
 
-  public getSamplesetsToChoose = async userId => {
+  public getSamplesetsToAnalyze = async userId => {
     const sql = mysql.format(
       `SELECT sampleset_id, sampleset_name, description, samples
         FROM sampleset
@@ -158,11 +158,11 @@ export class SamplesetDao {
     const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
   };
 
-  public deleteSampleset = async samplesetId => {
+  public deleteSamplesets = async samplesetIds => {
     const sql = mysql.format(
       `DELETE FROM sampleset 
-      WHERE sampleset_id = ?`,
-      [samplesetId]
+      WHERE sampleset_id IN (?)`,
+      [samplesetIds]
     );
     console.log(sql);
     const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);

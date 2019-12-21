@@ -193,9 +193,7 @@ class ReformatCnvToolResultModel {
       await this.addReformatCnvToolResults(reformatCnvToolResults);
     } catch (err) {
       // Delete all records
-      reformatCnvToolResultDao.deleteReformatCnvToolResult(
-        uploadCnvToolResultId
-      );
+      reformatCnvToolResultDao.deleteReformatByUploadId(uploadCnvToolResultId);
       throw err;
     }
   };
@@ -209,10 +207,18 @@ class ReformatCnvToolResultModel {
   };
 
   public getReformatCnvToolResults = async (
-    uploadCnvToolResultId: number
+    uploadCnvToolResultId: number,
+    sort: string,
+    order: string,
+    pageNumber: number,
+    pageSize: number
   ): Promise<ReformatCnvToolResultDto[]> => {
     return await reformatCnvToolResultDao.getReformatCnvToolResults(
-      uploadCnvToolResultId
+      uploadCnvToolResultId,
+      sort,
+      order,
+      pageNumber,
+      pageSize
     );
   };
 }

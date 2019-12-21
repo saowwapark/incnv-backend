@@ -1,4 +1,5 @@
 import { tabFileMappingDao } from '../databases/incnv/dao/tab-file-mapping.dao';
+import { userService } from '../services/user.service';
 
 export class TabFileMappingController {
   public getTabFileMapping = async (tabFileMappingId: number) => {
@@ -26,7 +27,8 @@ export class TabFileMappingController {
   };
 
   public getIdAndName = async (req, res) => {
-    const idAndNames = await tabFileMappingDao.getIdAndName(req);
+    const userId = userService.getUserId(req);
+    const idAndNames = await tabFileMappingDao.getIdAndName(userId);
     res.status(200).json({
       payload: idAndNames
     });

@@ -139,8 +139,7 @@ export class TabFileMappingDao {
     return rows[0];
   };
 
-  public getIdAndName = async req => {
-    const userId = userService.getUserId(req);
+  public getIdAndName = async userId => {
     const sql = mysql.format(
       `SELECT tab_file_mapping_id AS id,
             tab_file_mapping_name AS name
