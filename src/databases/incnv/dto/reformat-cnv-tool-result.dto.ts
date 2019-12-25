@@ -1,7 +1,7 @@
 export class ReformatCnvToolResultDto {
   reformatCnvToolResultId?: number;
   uploadCnvToolResultId?: number;
-  sampleName?: string;
+  sample?: string;
   chromosome?: string;
   startBasepair?: number;
   endBasepair?: number;
@@ -11,7 +11,7 @@ export class ReformatCnvToolResultDto {
     if (a) {
       this.reformatCnvToolResultId = a.reformatCnvToolResultId;
       this.uploadCnvToolResultId = a.uploadCnvToolResultId;
-      this.sampleName = a.sampleName;
+      this.sample = a.sample;
       this.chromosome = a.chromosome;
       this.startBasepair = a.startBasepair;
       this.endBasepair = a.endBasepair;

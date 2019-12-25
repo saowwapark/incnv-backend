@@ -16,7 +16,7 @@ export class TabFileMappingDao {
     tabFileMappingDto.modifyDate = tabFileMappingDb.modify_date;
 
     tabFileMappingDto.headerColumnMapping = {
-      sampleName: tabFileMappingDb.sample_name,
+      sample: tabFileMappingDb.sample,
       chromosome: tabFileMappingDb.chromosome,
       startBasepair: tabFileMappingDb.start_basepair,
       endBasepair: tabFileMappingDb.end_basepair,
@@ -51,7 +51,7 @@ export class TabFileMappingDao {
 
     const tabFileMappingId = body.tabFileMappingId,
       tabFileMappingName = body.tabFileMappingName,
-      sampleName = column.sampleName,
+      sample = column.sample,
       chromosome = column.chromosome,
       startBasepair = column.startBasepair,
       endBasepair = column.endBasepair,
@@ -62,7 +62,7 @@ export class TabFileMappingDao {
 
     const post = [
       tabFileMappingName,
-      sampleName,
+      sample,
       chromosome,
       startBasepair,
       endBasepair,
@@ -74,7 +74,7 @@ export class TabFileMappingDao {
     ];
     const sql = mysql.format(
       `UPDATE tab_file_mapping 
-      SET   tab_file_mapping_name = ?, sample_name = ?, chromosome = ?,
+      SET   tab_file_mapping_name = ?, sample = ?, chromosome = ?,
             start_basepair = ?, end_basepair = ?, cnv_type = ?,
             chromosome_22 = ?, duplication = ?, deletion = ?,
             modify_date = NOW() 
@@ -93,7 +93,7 @@ export class TabFileMappingDao {
 
     const userId = userService.getUserId(req),
       tabFileMappingName = body.tabFileMappingName,
-      sampleName = column.sampleName,
+      sample = column.sample,
       chromosome = column.chromosome,
       startBasepair = column.startBasepair,
       endBasepair = column.endBasepair,
@@ -105,7 +105,7 @@ export class TabFileMappingDao {
     const post = [
       userId,
       tabFileMappingName,
-      sampleName,
+      sample,
       chromosome,
       startBasepair,
       endBasepair,
@@ -116,7 +116,7 @@ export class TabFileMappingDao {
     ];
     const sql = mysql.format(
       `INSERT INTO tab_file_mapping (
-        user_id, tab_file_mapping_name, sample_name, chromosome,
+        user_id, tab_file_mapping_name, sample, chromosome,
         start_basepair, end_basepair, cnv_type, chromosome_22,
         duplication, deletion, create_date) 
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,

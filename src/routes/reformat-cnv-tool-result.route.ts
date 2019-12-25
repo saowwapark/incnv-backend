@@ -10,7 +10,7 @@ router
   .delete('', reformatCnvToolResultController.deleteReformatCnvToolResults)
   .get(
     '/upload-cnv-tool-results/:uploadCnvToolResultId',
-    reformatCnvToolResultController.getReformatCnvToolResults
+    reformatCnvToolResultController.getPagingResults
   )
   .delete(
     '/upload-cnv-tool-results/:uploadCnvToolResultId',

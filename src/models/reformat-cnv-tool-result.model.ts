@@ -27,8 +27,8 @@ class ReformatCnvToolResultModel {
 
     columnNames.forEach((columnName, i) => {
       switch (columnName) {
-        case column.sampleName:
-          columnIndex.sampleNameIndex = i;
+        case column.sample:
+          columnIndex.sampleIndex = i;
           break;
         case column.chromosome:
           columnIndex.chromosomeIndex = i;
@@ -49,7 +49,7 @@ class ReformatCnvToolResultModel {
 
     let errorMessage = '';
     let errorColumns: string[] = [];
-    columnIndex.sampleNameIndex === undefined
+    columnIndex.sampleIndex === undefined
       ? errorColumns.push('Sample Name')
       : null;
 
@@ -106,7 +106,7 @@ class ReformatCnvToolResultModel {
       mappedData.uploadCnvToolResultId = uploadCnvToolResultId;
 
       // Map Sample Name
-      mappedData.sampleName = data[columnIndex.sampleNameIndex!];
+      mappedData.sample = data[columnIndex.sampleIndex!];
 
       // Map Chromosome -- Chromosome22
       if (dataFieldMapping.chromosome22!.indexOf('22')) {
@@ -133,9 +133,9 @@ class ReformatCnvToolResultModel {
       // Map CNV Type
       const originalCnvType = data[columnIndex.cnvTypeIndex!];
       if (originalCnvType === dataFieldMapping.duplication) {
-        mappedData.cnvType = 'dup';
+        mappedData.cnvType = 'duplication';
       } else if (originalCnvType === dataFieldMapping.deletion) {
-        mappedData.cnvType = 'del';
+        mappedData.cnvType = 'deletion';
       } else {
         throw new HttpException(
           400,
@@ -203,22 +203,6 @@ class ReformatCnvToolResultModel {
   ) => {
     await reformatCnvToolResultDao.addReformatCnvToolResults(
       reformatCnvToolResults
-    );
-  };
-
-  public getReformatCnvToolResults = async (
-    uploadCnvToolResultId: number,
-    sort: string,
-    order: string,
-    pageNumber: number,
-    pageSize: number
-  ): Promise<ReformatCnvToolResultDto[]> => {
-    return await reformatCnvToolResultDao.getReformatCnvToolResults(
-      uploadCnvToolResultId,
-      sort,
-      order,
-      pageNumber,
-      pageSize
     );
   };
 }

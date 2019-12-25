@@ -1,5 +1,5 @@
 export interface HeaderColumnMapping {
-  sampleName?: string;
+  sample?: string;
   chromosome?: string;
   startBasepair?: string;
   endBasepair?: string;
@@ -13,7 +13,7 @@ export interface DataFieldMapping {
 }
 
 export interface HeaderColumnIndex {
-  sampleNameIndex?: number;
+  sampleIndex?: number;
   chromosomeIndex?: number;
   startBasepairIndex?: number;
   endBasepairIndex?: number;

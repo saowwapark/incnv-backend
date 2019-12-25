@@ -1,4 +1,3 @@
-import { userModel } from './../../../models/user.model';
 import * as mysql from 'mysql2/promise';
 import { inCnvPool } from '../../../configs/database';
 import { IdAndNameDto } from '../../../dto/id-and-name.dto';
@@ -24,12 +23,12 @@ export class SamplesetDao {
       name = body.samplesetName,
       description = body.description,
       samples = JSON.stringify(body.samples);
-    const post = [userId, name, description, samples];
+    const data = [userId, name, description, samples];
     const sql = mysql.format(
       `INSERT INTO sampleset (
         user_id, sampleset_name, description, samples, create_date) 
       VALUES(?, ?, ?, ?, NOW())`,
-      post
+      data
     );
     console.log(sql);
     const [rows] = await inCnvPool.query<mysql.OkPacket>(sql);
@@ -119,12 +118,12 @@ export class SamplesetDao {
     const initialPos = pageNumber * pageSize;
 
     const userId = userService.getUserId(req);
-    const post = [userId, search, initialPos, pageSize];
+    const data = [userId, search, initialPos, pageSize];
     const sql = mysql.format(
       `SELECT * FROM sampleset 
     WHERE user_id = ? AND sampleset_name LIKE ? 
     ORDER BY create_date DESC LIMIT ?, ?`,
-      post
+      data
     );
     console.log(sql);
     const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
@@ -144,7 +143,7 @@ export class SamplesetDao {
       name = body.samplesetName,
       description = body.description,
       samples = JSON.stringify(body.samples);
-    const post = [name, description, samples, samplesetId];
+    const data = [name, description, samples, samplesetId];
     const sql = mysql.format(
       `UPDATE sampleset 
       SET   sampleset_name = ?,
@@ -152,7 +151,7 @@ export class SamplesetDao {
             samples = ?,
             modify_date = NOW() 
       WHERE sampleset_id = ?`,
-      post
+      data
     );
     console.log(sql);
     const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);

@@ -104,7 +104,7 @@ class MapDataSource {
         'loss',
         'gain+loss',
         'duplication',
-        'deletion'
+        'del'
       ]);
       if (!chosenVariantSubType.has(variant_subtype)) continue;
 

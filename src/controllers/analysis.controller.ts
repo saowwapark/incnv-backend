@@ -1,3 +1,4 @@
+import { AnalysisProcessModel } from './../models/analysis-process.model';
 import { analysisModel } from './../models/analysis.model';
 import { userService } from '../services/user.service';
 import * as express from 'express';
@@ -38,6 +39,35 @@ export class AnalysisController {
     } catch (err) {
       next(err);
     }
+  };
+
+  public getAllCnvToolDetails = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    const referenceGenome = req.query.referenceGenome;
+    const cnvType = req.query.cnvType;
+    const chromosome = req.query.chromosome;
+    const uploadCnvToolResults = JSON.parse(req.query.uploadCnvToolResults);
+    const sample = req.query.sample;
+    const analysisProcessModel = new AnalysisProcessModel(
+      referenceGenome,
+      sample,
+      cnvType,
+      chromosome
+    );
+    // const allCnvToolDetails = await analysisProcessModel.getAllCnvToolDetails(
+    //   uploadCnvToolResults
+    // );
+
+    const mergeBasepairs = await analysisProcessModel.getMergedBasepairs(
+      uploadCnvToolResults
+    );
+    console.log(mergeBasepairs);
+    res.status(200).json({
+      // payload: allCnvToolDetails
+    });
   };
 }
 

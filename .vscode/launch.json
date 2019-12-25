@@ -8,7 +8,8 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/src/app.ts",
+      "program": "${workspaceFolder}/src/server.ts",
+      "runtimeArgs": ["--require", "dotenv/config"],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"]
     },
@@ -21,13 +22,6 @@
       // "outFiles": ["${workspaceFolder}/src/databases/dgv_grch37/map-table.js"]
      
       
-    }, 
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "ssh",
-      "program": "${workspaceFolder}/src/datasource/ssh-test1.ts",
-      "preLaunchTask": "tsc"
     }
   ]
 }

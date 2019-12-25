@@ -2,13 +2,13 @@ import { reformatCnvToolResultDao } from './../databases/incnv/dao/reformat-cnv-
 import express from 'express';
 
 export class ReformatCnvToolResultController {
-  public getReformatCnvToolResults = async (req: express.Request, res) => {
+  public getPagingResults = async (req: express.Request, res) => {
     const uploadCnvToolResultId = +req.params.uploadCnvToolResultId;
     const sort = req.query.sort;
     const order = req.query.order;
     const pageNumber = req.query.pageNumber;
     const pageSize = req.query.pageSize;
-    const reformatCnvToolResults = await reformatCnvToolResultDao.getReformatCnvToolResults(
+    const reformatCnvToolResults = await reformatCnvToolResultDao.getPagingResults(
       uploadCnvToolResultId,
       sort,
       order,
