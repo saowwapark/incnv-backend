@@ -17,33 +17,23 @@ export class DgvDao {
   public getVariantAccession = async (
     cnvType: string,
     chromosome: string,
-    startBasepair: number,
-    endBasepair: number
+    startBp: number,
+    endBp: number
   ): Promise<string[]> => {
-    let variantSubtype: string;
+    let variantSubtype: string[];
 
     if (cnvType === 'duplication') {
-      variantSubtype = `'gain', 'gain+loss', 'duplication`;
+      variantSubtype = ['gain', 'gain+loss', 'duplication'];
     } else if (cnvType === 'deletion') {
-      variantSubtype = `'loss', 'gain+loss', 'deletion'`;
+      variantSubtype = ['loss', 'gain+loss', 'deletion'];
     } else {
       throw new Error('Cnv Type is incorrect.');
     }
     const statement = `SELECT variant_accession FROM dgv
                   WHERE chromosome = ? AND variant_subtype in (?)
-                    AND
-                    start_basepair BETWEEN ? AND ?
-                    OR
-                    end_basepair BETWEEN ? AND ?
-                  ORDER BY start_basepair, end_basepair`;
-    const data = [
-      chromosome,
-      variantSubtype,
-      startBasepair,
-      endBasepair,
-      startBasepair,
-      endBasepair
-    ];
+                    AND (start_bp BETWEEN ? AND ? OR end_bp BETWEEN ? AND ?)
+                  ORDER BY start_bp, end_bp`;
+    const data = [chromosome, variantSubtype, startBp, endBp, startBp, endBp];
 
     const sql = mysql.format(statement, data);
     console.log(sql);

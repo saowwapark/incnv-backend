@@ -3,8 +3,8 @@ export class ReformatCnvToolResultDto {
   uploadCnvToolResultId?: number;
   sample?: string;
   chromosome?: string;
-  startBasepair?: number;
-  endBasepair?: number;
+  startBp?: number;
+  endBp?: number;
   cnvType?: string;
 
   constructor(a?) {
@@ -13,8 +13,8 @@ export class ReformatCnvToolResultDto {
       this.uploadCnvToolResultId = a.uploadCnvToolResultId;
       this.sample = a.sample;
       this.chromosome = a.chromosome;
-      this.startBasepair = a.startBasepair;
-      this.endBasepair = a.endBasepair;
+      this.startBp = a.startBp;
+      this.endBp = a.endBp;
       this.cnvType = a.cnvType;
     }
   }

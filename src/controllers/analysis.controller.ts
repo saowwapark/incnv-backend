@@ -57,16 +57,19 @@ export class AnalysisController {
       cnvType,
       chromosome
     );
-    // const allCnvToolDetails = await analysisProcessModel.getAllCnvToolDetails(
-    //   uploadCnvToolResults
-    // );
-
-    const mergeBasepairs = await analysisProcessModel.getMergedBasepairs(
+    let allCnvToolDetails: any[] = [];
+    const selectedCnvTools = await analysisProcessModel.annotateMultipleTools(
       uploadCnvToolResults
     );
-    console.log(mergeBasepairs);
+    const mergedCnvTool = await analysisProcessModel.annotateMergedTools(
+      uploadCnvToolResults
+    );
+
+    allCnvToolDetails = selectedCnvTools;
+    allCnvToolDetails.push(mergedCnvTool);
+
     res.status(200).json({
-      // payload: allCnvToolDetails
+      payload: allCnvToolDetails
     });
   };
 }

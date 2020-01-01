@@ -1,5 +1,4 @@
 module.exports = {
-    ecmaVersion: 2018,
     "env": {
         "browser": true,
         "es6": true

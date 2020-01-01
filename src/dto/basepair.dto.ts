@@ -1,9 +1,9 @@
 export class BasepairDto {
-  startBasepair: number;
-  endBasepair: number;
+  startBp: number;
+  endBp: number;
 
-  constructor(startBasepair, endBasepair) {
-    this.startBasepair = startBasepair;
-    this.endBasepair = endBasepair;
+  constructor(startBp, endBp) {
+    this.startBp = startBp;
+    this.endBp = endBp;
   }
 }

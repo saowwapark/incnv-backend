@@ -1,8 +1,8 @@
 export class DgvDto {
   variantAccession?: number;
   chromosome?: number;
-  startBasepair?: number;
-  endBasepair?: number;
+  startBp?: number;
+  endBp?: number;
   variantType?: string;
   variantSubtype?: string;
   // reference?: string;

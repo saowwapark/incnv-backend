@@ -11,8 +11,8 @@ export class ReformatCnvToolResultDao {
     reformatDto.uploadCnvToolResultId = reformatDb.upload_cnv_tool_result_id;
     reformatDto.sample = reformatDb.sample;
     reformatDto.chromosome = reformatDb.chromosome;
-    reformatDto.startBasepair = reformatDb.start_basepair;
-    reformatDto.endBasepair = reformatDb.end_basepair;
+    reformatDto.startBp = reformatDb.start_bp;
+    reformatDto.endBp = reformatDb.end_bp;
     reformatDto.cnvType = reformatDb.cnv_type;
     return reformatDto;
   }
@@ -24,14 +24,14 @@ export class ReformatCnvToolResultDao {
         reformatDto.uploadCnvToolResultId,
         reformatDto.sample,
         reformatDto.chromosome,
-        reformatDto.startBasepair,
-        reformatDto.endBasepair,
+        reformatDto.startBp,
+        reformatDto.endBp,
         reformatDto.cnvType
       ];
       const sql = mysql.format(
         `INSERT INTO reformat_cnv_tool_result (
       upload_cnv_tool_result_id, sample,
-      chromosome, start_basepair, end_basepair, cnv_type
+      chromosome, start_bp, end_bp, cnv_type
       ) VALUES (?, ?, ?, ?, ?, ?)`,
         post
       );
@@ -54,8 +54,8 @@ export class ReformatCnvToolResultDao {
           reformatDto.uploadCnvToolResultId,
           reformatDto.sample,
           reformatDto.chromosome,
-          reformatDto.startBasepair,
-          reformatDto.endBasepair,
+          reformatDto.startBp,
+          reformatDto.endBp,
           reformatDto.cnvType
         ];
         posts.push(post);
@@ -64,7 +64,7 @@ export class ReformatCnvToolResultDao {
       const sql = mysql.format(
         `INSERT INTO reformat_cnv_tool_result (
       upload_cnv_tool_result_id, sample,
-      chromosome, start_basepair, end_basepair, cnv_type
+      chromosome, start_bp, end_bp, cnv_type
       ) VALUES ?`,
         [posts]
       );
@@ -103,7 +103,7 @@ export class ReformatCnvToolResultDao {
     const sql = mysql.format(
       `SELECT * FROM reformat_cnv_tool_result
     WHERE upload_cnv_tool_result_id = ?
-    ORDER BY sample, chromosome, start_basepair
+    ORDER BY sample, chromosome, start_bp
     LIMIT ?, ? `,
       [uploadCnvToolResultId, initialPos, pageSize]
     );
@@ -123,17 +123,55 @@ export class ReformatCnvToolResultDao {
     cnvType,
     chr
   ): Promise<BasepairDto[]> => {
-    const statement = `SELECT start_basepair, end_basepair 
+    const statement = `SELECT start_bp, end_bp 
     FROM reformat_cnv_tool_result 
     WHERE upload_cnv_tool_result_id = ? AND sample = ? AND chromosome = ? AND cnv_type = ?
-    ORDER BY start_basepair, end_basepair`;
+    ORDER BY start_bp, end_bp`;
     const data = [uploadCnvToolResultId, sample, chr, cnvType];
     const sql = mysql.format(statement, data);
     console.log(sql);
     const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
     const basepairs: BasepairDto[] = [];
     for (const row of rows) {
-      const basepair = new BasepairDto(row.start_basepair, row.end_basepair);
+      const basepair = new BasepairDto(row.start_bp, row.end_bp);
+      basepairs.push(basepair);
+    }
+    return basepairs;
+  };
+
+  public getBasepairStartEnd = async (
+    uploadCnvToolResultId,
+    sample,
+    cnvType,
+    chr,
+    startBp,
+    endBp
+  ): Promise<BasepairDto[]> => {
+    const statement = `SELECT start_bp, end_bp 
+    FROM reformat_cnv_tool_result 
+    WHERE upload_cnv_tool_result_id = ? AND sample = ? AND chromosome = ? 
+    AND cnv_type = ? 
+    AND
+    start_bp BETWEEN ? AND ?
+    OR
+    end_bp BETWEEN ? AND ?
+    ORDER BY start_bp, end_bp`;
+    const data = [
+      uploadCnvToolResultId,
+      sample,
+      chr,
+      cnvType,
+      startBp,
+      endBp,
+      startBp,
+      endBp
+    ];
+    const sql = mysql.format(statement, data);
+    console.log(sql);
+    const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
+    const basepairs: BasepairDto[] = [];
+    for (const row of rows) {
+      const basepair = new BasepairDto(row.start_bp, row.end_bp);
       basepairs.push(basepair);
     }
     return basepairs;
@@ -156,14 +194,14 @@ export class ReformatCnvToolResultDao {
     const post = [
       reformat.sample,
       reformat.chromosome,
-      reformat.startBasepair,
-      reformat.endBasepair,
+      reformat.startBp,
+      reformat.endBp,
       reformat.cnvType,
       reformat.reformatCnvToolResultId
     ];
     const sql = mysql.format(
       `UPDATE reformat_cnv_tool_result
-           SET sample = ?, chromosome = ?, start_basepair = ?, end_basepair = ?, cnv_type = ? 
+           SET sample = ?, chromosome = ?, start_bp = ?, end_bp = ?, cnv_type = ? 
            WHERE reformat_cnv_tool_result_id = ?`,
       post
     );

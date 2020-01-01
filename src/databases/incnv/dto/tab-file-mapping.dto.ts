@@ -1,8 +1,8 @@
 export interface HeaderColumnMapping {
   sample?: string;
   chromosome?: string;
-  startBasepair?: string;
-  endBasepair?: string;
+  startBp?: string;
+  endBp?: string;
   cnvType?: string;
 }
 
@@ -15,8 +15,8 @@ export interface DataFieldMapping {
 export interface HeaderColumnIndex {
   sampleIndex?: number;
   chromosomeIndex?: number;
-  startBasepairIndex?: number;
-  endBasepairIndex?: number;
+  startBpIndex?: number;
+  endBpIndex?: number;
   cnvTypeIndex?: number;
 }
 

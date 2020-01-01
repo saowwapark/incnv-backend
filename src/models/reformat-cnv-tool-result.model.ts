@@ -33,11 +33,11 @@ class ReformatCnvToolResultModel {
         case column.chromosome:
           columnIndex.chromosomeIndex = i;
           break;
-        case column.startBasepair:
-          columnIndex.startBasepairIndex = i;
+        case column.startBp:
+          columnIndex.startBpIndex = i;
           break;
-        case column.endBasepair:
-          columnIndex.endBasepairIndex = i;
+        case column.endBp:
+          columnIndex.endBpIndex = i;
           break;
         case column.cnvType:
           columnIndex.cnvTypeIndex = i;
@@ -56,10 +56,10 @@ class ReformatCnvToolResultModel {
     columnIndex.chromosomeIndex === undefined
       ? errorColumns.push('Chromosome')
       : null;
-    columnIndex.startBasepairIndex === undefined
+    columnIndex.startBpIndex === undefined
       ? errorColumns.push('Start Basepair')
       : null;
-    columnIndex.endBasepairIndex === undefined
+    columnIndex.endBpIndex === undefined
       ? errorColumns.push('End Basepair')
       : null;
     columnIndex.cnvTypeIndex === undefined
@@ -148,17 +148,15 @@ class ReformatCnvToolResultModel {
       // Confirm that this value is number
       // * use regex to remove comma from number
       // * use '+' to confirm this element is number
-      const originalStartBasepair = data[columnIndex.startBasepairIndex!];
-      mappedData.startBasepair = Number(
-        originalStartBasepair.replace(/,/gu, '')
-      );
+      const originalStartBp = data[columnIndex.startBpIndex!];
+      mappedData.startBp = Number(originalStartBp.replace(/,/gu, ''));
 
       // Map End Basepair
       // Confirm that this value is number
       // * use regex to remove comma from number
       // * use '+' to confirm this element is number
-      const originalEndBasepair = data[columnIndex.endBasepairIndex!];
-      mappedData.endBasepair = Number(originalEndBasepair.replace(/,/gu, ''));
+      const originalEndBp = data[columnIndex.endBpIndex!];
+      mappedData.endBp = Number(originalEndBp.replace(/,/gu, ''));
 
       mappedDatas.push(mappedData);
     }

@@ -18,8 +18,8 @@ export class TabFileMappingDao {
     tabFileMappingDto.headerColumnMapping = {
       sample: tabFileMappingDb.sample,
       chromosome: tabFileMappingDb.chromosome,
-      startBasepair: tabFileMappingDb.start_basepair,
-      endBasepair: tabFileMappingDb.end_basepair,
+      startBp: tabFileMappingDb.start_bp,
+      endBp: tabFileMappingDb.end_bp,
       cnvType: tabFileMappingDb.cnv_type
     };
 
@@ -53,8 +53,8 @@ export class TabFileMappingDao {
       tabFileMappingName = body.tabFileMappingName,
       sample = column.sample,
       chromosome = column.chromosome,
-      startBasepair = column.startBasepair,
-      endBasepair = column.endBasepair,
+      startBp = column.startBp,
+      endBp = column.endBp,
       cnvType = column.cnvType,
       chromosome22 = field.chromosome22,
       duplication = field.duplication,
@@ -64,8 +64,8 @@ export class TabFileMappingDao {
       tabFileMappingName,
       sample,
       chromosome,
-      startBasepair,
-      endBasepair,
+      startBp,
+      endBp,
       cnvType,
       chromosome22,
       duplication,
@@ -75,7 +75,7 @@ export class TabFileMappingDao {
     const sql = mysql.format(
       `UPDATE tab_file_mapping 
       SET   tab_file_mapping_name = ?, sample = ?, chromosome = ?,
-            start_basepair = ?, end_basepair = ?, cnv_type = ?,
+            start_bp = ?, end_bp = ?, cnv_type = ?,
             chromosome_22 = ?, duplication = ?, deletion = ?,
             modify_date = NOW() 
       WHERE tab_file_mapping_id = ?`,
@@ -95,8 +95,8 @@ export class TabFileMappingDao {
       tabFileMappingName = body.tabFileMappingName,
       sample = column.sample,
       chromosome = column.chromosome,
-      startBasepair = column.startBasepair,
-      endBasepair = column.endBasepair,
+      startBp = column.startBp,
+      endBp = column.endBp,
       cnvType = column.cnvType,
       chromosome22 = field.chromosome22,
       duplication = field.duplication,
@@ -107,8 +107,8 @@ export class TabFileMappingDao {
       tabFileMappingName,
       sample,
       chromosome,
-      startBasepair,
-      endBasepair,
+      startBp,
+      endBp,
       cnvType,
       chromosome22,
       duplication,
@@ -117,7 +117,7 @@ export class TabFileMappingDao {
     const sql = mysql.format(
       `INSERT INTO tab_file_mapping (
         user_id, tab_file_mapping_name, sample, chromosome,
-        start_basepair, end_basepair, cnv_type, chromosome_22,
+        start_bp, end_bp, cnv_type, chromosome_22,
         duplication, deletion, create_date) 
       VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
       post

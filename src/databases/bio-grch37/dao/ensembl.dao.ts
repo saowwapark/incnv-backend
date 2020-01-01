@@ -16,23 +16,14 @@ export class EnsemblDao {
 
   public getGeneId = async (
     chromosome: string,
-    startBasepair: number,
-    endBasepair: number
+    startBp: number,
+    endBp: number
   ): Promise<string[]> => {
     const statement = `SELECT gene_id FROM ensembl
                   WHERE chromosome = ?
-                    AND
-                    start_basepair BETWEEN ? AND ?
-                    OR
-                    end_basepair BETWEEN ? AND ?
-                  ORDER BY start_basepair, end_basepair`;
-    const data = [
-      chromosome,
-      startBasepair,
-      endBasepair,
-      startBasepair,
-      endBasepair
-    ];
+                    AND (start_bp BETWEEN ? AND ? OR end_bp BETWEEN ? AND ?)
+                  ORDER BY start_bp, end_bp`;
+    const data = [chromosome, startBp, endBp, startBp, endBp];
 
     const sql = mysql.format(statement, data);
     console.log(sql);
