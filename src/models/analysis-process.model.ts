@@ -9,14 +9,15 @@ class CnvToolAnnotationDto {
   cnvToolAnnotations?: CnvFragmentAnnotationDto[]; // annotation for a given cnv tool.
 }
 class CnvFragmentAnnotationDto {
+  referenceGenome?: string;
   chromosome?: string;
   cnvType?: string;
   startBp?: number;
   endBp?: number;
   overlapTools?: string[];
-  dgv?: string[]; //dgv.variant_accession
-  ensembl?: string[]; //ensembl.gene_id
-  clinvar;
+  dgvs?: string[]; //dgv.variant_accession
+  ensembls?: string[]; //ensembl.gene_id
+  clinvars;
 }
 
 // class CnvMergedAnnotationDto {
@@ -33,7 +34,7 @@ class CnvFragmentAnnotationDto {
 class MergedBasepairDto extends BasepairDto {
   overlapTools: string[];
 
-  constructor(startBp, endBp, overlapTools) {
+  constructor(startBp: number, endBp: number, overlapTools: string[]) {
     super(startBp, endBp);
     this.overlapTools = overlapTools;
   }
@@ -194,32 +195,26 @@ export class AnalysisProcessModel {
     // order of result is significant (basepair orders by ascending)
     let results: MergedBasepairDto[] | undefined = undefined;
     const diffStart = t.startBp - m.startBp;
+    const overlapTools = [...m.overlapTools];
     if (diffStart === 0) {
-      const r1 = new MergedBasepairDto(
-        m.startBp,
-        m.endBp,
-        m.overlapTools.push(name)
-      );
+      const r1 = new MergedBasepairDto(m.startBp, m.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1];
     } else if (diffStart < 0) {
       const r1 = new MergedBasepairDto(t.startBp, m.startBp - 1, [name]);
-      const r2 = new MergedBasepairDto(
-        m.startBp,
-        m.endBp,
-        m.overlapTools.push(name)
-      );
+      const r2 = new MergedBasepairDto(m.startBp, m.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1, r2];
     } else {
-      const r1 = new MergedBasepairDto(
-        m.startBp,
-        t.startBp - 1,
-        m.overlapTools
-      );
-      const r2 = new MergedBasepairDto(
-        t.startBp,
-        m.endBp,
-        m.overlapTools.push(name)
-      );
+      const r1 = new MergedBasepairDto(m.startBp, t.startBp - 1, overlapTools);
+      const r2 = new MergedBasepairDto(t.startBp, m.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1, r2];
     }
     return results;
@@ -236,16 +231,16 @@ export class AnalysisProcessModel {
     let results: MergedBasepairDto[] | undefined = undefined;
     const diffStart = t.startBp - m.startBp;
     const diffEnd = t.endBp - m.endBp;
+    const overlapTools = [...m.overlapTools];
     // M       -----------
     // T ----------
     if (diffStart < 0 && diffEnd < 0) {
       console.log('condition 1');
       const r1 = new MergedBasepairDto(t.startBp, m.startBp - 1, [name]);
-      const r2 = new MergedBasepairDto(
-        m.startBp,
-        t.endBp,
-        m.overlapTools.push(name)
-      );
+      const r2 = new MergedBasepairDto(m.startBp, t.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1, r2];
     }
 
@@ -253,11 +248,10 @@ export class AnalysisProcessModel {
     // T -----
     else if (diffStart === 0 && diffEnd < 0) {
       console.log('condition 2');
-      const r1 = new MergedBasepairDto(
-        t.startBp,
-        t.endBp,
-        m.overlapTools.push(name)
-      );
+      const r1 = new MergedBasepairDto(t.startBp, t.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1];
     }
 
@@ -265,27 +259,21 @@ export class AnalysisProcessModel {
     // T        ------
     else if (diffStart > 0 && diffEnd === 0) {
       console.log('condition 3');
-      const r1 = new MergedBasepairDto(
-        m.startBp,
-        t.startBp - 1,
-        m.overlapTools
-      );
-      const r2 = new MergedBasepairDto(
-        t.startBp,
-        t.endBp,
-        m.overlapTools.push(name)
-      );
+      const r1 = new MergedBasepairDto(m.startBp, t.startBp - 1, overlapTools);
+      const r2 = new MergedBasepairDto(t.startBp, t.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1, r2];
     }
     // M --------------
     // T --------------
     else if (diffStart === 0 && diffEnd === 0) {
       console.log('condition 4');
-      const r1 = new MergedBasepairDto(
-        m.startBp,
-        m.endBp,
-        m.overlapTools.push(name)
-      );
+      const r1 = new MergedBasepairDto(m.startBp, m.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1];
     }
 
@@ -293,16 +281,11 @@ export class AnalysisProcessModel {
     // T    ------
     else if (diffStart > 0 && diffEnd < 0) {
       console.log('condition 5');
-      const r1 = new MergedBasepairDto(
-        m.startBp,
-        t.startBp - 1,
-        m.overlapTools
-      );
-      const r2 = new MergedBasepairDto(
-        t.startBp,
-        t.endBp,
-        m.overlapTools.push(name)
-      );
+      const r1 = new MergedBasepairDto(m.startBp, t.startBp - 1, overlapTools);
+      const r2 = new MergedBasepairDto(t.startBp, t.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1, r2];
     }
 
@@ -311,11 +294,10 @@ export class AnalysisProcessModel {
     else if (diffStart < 0 && diffEnd === 0) {
       console.log('condition 6');
       const r1 = new MergedBasepairDto(t.startBp, m.startBp - 1, [name]);
-      const r2 = new MergedBasepairDto(
-        m.startBp,
-        m.endBp,
-        m.overlapTools.push(name)
-      );
+      const r2 = new MergedBasepairDto(m.startBp, m.endBp, [
+        ...overlapTools,
+        name
+      ]);
       results = [r1, r2];
     }
     return results;
@@ -343,6 +325,7 @@ export class AnalysisProcessModel {
 
     for (const basepair of basepairs) {
       const fragmentAnnotation = new CnvFragmentAnnotationDto();
+      fragmentAnnotation.referenceGenome = this.referenceGenome;
       fragmentAnnotation.chromosome = this.chromosome;
       fragmentAnnotation.cnvType = this.cnvType;
       fragmentAnnotation.startBp = basepair.startBp;
@@ -359,7 +342,7 @@ export class AnalysisProcessModel {
         basepair.startBp,
         basepair.endBp
       );
-      fragmentAnnotation.dgv = dgvData;
+      fragmentAnnotation.dgvs = dgvData;
 
       // ensembl
       const ensemblData = await ensemblDao.getGeneId(
@@ -367,7 +350,7 @@ export class AnalysisProcessModel {
         basepair.startBp,
         basepair.endBp
       );
-      fragmentAnnotation.ensembl = ensemblData;
+      fragmentAnnotation.ensembls = ensemblData;
 
       annotations.push(fragmentAnnotation);
     }
