@@ -6,7 +6,7 @@ import { RegionBpDto } from '../dto/basepair.dto';
 
 import { reformatCnvToolResultDao } from '../databases/incnv/dao/reformat-cnv-tool-result.dao';
 import { UploadCnvToolResultDto } from '../databases/incnv/dto/upload-cnv-tool-result.dto';
-import { CnvToolDto } from '../dto/analysis/cnv-tool.dto';
+import { CnvGroupDto } from '../dto/analysis/cnv-group.dto';
 import { MergedBasepairDto } from '../dto/analysis/merged-basepair.dto';
 
 const MERGE_TOOL_IDENTITY = 'merged tools';
@@ -24,7 +24,7 @@ export class AnalysisIndividualSampleModel {
     cnvType,
     sample,
     uploadCnvToolResults: UploadCnvToolResultDto[]
-  ): Promise<CnvToolDto[]> => {
+  ): Promise<CnvGroupDto[]> => {
     const annotatedTools: any[] = [];
     for (const uploadCnvToolResult of uploadCnvToolResults) {
       const regionBps = await analysisModel.getBpFromCnvResult(
@@ -39,8 +39,8 @@ export class AnalysisIndividualSampleModel {
         cnvType,
         regionBps
       );
-      const annotatedTool: CnvToolDto = {
-        cnvToolId: `${uploadCnvToolResult.cnvToolName}_${uploadCnvToolResult.fileInfo}`,
+      const annotatedTool: CnvGroupDto = {
+        cnvGroupName: `${uploadCnvToolResult.cnvToolName}_${uploadCnvToolResult.fileInfo}`,
         cnvInfos: toolAnnotation
       };
       annotatedTools.push(annotatedTool);
@@ -59,7 +59,7 @@ export class AnalysisIndividualSampleModel {
     cnvType,
     sample,
     uploadCnvToolResults: UploadCnvToolResultDto[]
-  ): Promise<CnvToolDto> => {
+  ): Promise<CnvGroupDto> => {
     const mergedBps: MergedBasepairDto[] = await this.mergeToolBps(
       chromosome,
       cnvType,
@@ -72,7 +72,7 @@ export class AnalysisIndividualSampleModel {
       cnvType,
       mergedBps
     );
-    return new CnvToolDto(MERGE_TOOL_IDENTITY, cnvAnnotations);
+    return new CnvGroupDto(MERGE_TOOL_IDENTITY, cnvAnnotations);
   };
 
   private mergeToolBps = async (

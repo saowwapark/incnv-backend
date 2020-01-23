@@ -87,7 +87,7 @@ export class AnalysisController {
     });
   };
 
-  public updateCnvInfos = async (
+  public getCnvInfos = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
@@ -108,7 +108,7 @@ export class AnalysisController {
     });
   };
 
-  public updateCnvInfo = async (
+  public getCnvInfo = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction

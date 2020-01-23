@@ -6,8 +6,8 @@ router
   .get('/upload-cnv-tool-results', analysisController.getUploadCnvToolResults)
   .get('/individual-sample', analysisController.getIndividualSample)
   .get('/multiple-sample', analysisController.getMultipleSample)
-  .post('/cnv-infos', analysisController.updateCnvInfos)
-  .post('/cnv-info', analysisController.updateCnvInfo)
+  .post('/cnv-infos', analysisController.getCnvInfos)
+  .post('/cnv-info', analysisController.getCnvInfo)
   .post('/download/cnv-infos', analysisController.exportCnvInfos);
 
 export default router;
