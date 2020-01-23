@@ -1,7 +1,7 @@
 import { ReformatCnvToolResultDto } from './../dto/reformat-cnv-tool-result.dto';
 import * as mysql from 'mysql2/promise';
 import { inCnvPool } from '../../../configs/database';
-import { BasepairDto } from '../../../dto/basepair.dto';
+import { RegionBpDto } from '../../../dto/basepair.dto';
 
 export class ReformatCnvToolResultDao {
   private parse(reformatDb) {
@@ -122,7 +122,7 @@ export class ReformatCnvToolResultDao {
     sample,
     cnvType,
     chr
-  ): Promise<BasepairDto[]> => {
+  ): Promise<RegionBpDto[]> => {
     const statement = `SELECT start_bp, end_bp 
     FROM reformat_cnv_tool_result 
     WHERE upload_cnv_tool_result_id = ? AND sample = ? AND chromosome = ? AND cnv_type = ?
@@ -131,9 +131,9 @@ export class ReformatCnvToolResultDao {
     const sql = mysql.format(statement, data);
     console.log(sql);
     const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
-    const basepairs: BasepairDto[] = [];
+    const basepairs: RegionBpDto[] = [];
     for (const row of rows) {
-      const basepair = new BasepairDto(row.start_bp, row.end_bp);
+      const basepair = new RegionBpDto(row.start_bp, row.end_bp);
       basepairs.push(basepair);
     }
     return basepairs;
@@ -146,7 +146,7 @@ export class ReformatCnvToolResultDao {
     chr,
     startBp,
     endBp
-  ): Promise<BasepairDto[]> => {
+  ): Promise<RegionBpDto[]> => {
     const statement = `SELECT start_bp, end_bp 
     FROM reformat_cnv_tool_result 
     WHERE upload_cnv_tool_result_id = ? AND sample = ? AND chromosome = ? 
@@ -169,9 +169,9 @@ export class ReformatCnvToolResultDao {
     const sql = mysql.format(statement, data);
     console.log(sql);
     const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
-    const basepairs: BasepairDto[] = [];
+    const basepairs: RegionBpDto[] = [];
     for (const row of rows) {
-      const basepair = new BasepairDto(row.start_bp, row.end_bp);
+      const basepair = new RegionBpDto(row.start_bp, row.end_bp);
       basepairs.push(basepair);
     }
     return basepairs;

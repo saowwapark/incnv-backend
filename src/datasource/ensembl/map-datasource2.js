@@ -1,6 +1,6 @@
 const fs = require('fs');
-const ensembl_37 = require('../database').ensembl_37;
-const ensembl_38 = require('../database').ensembl_38;
+const bio_grch37 = require('../database').bio_grch37;
+const bio_grch38 = require('../database').bio_grch38;
 const mysql = require('mysql2/promise');
 const path = require('path');
 const readline = require('readline-sync');
@@ -11,10 +11,10 @@ class MapDataSource {
 
   constructor(reference) {
     if (reference === 'grch37') {
-      this.pool = ensembl_37;
+      this.pool = bio_grch37;
       this.fileName = 'Homo_sapiens.GRCh37.87.chr.gff3';
     } else {
-      this.pool = ensembl_38;
+      this.pool = bio_grch38;
       this.fileName = 'Homo_sapiens.GRCh38.98.chr.gff3';
     }
   }
@@ -23,6 +23,7 @@ class MapDataSource {
     const sql = `CREATE TABLE gene (
       gene_id VARCHAR(15) NOT NULL,
       gene_type VARCHAR(45) NULL,
+      gene_symbol VARCHAR(45),
       chromosome VARCHAR(10) NULL,
       start_bp INT(10) NULL,
       end_bp INT(10) NULL,
@@ -33,8 +34,9 @@ class MapDataSource {
   };
 
   addGene = async mapped => {
+    console.log(mapped[0]);
     const sql = mysql.format(
-      `INSERT INTO gene (gene_id, gene_type, chromosome, start_bp, end_bp) VALUES ?`,
+      `INSERT INTO gene (gene_id, gene_type, gene_symbol, chromosome, start_bp, end_bp) VALUES ?`,
       [mapped]
     );
 
@@ -44,7 +46,10 @@ class MapDataSource {
   };
 
   mapDataSource = () => {
-    // read file
+   
+    const geneSymbolDataList = this.mapGeneSymbolDataSource();
+
+     // read file
     const file = path.join(
       __dirname,
       'source',
@@ -76,10 +81,55 @@ class MapDataSource {
       const firstAttr = attributes[0];
       if (firstAttr.slice(0, 7) === 'ID=gene') {
         const geneId = firstAttr.slice(8);
-        datalist.push([geneId, type, chr, +start, +end]);
+
+        for (const geneSymbolData of geneSymbolDataList) {
+          if(geneSymbolData[0] === geneId) {
+            datalist.push([geneId, type, geneSymbolData[1], chr, +start, +end]);
+            break;
+          }
+        }
       }
     }
     return datalist;
+  };
+
+
+
+  // return [any[], any[]]
+  mapGeneSymbolDataSource = ()  => {
+    // read file
+    const file = path.join(
+      __dirname,
+      'source',
+      'gene_symbol.txt'
+    );
+    const context = fs.readFileSync(file, 'utf8');
+    const lines = context.split('\n');
+
+    const dataList = [];
+  
+
+    for (const line of lines) {
+      // line space
+      if (!line || line === '') continue;
+
+      //ignore a commented line
+      if (line.charAt(0) === '#') continue;
+
+      const columns = line.split('\t');
+
+      const  gene_symbol = columns[0], gene_id = columns[1];
+     
+        
+    
+      if(gene_symbol && gene_id) {
+        const data = [ gene_id, gene_symbol];
+        dataList.push(data);
+      }
+    
+    }
+
+    return dataList;
   };
 
   async main() {

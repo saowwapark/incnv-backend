@@ -1,4 +1,4 @@
-export class BasepairDto {
+export class RegionBpDto {
   startBp: number;
   endBp: number;
 

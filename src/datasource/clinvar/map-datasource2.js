@@ -1,16 +1,17 @@
 const fs = require('fs');
-const clinvar_37 = require('../database').clinvar_37;
-const clinvar_38 = require('../database').clinvar_38;
+const bio_grch37 = require('../database').bio_grch37;
+const bio_grch38 = require('../database').bio_grch38;
 const mysql = require('mysql2/promise');
 const path = require('path');
+const readline = require('readline-sync');
 
 /**
- *  This version keep omim_id_list in form of json array
+ *  This version keep omim_id_list in form of separed string by semi-colon
  */
 class MapDataSource {
   createClinvarTable = async () => {
-    await clinvar_37.execute(`DROP TABLE IF EXISTS clinvar`);
-    await clinvar_38.execute(`DROP TABLE IF EXISTS clinvar`);
+    await bio_grch37.execute(`DROP TABLE IF EXISTS clinvar`);
+    await bio_grch38.execute(`DROP TABLE IF EXISTS clinvar`);
     const sql = `CREATE TABLE clinvar (
       clinvar_id int(3) unsigned NOT NULL AUTO_INCREMENT,
       allele_id int(11) DEFAULT NULL,
@@ -31,8 +32,8 @@ class MapDataSource {
       PRIMARY KEY (clinvar_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;`;
     console.log(sql);
-    await clinvar_37.query(sql);
-    await clinvar_38.query(sql);
+    await bio_grch37.query(sql);
+    await bio_grch38.query(sql);
   };
 
   addClinvar = async ([mapped_grch37, mapped_grch38]) => {
@@ -48,20 +49,20 @@ class MapDataSource {
           rs_dbSNP,
           omim_id_list,
           phenotype_list,
-           chr,
-          start,
-          end,
+          chromosome,
+          start_bp,
+          end_bp,
           cytogenetic) VALUES ?`;
     const statement_grch37 = mysql.format(sql, [mapped_grch37]);
 
     // console.log(statement_grch37);
-    const [resultSetHeader_grch37] = await clinvar_37.query(
+    const [resultSetHeader_grch37] = await bio_grch37.query(
       statement_grch37
     );
 
     const statement_grch38 = mysql.format(sql, [mapped_grch38]);
     // console.log(statement_grch38);
-    const [resultSetHeader_grch38] = await clinvar_38.query(
+    const [resultSetHeader_grch38] = await bio_grch38.query(
       statement_grch38
     );
   };
@@ -98,7 +99,7 @@ class MapDataSource {
         clinical_significance = columns[6],
         last_evaluated = columns[8],
         rs_dbSNP = columns[9],
-        phenotype_ids = columns[12].split(','),
+        phenotype_ids = columns[12].split(';'),
         phenotype_list = columns[13],
         chr = columns[18],
         start = columns[19],
@@ -107,15 +108,27 @@ class MapDataSource {
 
       if (!chr || chr === 'na') continue;
 
-      const omim_id_list = [];
+      let omim_id_list = '';
       const assembly = columns[16];
       for (const phenotype_id of phenotype_ids) {
-        if (phenotype_id.substring(0, 4) !== 'OMIM') continue;
-        const omim_id = phenotype_id.substring(5, 11);
-        omim_id_list.push(omim_id);
+        const fragments = phenotype_id.split(',');
+        for (const fragment of fragments) {
+
+          if (fragment.substring(0, 4) === 'OMIM') {
+            const omim_id = fragment.substring(5, 11);
+            if(omim_id_list.length === 0) {
+              omim_id_list = omim_id;
+            } else {
+              omim_id_list += `;${omim_id}`;
+            }
+            break;
+          }
+        }
       }
 
-      if (omim_id_list.length < 1) continue;
+      // keep only have omim_id_list
+      if (!omim_id_list) continue;
+
       const data = [
         allele_id,
         type,
@@ -126,7 +139,7 @@ class MapDataSource {
         clinical_significance,
         new Date(last_evaluated),
         rs_dbSNP,
-        JSON.stringify(omim_id_list),
+        omim_id_list,
         phenotype_list,
         chr,
         start,

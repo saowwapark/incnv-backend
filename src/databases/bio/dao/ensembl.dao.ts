@@ -1,3 +1,4 @@
+import { EnsemblAnnotationDto } from './../dto/ensembl-annotation.dto';
 import * as mysql from 'mysql2/promise';
 import { bioGrch37Pool, bioGrch38Pool } from '../../../configs/database';
 
@@ -14,12 +15,12 @@ export class EnsemblDao {
     }
   }
 
-  public getGeneId = async (
+  public getGeneAnnotaions = async (
     chromosome: string,
     startBp: number,
     endBp: number
-  ): Promise<string[]> => {
-    const statement = `SELECT gene_id FROM ensembl
+  ): Promise<EnsemblAnnotationDto[]> => {
+    const statement = `SELECT gene_id, gene_symbol FROM gene
                   WHERE chromosome = ?
                     AND (start_bp BETWEEN ? AND ? OR end_bp BETWEEN ? AND ?)
                   ORDER BY start_bp, end_bp`;
@@ -28,11 +29,12 @@ export class EnsemblDao {
     const sql = mysql.format(statement, data);
     console.log(sql);
     const [rows] = await this.pool.query<mysql.RowDataPacket[]>(sql);
-    const geneIds: string[] = [];
+    const ensemblAnnotations: EnsemblAnnotationDto[] = [];
     rows.forEach(row => {
       const geneId = row.gene_id;
-      geneIds.push(geneId);
+      const geneSymbol = row.gene_symbol;
+      ensemblAnnotations.push(new EnsemblAnnotationDto(geneId, geneSymbol));
     });
-    return geneIds;
+    return ensemblAnnotations;
   };
 }

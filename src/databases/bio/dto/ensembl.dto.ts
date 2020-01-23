@@ -1,7 +1,8 @@
 export class EnsemblDto {
   geneId;
   geneType;
-  chr;
-  start;
-  end;
+  geneSymbol;
+  chromosome;
+  startBp;
+  endBp;
 }
