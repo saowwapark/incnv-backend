@@ -121,13 +121,13 @@ export class ReformatCnvToolResultDao {
     uploadCnvToolResultId,
     sample,
     cnvType,
-    chr
+    chromosome
   ): Promise<RegionBpDto[]> => {
     const statement = `SELECT start_bp, end_bp 
     FROM reformat_cnv_tool_result 
     WHERE upload_cnv_tool_result_id = ? AND sample = ? AND chromosome = ? AND cnv_type = ?
     ORDER BY start_bp, end_bp`;
-    const data = [uploadCnvToolResultId, sample, chr, cnvType];
+    const data = [uploadCnvToolResultId, sample, chromosome, cnvType];
     const sql = mysql.format(statement, data);
     console.log(sql);
     const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);

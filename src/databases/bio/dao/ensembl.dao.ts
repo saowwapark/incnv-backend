@@ -1,3 +1,4 @@
+import { RegionBpDto } from './../../../dto/basepair.dto';
 import { EnsemblAnnotationDto } from './../dto/ensembl-annotation.dto';
 import * as mysql from 'mysql2/promise';
 import { bioGrch37Pool, bioGrch38Pool } from '../../../configs/database';
@@ -20,7 +21,7 @@ export class EnsemblDao {
     startBp: number,
     endBp: number
   ): Promise<EnsemblAnnotationDto[]> => {
-    const statement = `SELECT gene_id, gene_symbol FROM gene
+    const statement = `SELECT gene_id, gene_symbol, start_bp, end_bp FROM gene
                   WHERE chromosome = ?
                     AND (start_bp BETWEEN ? AND ? OR end_bp BETWEEN ? AND ?)
                   ORDER BY start_bp, end_bp`;
@@ -33,7 +34,10 @@ export class EnsemblDao {
     rows.forEach(row => {
       const geneId = row.gene_id;
       const geneSymbol = row.gene_symbol;
-      ensemblAnnotations.push(new EnsemblAnnotationDto(geneId, geneSymbol));
+      const basepair = new RegionBpDto(row.start_bp, row.end_bp);
+      ensemblAnnotations.push(
+        new EnsemblAnnotationDto(geneId, geneSymbol, basepair)
+      );
     });
     return ensemblAnnotations;
   };

@@ -150,6 +150,13 @@ class ReformatCnvToolResultModel {
       // * use '+' to confirm this element is number
       const originalStartBp = data[columnIndex.startBpIndex!];
       mappedData.startBp = Number(originalStartBp.replace(/,/gu, ''));
+      if (isNaN(mappedData.startBp)) {
+        throw new HttpException(
+          400,
+          `At line: ${index +
+            1}. 'start basepair': ${originalStartBp} is not a number`
+        );
+      }
 
       // Map End Basepair
       // Confirm that this value is number
@@ -157,7 +164,21 @@ class ReformatCnvToolResultModel {
       // * use '+' to confirm this element is number
       const originalEndBp = data[columnIndex.endBpIndex!];
       mappedData.endBp = Number(originalEndBp.replace(/,/gu, ''));
+      if (isNaN(mappedData.endBp)) {
+        throw new HttpException(
+          400,
+          `At line: ${index +
+            1}. 'start basepair': ${originalEndBp} is not a number`
+        );
+      }
 
+      if (mappedData.startBp > mappedData.endBp) {
+        throw new HttpException(
+          400,
+          `At line: ${index +
+            1}. 'start basepair': ${originalStartBp} is more than 'end basepair': ${originalEndBp}.`
+        );
+      }
       mappedDatas.push(mappedData);
     }
 

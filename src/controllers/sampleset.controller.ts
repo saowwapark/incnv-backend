@@ -9,9 +9,8 @@ export class SamplesetController {
     res: express.Response,
     next: express.NextFunction
   ) => {
-    const userId = userService.getUserId(req);
-
     try {
+      const userId = userService.getUserId(req);
       const idAndNames = await samplesetDao.getIdAndNames(userId);
       res.status(200).json({
         payload: idAndNames
@@ -21,38 +20,78 @@ export class SamplesetController {
     }
   };
 
-  public countSampleset = async (req, res) => {
-    const totalSampleset = await samplesetDao.countSampleset(req);
-    res.status(200).json({
-      payload: totalSampleset
-    });
+  public countSampleset = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const totalSampleset = await samplesetDao.countSampleset(req);
+      res.status(200).json({
+        payload: totalSampleset
+      });
+    } catch (err) {
+      next(err);
+    }
   };
 
   /**
    * Find samplesets per page
    */
-  public findSamplesets = async (req, res) => {
-    const samplesets = await samplesetDao.findSampleset(req);
-    res.status(200).json({
-      payload: samplesets
-    });
+  public findSamplesets = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const samplesets = await samplesetDao.findSampleset(req);
+      res.status(200).json({
+        payload: samplesets
+      });
+    } catch (err) {
+      next(err);
+    }
   };
 
-  public addSampleset = async (req, res) => {
-    await samplesetDao.addSampleset(req);
-    res.status(200).end();
+  public addSampleset = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      await samplesetDao.addSampleset(req);
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
   };
 
-  public editSampleset = async (req, res) => {
-    await samplesetDao.editSampleset(req);
-    res.status(200).end();
+  public editSampleset = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      await samplesetDao.editSampleset(req);
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
   };
 
-  public deleteSamplesets = async (req: express.Request, res) => {
-    const samplesetIds = req.body.samplesetIds;
-    console.log(samplesetIds);
-    await samplesetDao.deleteSamplesets(samplesetIds);
-    res.status(200).end();
+  public deleteSamplesets = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const samplesetIds = req.body.samplesetIds;
+      console.log(samplesetIds);
+      await samplesetDao.deleteSamplesets(samplesetIds);
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
   };
 
   public getSamplesets = async (

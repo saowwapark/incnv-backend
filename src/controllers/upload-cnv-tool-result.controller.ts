@@ -5,7 +5,11 @@ import express from 'express';
 import { UploadCnvToolResultDto } from '../databases/incnv/dto/upload-cnv-tool-result.dto';
 
 export class UploadCnvToolResultController {
-  public addUploadCnvToolResult = async (req, res, next) => {
+  public addUploadCnvToolResult = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
     const uploadCnvToolResult: UploadCnvToolResultDto = JSON.parse(
       req.body.uploadCnvToolResult
     );

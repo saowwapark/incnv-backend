@@ -10,6 +10,10 @@ import { ClinvarAnnotationListDto } from '../dto/analysis/clinvar-annotation-lis
 import { reformatCnvToolResultDao } from '../databases/incnv/dao/reformat-cnv-tool-result.dao';
 import { MergedBasepairDto } from '../dto/analysis/merged-basepair.dto';
 import { CnvInfoDto } from '../dto/analysis/cnv-info.dto';
+import { BpGroup } from '../dto/analysis/bp-group';
+import { CnvGroupDto } from '../dto/analysis/cnv-group.dto';
+import { MERGED_RESULT_NAME } from '../dto/analysis/constants';
+import { DgvAnnotationDto } from '../databases/bio/dto/dgv-annotation.dto';
 
 export class AnalysisModel {
   public getSamplesetsToAnalyze = async (userId: number) => {
@@ -94,7 +98,7 @@ export class AnalysisModel {
     chromosome,
     startBp,
     endBp
-  ): Promise<string[]> => {
+  ): Promise<DgvAnnotationDto[]> => {
     return await dgvDao.getVariantAccession(
       cnvType,
       chromosome,
@@ -193,21 +197,6 @@ export class AnalysisModel {
     );
   };
 
-  public getBpFromCnvResult = async (
-    uploadCnvToolResultId: number,
-    chromosome,
-    cnvType,
-    sample: string
-  ): Promise<RegionBpDto[]> => {
-    // baseparis for one cnv tool
-    return await reformatCnvToolResultDao.getBasepairs(
-      uploadCnvToolResultId,
-      sample,
-      cnvType,
-      chromosome
-    );
-  };
-
   // diffEnd > 0
   public getOverlapOverMergedBp = (
     m: MergedBasepairDto,
@@ -301,12 +290,14 @@ export class AnalysisModel {
   public mergeBps = (
     oldMergedBps: MergedBasepairDto[],
     bps: RegionBpDto[],
-    name
+    overlapName
   ) => {
     if (oldMergedBps && oldMergedBps.length === 0) {
       // First bps
       for (const bp of bps) {
-        const mergedBp = new MergedBasepairDto(bp.startBp, bp.endBp, [name]);
+        const mergedBp = new MergedBasepairDto(bp.startBp, bp.endBp, [
+          overlapName
+        ]);
         oldMergedBps.push(mergedBp);
       }
       return oldMergedBps;
@@ -330,7 +321,7 @@ export class AnalysisModel {
               const mergedBps = analysisModel.getOverlapNotOverMergedBp(
                 oldMergedBp,
                 bp,
-                name
+                overlapName
               );
               if (mergedBps) {
                 // remove used cnvToolBp
@@ -343,7 +334,7 @@ export class AnalysisModel {
               const mergedBps = analysisModel.getOverlapOverMergedBp(
                 oldMergedBp,
                 bp,
-                name
+                overlapName
               );
               if (mergedBps) {
                 // change cnvToolBp used
@@ -357,7 +348,7 @@ export class AnalysisModel {
           // not overlap
           else {
             const mergedBps = new MergedBasepairDto(bp.startBp, bp.endBp, [
-              name
+              overlapName
             ]);
             // remove used cnvToolBp
             clonedBps.splice(clonedBps.indexOf(bp), 1);
@@ -383,6 +374,41 @@ export class AnalysisModel {
       }
     }
     return oldMergedBps;
+  };
+  /**
+   *  Get Merged Bps of multiple samples
+   */
+  public mergeBpGroups = (bpGroups: BpGroup[]): MergedBasepairDto[] => {
+    let mergedBps: MergedBasepairDto[] = [];
+    for (const bpGroup of bpGroups) {
+      mergedBps = analysisModel.mergeBps(
+        mergedBps,
+        bpGroup.basepairs!,
+        bpGroup.groupName
+      );
+    }
+    return mergedBps;
+  };
+
+  /**
+   * Annotate Merged Tools
+   */
+  public annotateMergedBpGroup = async (
+    referenceGenome,
+    chromosome,
+    cnvType,
+    toolBpGroups: BpGroup[]
+  ): Promise<CnvGroupDto> => {
+    const mergedBps: MergedBasepairDto[] = await analysisModel.mergeBpGroups(
+      toolBpGroups
+    );
+    const cnvInfos = await analysisModel.generateCnvInfos(
+      referenceGenome,
+      chromosome,
+      cnvType,
+      mergedBps
+    );
+    return new CnvGroupDto(MERGED_RESULT_NAME, cnvInfos);
   };
 }
 

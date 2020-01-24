@@ -1,5 +1,7 @@
+import { RegionBpDto } from './../../../dto/basepair.dto';
 import * as mysql from 'mysql2/promise';
 import { bioGrch37Pool, bioGrch38Pool } from '../../../configs/database';
+import { DgvAnnotationDto } from '../dto/dgv-annotation.dto';
 
 export class DgvDao {
   pool: mysql.Pool;
@@ -19,7 +21,7 @@ export class DgvDao {
     chromosome: string,
     startBp: number,
     endBp: number
-  ): Promise<string[]> => {
+  ): Promise<DgvAnnotationDto[]> => {
     let variantSubtype: string[];
 
     if (cnvType === 'duplication') {
@@ -29,7 +31,7 @@ export class DgvDao {
     } else {
       throw new Error('Cnv Type is incorrect.');
     }
-    const statement = `SELECT variant_accession FROM dgv
+    const statement = `SELECT variant_accession, start_bp, end_bp FROM dgv
                   WHERE chromosome = ? AND variant_subtype in (?)
                     AND (start_bp BETWEEN ? AND ? OR end_bp BETWEEN ? AND ?)
                   ORDER BY start_bp, end_bp`;
@@ -38,10 +40,11 @@ export class DgvDao {
     const sql = mysql.format(statement, data);
     console.log(sql);
     const [rows] = await this.pool.query<mysql.RowDataPacket[]>(sql);
-    const variantAccessions: string[] = [];
+    const variantAccessions: DgvAnnotationDto[] = [];
     rows.forEach(row => {
       const variant = row.variant_accession;
-      variantAccessions.push(variant);
+      const basepair = new RegionBpDto(row.start_bp, row.end_bp);
+      variantAccessions.push(new DgvAnnotationDto(variant, basepair));
     });
     return variantAccessions;
   };
