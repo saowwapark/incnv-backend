@@ -116,7 +116,7 @@ class ReformatCnvToolResultModel {
           throw new HttpException(
             400,
             `At line: ${index +
-              1}.  Please check file content whether matching with the configuration of tab file mapping.`
+              2}.  Please check file content whether matching with the configuration of tab file mapping.`
           );
         }
         mappedData.chromosome = originalChromosome
@@ -126,7 +126,7 @@ class ReformatCnvToolResultModel {
         throw new HttpException(
           400,
           `At line: ${index +
-            1}.  Please check file content whether matching with the configuration of tab file mapping.`
+            2}.  Please check file content whether matching with the configuration of tab file mapping.`
         );
       }
 
@@ -140,7 +140,7 @@ class ReformatCnvToolResultModel {
         throw new HttpException(
           400,
           `At line: ${index +
-            1}. Cannot map data named '${originalCnvType}'.  Please check file content whether matching with the configuration of tab file mapping.`
+            2}. Cannot map data named '${originalCnvType}'.  Please check file content whether matching with the configuration of tab file mapping.`
         );
       }
 
@@ -154,7 +154,7 @@ class ReformatCnvToolResultModel {
         throw new HttpException(
           400,
           `At line: ${index +
-            1}. 'start basepair': ${originalStartBp} is not a number`
+            2}. 'start basepair': ${originalStartBp} is not a number`
         );
       }
 
@@ -168,16 +168,18 @@ class ReformatCnvToolResultModel {
         throw new HttpException(
           400,
           `At line: ${index +
-            1}. 'start basepair': ${originalEndBp} is not a number`
+            2}. 'start basepair': ${originalEndBp} is not a number`
         );
       }
 
       if (mappedData.startBp > mappedData.endBp) {
-        throw new HttpException(
-          400,
-          `At line: ${index +
-            1}. 'start basepair': ${originalStartBp} is more than 'end basepair': ${originalEndBp}.`
-        );
+        console.log(line);
+        continue;
+        // throw new HttpException(
+        //   400,
+        //   `At line: ${index +
+        //     2}. 'start basepair': ${originalStartBp} is more than 'end basepair': ${originalEndBp}.`
+        // );
       }
       mappedDatas.push(mappedData);
     }

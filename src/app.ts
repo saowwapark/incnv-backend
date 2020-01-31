@@ -33,7 +33,9 @@ export class App {
     this.app.use(express.static(path.join(__dirname, 'public')));
 
     // path
-    mkdirp.sync(path.join(__dirname, 'file-system', 'uploads'));
+    mkdirp.sync(path.join(__dirname, 'tmp', 'cnv-tool-result'));
+
+    mkdirp.sync(path.join(__dirname, 'tmp', 'datasource'));
 
     // use logger middlware
     this.app.use(logger('dev'));

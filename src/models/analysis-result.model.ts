@@ -1,4 +1,6 @@
+import { ClinvarAnnotationListDto } from './../dto/analysis/clinvar-annotation-list.dto';
 import { CnvInfoDto } from '../dto/analysis/cnv-info.dto';
+import { DgvAnnotationDto } from '../databases/bio/dto/dgv-annotation.dto';
 
 export class AnalysisResultModel {
   createDataFile = (cnvInfos: CnvInfoDto[]) => {
@@ -12,8 +14,8 @@ export class AnalysisResultModel {
       result += `${cnvInfo.endBp}\t`;
       result += `${cnvInfo.cnvType}\t`;
       const ensembls = cnvInfo.ensembls;
-      const dgvs = cnvInfo.dgvs;
-      const clinvar = cnvInfo.clinvar;
+      const dgvs: DgvAnnotationDto[] = cnvInfo.dgvs!;
+      const clinvar: ClinvarAnnotationListDto = cnvInfo.clinvar!;
       if (!ensembls || ensembls.length === 0) {
         result += `\t\t`;
       } else if (ensembls.length > 0) {
@@ -37,10 +39,10 @@ export class AnalysisResultModel {
           const dgv = dgvs[index];
           // last
           if (index === dgvs.length - 1) {
-            result += `${dgv}`;
+            result += `${dgv.variantAccession}`;
           } else {
             // general
-            result += `${dgv};`;
+            result += `${dgv.variantAccession};`;
           }
         }
         result += `\t`;

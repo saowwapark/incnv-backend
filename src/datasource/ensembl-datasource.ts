@@ -1,21 +1,26 @@
 const fs = require('fs');
-const bio_grch37 = require('../database').bio_grch37;
-const bio_grch38 = require('../database').bio_grch38;
-const mysql = require('mysql2/promise');
+import { bioGrch37Pool, bioGrch38Pool } from './../configs/database';
+import * as mysql from 'mysql2/promise';
 const path = require('path');
 const readline = require('readline-sync');
 
-class MapDataSource {
+export class EnsemblDataSource {
   pool;
-  fileName;
+  reference;
+  ensemblFilePath;
+  geneSymbolFilePath;
 
-  constructor(reference) {
+  constructor(reference, ensemblFilePath, geneSymbolFilePath) {
     if (reference === 'grch37') {
-      this.pool = bio_grch37;
-      this.fileName = 'Homo_sapiens.GRCh37.87.chr.gff3';
+      this.reference = reference;
+      this.pool = bioGrch37Pool;
+      this.ensemblFilePath = ensemblFilePath;
+      this.geneSymbolFilePath = geneSymbolFilePath;
     } else {
-      this.pool = bio_grch38;
-      this.fileName = 'Homo_sapiens.GRCh38.98.chr.gff3';
+      this.reference = reference;
+      this.pool = bioGrch38Pool;
+      this.ensemblFilePath = ensemblFilePath;
+      this.geneSymbolFilePath = geneSymbolFilePath;
     }
   }
   createGeneTable = async () => {
@@ -46,19 +51,13 @@ class MapDataSource {
   };
 
   mapDataSource = () => {
-   
     const geneSymbolDataList = this.mapGeneSymbolDataSource();
 
-     // read file
-    const file = path.join(
-      __dirname,
-      'source',
-      this.fileName
-    );
-    const context = fs.readFileSync(file, 'utf8');
+    // read file
+    const context = fs.readFileSync(this.ensemblFilePath, 'utf8');
     const lines = context.split('\n');
 
-    const datalist = [];
+    const datalist: any[] = [];
     for (const line of lines) {
       // line space
       if (!line || line === '') continue;
@@ -83,7 +82,7 @@ class MapDataSource {
         const geneId = firstAttr.slice(8);
 
         for (const geneSymbolData of geneSymbolDataList) {
-          if(geneSymbolData[0] === geneId) {
+          if (geneSymbolData[0] === geneId) {
             datalist.push([geneId, type, geneSymbolData[1], chr, +start, +end]);
             break;
           }
@@ -93,21 +92,13 @@ class MapDataSource {
     return datalist;
   };
 
-
-
   // return [any[], any[]]
-  mapGeneSymbolDataSource = ()  => {
+  mapGeneSymbolDataSource = () => {
     // read file
-    const file = path.join(
-      __dirname,
-      'source',
-      'gene_symbol.txt'
-    );
-    const context = fs.readFileSync(file, 'utf8');
+    const context = fs.readFileSync(this.geneSymbolFilePath, 'utf8');
     const lines = context.split('\n');
 
-    const dataList = [];
-  
+    const dataList: any[] = [];
 
     for (const line of lines) {
       // line space
@@ -118,38 +109,39 @@ class MapDataSource {
 
       const columns = line.split('\t');
 
-      const  gene_symbol = columns[0], gene_id = columns[1];
-     
-        
-    
-      if(gene_symbol && gene_id) {
-        const data = [ gene_id, gene_symbol];
+      const gene_symbol = columns[0],
+        gene_id = columns[1];
+
+      if (gene_symbol && gene_id) {
+        const data = [gene_id, gene_symbol];
         dataList.push(data);
       }
-    
     }
 
     return dataList;
   };
 
   async main() {
-    console.log(`file name: ${this.fileName}`);
+    console.log(`Mapping ensembl on ${this.reference}`);
     const dataSource = this.mapDataSource();
     await this.createGeneTable();
     await this.addGene(dataSource);
-    console.log('SUCCESS');
+    console.log(`Mapping ensembl on ${this.reference} SUCCESS!!`);
   }
 }
 
-const refNumber = readline.question(
-  `Please choose the reference. 
-    '1' for GRCh37
-    '2' for GRCh38\n`);
-if (refNumber === '1') {
-  const mapDataSource = new MapDataSource('grch37');
-  mapDataSource.main();
-}
-if (refNumber === '2') {
-  const mapDataSource = new MapDataSource('grch38');
-  mapDataSource.main();
-}
+const run = () => {
+  const ensemblGrch37 = new EnsemblDataSource(
+    'grch37',
+    '/abolute/file/path/Homo_sapiens.GRCh37.87.chr.gff3',
+    '/abolute/file/path/gene_symbol.txt'
+  );
+  ensemblGrch37.main();
+
+  const ensemblGrch38 = new EnsemblDataSource(
+    'grch37',
+    '/abolute/file/path/Homo_sapiens.GRCh38.98.chr.gff3',
+    '/abolute/file/path/gene_symbol.txt'
+  );
+  ensemblGrch38.main();
+};

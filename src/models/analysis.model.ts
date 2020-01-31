@@ -7,13 +7,13 @@ import { RegionBpDto } from '../dto/basepair.dto';
 import { EnsemblAnnotationDto } from '../databases/bio/dto/ensembl-annotation.dto';
 import { ClinvarDto } from '../databases/bio/dto/clinvar.dto';
 import { ClinvarAnnotationListDto } from '../dto/analysis/clinvar-annotation-list.dto';
-import { reformatCnvToolResultDao } from '../databases/incnv/dao/reformat-cnv-tool-result.dao';
 import { MergedBasepairDto } from '../dto/analysis/merged-basepair.dto';
 import { CnvInfoDto } from '../dto/analysis/cnv-info.dto';
 import { BpGroup } from '../dto/analysis/bp-group';
 import { CnvGroupDto } from '../dto/analysis/cnv-group.dto';
 import { MERGED_RESULT_NAME } from '../dto/analysis/constants';
 import { DgvAnnotationDto } from '../databases/bio/dto/dgv-annotation.dto';
+import { mergedBasepairModel } from './merged-basepair.model';
 
 export class AnalysisModel {
   public getSamplesetsToAnalyze = async (userId: number) => {
@@ -30,6 +30,10 @@ export class AnalysisModel {
     );
   };
 
+  /**
+   *  @param RegionBpDto[]
+   *  Get CNV Infos of basepair regions and bio database
+   */
   public generateCnvInfos = async (
     referenceGenome,
     chromosome,
@@ -81,44 +85,6 @@ export class AnalysisModel {
       cnvInfos.push(cnvInfo);
     }
     return cnvInfos;
-  };
-
-  private getEnsemblAnnotations = async (
-    ensemblDao: EnsemblDao,
-    chromosome,
-    startBp,
-    endBp
-  ): Promise<EnsemblAnnotationDto[]> => {
-    return await ensemblDao.getGeneAnnotaions(chromosome, startBp, endBp);
-  };
-
-  private getDgvAnnotations = async (
-    dgvDao: DgvDao,
-    cnvType,
-    chromosome,
-    startBp,
-    endBp
-  ): Promise<DgvAnnotationDto[]> => {
-    return await dgvDao.getVariantAccession(
-      cnvType,
-      chromosome,
-      startBp,
-      endBp
-    );
-  };
-
-  private getClinvarAnnotations = async (
-    clinvarDao: ClinvarDao,
-    chromosome: string,
-    startBp: number,
-    endBp: number
-  ) => {
-    const clinvars: ClinvarDto[] = await clinvarDao.getClinvar(
-      chromosome,
-      startBp,
-      endBp
-    );
-    return this.mergedClinvarAnnotations(clinvars);
   };
 
   public updateCnvInfo = async (cnvInfo: CnvInfoDto) => {
@@ -197,199 +163,6 @@ export class AnalysisModel {
     );
   };
 
-  // diffEnd > 0
-  public getOverlapOverMergedBp = (
-    m: MergedBasepairDto,
-    t: RegionBpDto,
-    name: string
-  ): MergedBasepairDto[] | undefined => {
-    // order of result is significant (basepair orders by ascending)
-    let results: MergedBasepairDto[] | undefined = undefined;
-    const diffStart = t.startBp - m.startBp;
-    const overlaps = [...m.overlaps];
-    if (diffStart === 0) {
-      const r1 = new MergedBasepairDto(m.startBp, m.endBp, [...overlaps, name]);
-      results = [r1];
-    } else if (diffStart < 0) {
-      const r1 = new MergedBasepairDto(t.startBp, m.startBp - 1, [name]);
-      const r2 = new MergedBasepairDto(m.startBp, m.endBp, [...overlaps, name]);
-      results = [r1, r2];
-    } else {
-      const r1 = new MergedBasepairDto(m.startBp, t.startBp - 1, overlaps);
-      const r2 = new MergedBasepairDto(t.startBp, m.endBp, [...overlaps, name]);
-      results = [r1, r2];
-    }
-    return results;
-  };
-
-  // tool cnv not over merged cnv -> remove T
-  // diffEnd <= 0
-  public getOverlapNotOverMergedBp = (
-    m: MergedBasepairDto,
-    t: RegionBpDto,
-    name: string
-  ): MergedBasepairDto[] | undefined => {
-    // order of result is significant (basepair orders by ascending)
-    let results: MergedBasepairDto[] | undefined = undefined;
-    const diffStart = t.startBp - m.startBp;
-    const diffEnd = t.endBp - m.endBp;
-    const overlaps = [...m.overlaps];
-    // M       -----------
-    // T ----------
-    if (diffStart < 0 && diffEnd < 0) {
-      console.log('condition 1');
-      const r1 = new MergedBasepairDto(t.startBp, m.startBp - 1, [name]);
-      const r2 = new MergedBasepairDto(m.startBp, t.endBp, [...overlaps, name]);
-      results = [r1, r2];
-    }
-
-    // M ------------
-    // T -----
-    else if (diffStart === 0 && diffEnd < 0) {
-      console.log('condition 2');
-      const r1 = new MergedBasepairDto(t.startBp, t.endBp, [...overlaps, name]);
-      results = [r1];
-    }
-
-    // M -------------
-    // T        ------
-    else if (diffStart > 0 && diffEnd === 0) {
-      console.log('condition 3');
-      const r1 = new MergedBasepairDto(m.startBp, t.startBp - 1, overlaps);
-      const r2 = new MergedBasepairDto(t.startBp, t.endBp, [...overlaps, name]);
-      results = [r1, r2];
-    }
-    // M --------------
-    // T --------------
-    else if (diffStart === 0 && diffEnd === 0) {
-      console.log('condition 4');
-      const r1 = new MergedBasepairDto(m.startBp, m.endBp, [...overlaps, name]);
-      results = [r1];
-    }
-
-    // M --------------
-    // T    ------
-    else if (diffStart > 0 && diffEnd < 0) {
-      console.log('condition 5');
-      const r1 = new MergedBasepairDto(m.startBp, t.startBp - 1, overlaps);
-      const r2 = new MergedBasepairDto(t.startBp, t.endBp, [...overlaps, name]);
-      results = [r1, r2];
-    }
-
-    // M        --------
-    // T ---------------
-    else if (diffStart < 0 && diffEnd === 0) {
-      console.log('condition 6');
-      const r1 = new MergedBasepairDto(t.startBp, m.startBp - 1, [name]);
-      const r2 = new MergedBasepairDto(m.startBp, m.endBp, [...overlaps, name]);
-      results = [r1, r2];
-    }
-    return results;
-  };
-
-  public mergeBps = (
-    oldMergedBps: MergedBasepairDto[],
-    bps: RegionBpDto[],
-    overlapName
-  ) => {
-    if (oldMergedBps && oldMergedBps.length === 0) {
-      // First bps
-      for (const bp of bps) {
-        const mergedBp = new MergedBasepairDto(bp.startBp, bp.endBp, [
-          overlapName
-        ]);
-        oldMergedBps.push(mergedBp);
-      }
-      return oldMergedBps;
-    } else {
-      // each old-merged basepair compare to current cnv tool
-      let mIndex = 0;
-      while (mIndex < oldMergedBps.length) {
-        let oldMergedBp = oldMergedBps[mIndex];
-        let clonedBps = [...bps];
-        let branchBps: MergedBasepairDto[] = [];
-
-        // each new tool's basepair
-        for (const bp of bps) {
-          // ignore cnvToolBp on right side of mergedBp
-          if (bp.startBp - oldMergedBp.endBp > 0) break;
-
-          // overlap
-          if (bp.endBp - oldMergedBp.startBp >= 0) {
-            const diffEnd = bp.endBp - oldMergedBp.endBp;
-            if (diffEnd <= 0) {
-              const mergedBps = analysisModel.getOverlapNotOverMergedBp(
-                oldMergedBp,
-                bp,
-                overlapName
-              );
-              if (mergedBps) {
-                // remove used cnvToolBp
-                clonedBps.splice(clonedBps.indexOf(bp), 1);
-
-                branchBps = branchBps.concat(mergedBps);
-                oldMergedBp.startBp = bp.endBp + 1;
-              }
-            } else {
-              const mergedBps = analysisModel.getOverlapOverMergedBp(
-                oldMergedBp,
-                bp,
-                overlapName
-              );
-              if (mergedBps) {
-                // change cnvToolBp used
-                const newIndex = clonedBps.indexOf(bp);
-                clonedBps[newIndex].startBp = oldMergedBp.endBp + 1;
-
-                branchBps = mergedBps;
-              }
-            }
-          }
-          // not overlap
-          else {
-            const mergedBps = new MergedBasepairDto(bp.startBp, bp.endBp, [
-              overlapName
-            ]);
-            // remove used cnvToolBp
-            clonedBps.splice(clonedBps.indexOf(bp), 1);
-
-            branchBps.push(mergedBps);
-          }
-        }
-        // update input bps for next loop
-        bps = clonedBps;
-
-        if (branchBps.length > 0) {
-          // remove changed merged bp
-          oldMergedBps.splice(mIndex, 1);
-
-          // insert merged bp instead of removed bp
-          oldMergedBps.splice(mIndex, 0, ...branchBps);
-
-          // update merged index
-          mIndex = mIndex + branchBps.length;
-        } else {
-          mIndex++;
-        }
-      }
-    }
-    return oldMergedBps;
-  };
-  /**
-   *  Get Merged Bps of multiple samples
-   */
-  public mergeBpGroups = (bpGroups: BpGroup[]): MergedBasepairDto[] => {
-    let mergedBps: MergedBasepairDto[] = [];
-    for (const bpGroup of bpGroups) {
-      mergedBps = analysisModel.mergeBps(
-        mergedBps,
-        bpGroup.basepairs!,
-        bpGroup.groupName
-      );
-    }
-    return mergedBps;
-  };
-
   /**
    * Annotate Merged Tools
    */
@@ -399,7 +172,7 @@ export class AnalysisModel {
     cnvType,
     toolBpGroups: BpGroup[]
   ): Promise<CnvGroupDto> => {
-    const mergedBps: MergedBasepairDto[] = await analysisModel.mergeBpGroups(
+    const mergedBps: MergedBasepairDto[] = mergedBasepairModel.mergeBpGroups(
       toolBpGroups
     );
     const cnvInfos = await analysisModel.generateCnvInfos(
@@ -409,6 +182,44 @@ export class AnalysisModel {
       mergedBps
     );
     return new CnvGroupDto(MERGED_RESULT_NAME, cnvInfos);
+  };
+
+  private getEnsemblAnnotations = async (
+    ensemblDao: EnsemblDao,
+    chromosome,
+    startBp,
+    endBp
+  ): Promise<EnsemblAnnotationDto[]> => {
+    return await ensemblDao.getGeneAnnotaions(chromosome, startBp, endBp);
+  };
+
+  private getDgvAnnotations = async (
+    dgvDao: DgvDao,
+    cnvType,
+    chromosome,
+    startBp,
+    endBp
+  ): Promise<DgvAnnotationDto[]> => {
+    return await dgvDao.getVariantAccession(
+      cnvType,
+      chromosome,
+      startBp,
+      endBp
+    );
+  };
+
+  private getClinvarAnnotations = async (
+    clinvarDao: ClinvarDao,
+    chromosome: string,
+    startBp: number,
+    endBp: number
+  ) => {
+    const clinvars: ClinvarDto[] = await clinvarDao.getClinvar(
+      chromosome,
+      startBp,
+      endBp
+    );
+    return this.mergedClinvarAnnotations(clinvars);
   };
 }
 

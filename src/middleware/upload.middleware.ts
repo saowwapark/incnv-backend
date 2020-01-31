@@ -8,7 +8,7 @@ export class UploadMiddleware {
     res: express.Response,
     next: express.NextFunction
   ) => {
-    const tempFilePath = path.join(__dirname, '..', 'file-system', 'uploads');
+    const tempFilePath = path.join(__dirname, '..', 'tmp', 'cnv-tool-result');
     const MIME_TYPE_MAP = {
       'text/plain': 'txt'
     };

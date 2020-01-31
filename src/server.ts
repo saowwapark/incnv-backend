@@ -2,7 +2,6 @@
 import http from 'http';
 import express from 'express';
 import { App } from './app';
-
 import * as config from './config';
 
 class Server {
