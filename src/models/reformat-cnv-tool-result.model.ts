@@ -190,11 +190,11 @@ class ReformatCnvToolResultModel {
   // obj is tabFileMapping
   public reformatFile = async (
     uploadCnvToolResultId,
-    file,
+    filePath: string,
     tabFileMapping: TabFileMappingDto
   ) => {
     // read file
-    const context = fs.readFileSync(file, 'utf8');
+    const context = fs.readFileSync(filePath, 'utf8');
     const lines = context.split('\n');
 
     try {
