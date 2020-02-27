@@ -3,6 +3,7 @@ import express from 'express';
 const router = express.Router();
 
 router
+  .post('', reformatCnvToolResultController.addReformatCnvToolResult)
   .get(
     '/upload-cnv-tool-results/:uploadCnvToolResultId',
     reformatCnvToolResultController.getPagingResults
@@ -11,11 +12,7 @@ router
     '/:reformatCnvToolResultId',
     reformatCnvToolResultController.editReformatCnvToolResult
   )
-  .post('', reformatCnvToolResultController.addReformatCnvToolResult)
-  .get(
-    '/upload-cnv-tool-results/:uploadCnvToolResultId',
-    reformatCnvToolResultController.getPagingResults
-  )
+
   .delete(
     '/single-upload-cnv-tool-result',
     reformatCnvToolResultController.deleteReformatByUploadId
