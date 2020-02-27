@@ -1,8 +1,8 @@
-import * as dotenv from 'dotenv';
-const env = dotenv.config();
-if (env.error) {
-  throw env.error;
-}
+// import * as dotenv from 'dotenv';
+// const env = dotenv.config();
+// if (env.error) {
+//   throw env.error;
+// }
 
 // configuration for production
 export const host = process.env.HOST || 'hostproduction';
