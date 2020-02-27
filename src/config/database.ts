@@ -4,12 +4,14 @@ import { dbEnv } from '../db-env';
 
 const connectionConfig = {
   host: dbEnv.host,
+  port: Number(dbEnv.port),
   user: dbEnv.user,
   password: dbEnv.password
 };
 
 const inCnvConfig = {
   host: dbEnv.host,
+  port: Number(dbEnv.port),
   user: dbEnv.user,
   password: dbEnv.password,
   database: 'inCnv'
@@ -21,6 +23,7 @@ const inCnvConfig = {
 
 const bioGrch37Config = {
   host: dbEnv.host,
+  port: Number(dbEnv.port),
   user: dbEnv.user,
   password: dbEnv.password,
   database: 'bio_grch37'
@@ -33,6 +36,7 @@ const bioGrch37Config = {
 
 const bioGrch38Config = {
   host: dbEnv.host,
+  port: Number(dbEnv.port),
   user: dbEnv.user,
   password: dbEnv.password,
   database: 'bio_grch38'

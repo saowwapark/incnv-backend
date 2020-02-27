@@ -3,12 +3,12 @@ import { tabFileMappingController } from '../controllers/tab-file-mapping.contro
 
 const router = express.Router();
 
-router.get('/id-names', tabFileMappingController.getIdAndName);
-
 router
   .get('', tabFileMappingController.getTabFileMappings)
 
   .post('', tabFileMappingController.addTabFileMapping)
+
+  .get('/id-names', tabFileMappingController.getIdAndName)
 
   .put('/:tabFileMappingId', tabFileMappingController.editTabFileMapping)
 
