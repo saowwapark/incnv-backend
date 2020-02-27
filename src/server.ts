@@ -98,20 +98,16 @@ const server = new Server(config.port, config.host, app).server;
 // })()
 
 // create and update database
-// createDatabase.crateDb(databases).then(() => {
-//   console.log('check create db success!!');
-//   updateDatabase.main().then(() => {
-//     console.log('check update db success!!');
-//   });
-// });
-// updateDgvAllVariants.main();
-// updateReferenceGenomeGrch37.main();
-// updateReferenceGenomeGrch38.main();
-
-// utilityDatasource.deleteFiles(datasourceTmpDir);
-
 createDatabase.crateDb(databases).then(() => {
   console.log('check create db success!!');
+  updateDatabase.main().then(() => {
+    console.log('check update db success!!');
+  });
 });
+updateDgvAllVariants.main();
+updateReferenceGenomeGrch37.main();
+updateReferenceGenomeGrch38.main();
+
+utilityDatasource.deleteFiles(datasourceTmpDir);
 
 module.exports = server;
