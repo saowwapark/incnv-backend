@@ -81,7 +81,7 @@ export class App {
     this.app.use(methodOverride());
 
     // catch 404 and forward to error handler
-    this.app.use(function(
+    this.app.use(function (
       err: any,
       req: express.Request,
       res: express.Response,

@@ -14,7 +14,7 @@ const inCnvConfig = {
   port: Number(dbEnv.port),
   user: dbEnv.user,
   password: dbEnv.password,
-  database: 'inCnv'
+  database: 'inCNV'
   // // --- only mysql --
   // connectionLimit: 10,
   // supportBigNumbers: true,
