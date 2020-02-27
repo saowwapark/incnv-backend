@@ -13,6 +13,10 @@ export const datasourceVersionPath = path.join(
   datasourceDirPath,
   'datasource-version.json'
 );
+export const datasourceOriginalVersionPath = path.join(
+  datasourceDirPath,
+  'datasource-version-original.json'
+);
 export const referenceGenomeDirPath = path.join(
   datasourceDirPath,
   'reference_genome'

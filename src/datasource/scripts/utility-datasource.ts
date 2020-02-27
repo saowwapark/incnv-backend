@@ -2,7 +2,10 @@ import axios from 'axios';
 import fs from 'fs-extra';
 import * as path from 'path';
 import { DatasourceVersion } from './datasource-version.model';
-import { datasourceVersionPath } from '../../config/path-config';
+import {
+  datasourceVersionPath,
+  datasourceOriginalVersionPath
+} from '../../config/path-config';
 export class UtilityDatasource {
   public getDatasource = async (
     downloadedUrl: string,
@@ -44,6 +47,11 @@ export class UtilityDatasource {
 
   public getDatasourceVersion = (): DatasourceVersion => {
     let rawData = fs.readFileSync(datasourceVersionPath, 'utf8');
+    return JSON.parse(rawData);
+  };
+
+  public getDatasourceOriginalVersion = (): DatasourceVersion => {
+    let rawData = fs.readFileSync(datasourceOriginalVersionPath, 'utf8');
     return JSON.parse(rawData);
   };
 

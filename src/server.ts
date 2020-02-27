@@ -1,18 +1,9 @@
-import { utilityDatasource } from './datasource/scripts/utility-datasource';
-import { updateDatabase } from './datasource/scripts/update-database';
-import { DatabaseScript, databases } from './datasource/scripts/database-const';
-import { createDatabase } from './datasource/scripts/create-database';
 /** Third Party Packages **/
 import http from 'http';
 import express from 'express';
 import { App } from './app';
 import * as config from './db-env';
-import IO from './socket';
-import cluster from 'cluster';
-import { updateDgvAllVariants } from './datasource/scripts/update-dgv-all-varaint';
-import { updateReferenceGenomeGrch37 } from './datasource/scripts/update-reference-genome-grch37';
-import { updateReferenceGenomeGrch38 } from './datasource/scripts/update-reference-genome-grch38';
-import { datasourceTmpDir } from './config/path-config';
+import { updateDatasource } from './datasource/scripts/update-datasource';
 
 class Server {
   port: number;
@@ -86,28 +77,9 @@ const server = new Server(config.port, config.host, app).server;
 //   });
 // });
 
-// // async-await at top level
-// (async() => {
-//   await createDatabase.crateDb(databases);
-//   console.log('check create db success!!');
-//   await updateDatabase.main();
-//   console.log('check update db success!!');
-//   await updateDgvAllVariants.main();
-//   await updateReferenceGenomeGrch37.main();
-//   await updateReferenceGenomeGrch38.main();
-// })()
-
-// create and update database
-createDatabase.crateDb(databases).then(() => {
-  console.log('check create db success!!');
-  updateDatabase.main().then(() => {
-    console.log('check update db success!!');
-  });
-});
-updateDgvAllVariants.main();
-updateReferenceGenomeGrch37.main();
-updateReferenceGenomeGrch38.main();
-
-utilityDatasource.deleteFiles(datasourceTmpDir);
+// async-await at top level
+(async () => {
+  await updateDatasource.main();
+})();
 
 module.exports = server;
