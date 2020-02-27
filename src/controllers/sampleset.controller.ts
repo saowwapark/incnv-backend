@@ -11,7 +11,7 @@ export class SamplesetController {
   ) => {
     try {
       const userId = userService.getUserId(req);
-      const idAndNames = await samplesetDao.getIdAndNames(userId);
+      const idAndNames = await samplesetDao.getIdAndNames(userId!);
       res.status(200).json({
         payload: idAndNames
       });

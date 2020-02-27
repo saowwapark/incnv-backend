@@ -1,36 +1,47 @@
+import { BpGroup } from './../dto/analysis/bp-group';
 import { RegionBpDto } from '../dto/basepair.dto';
 
 import { MergedBasepairDto } from '../dto/analysis/merged-basepair.dto';
-
-import { BpGroup } from '../dto/analysis/bp-group';
 
 export class MergedBasepairModel {
   /**
    *  Get Merged Bps of multiple samples or mulitple cnv tools
    */
+  // allSortedPostion: any[] = [];
 
   public mergeBpGroups = (bpGroups: BpGroup[]): MergedBasepairDto[] => {
-    const map: number[] = this.getMapPosition(bpGroups);
-    var allposition = this.convertMapToArrayInt(map);
-    this.sortArray(allposition);
-
-    const alloverlapped: MergedBasepairDto[] = [];
-    for (let i = 0; i < allposition.length - 1; i++) {
-      const iStart = allposition[i];
-      const iEnd = allposition[i + 1];
+    const mergedBps: MergedBasepairDto[] = [];
+    const allSortedPostion = this.sortAllPosition(bpGroups);
+    for (let i = 0; i < allSortedPostion.length - 1; i++) {
+      const iStart = allSortedPostion[i];
+      const iEnd = allSortedPostion[i + 1];
 
       const namelist = this.getVariantInRange(bpGroups, iStart, iEnd);
       if (namelist.length != 0) {
         const mergedBp = new MergedBasepairDto(iStart, iEnd, namelist);
-        alloverlapped.push(mergedBp);
+        mergedBps.push(mergedBp);
       }
     }
 
-    this.removeContingentList(alloverlapped);
-
-    return alloverlapped;
+    this.removeContingentList(mergedBps);
+    this.distinctGroupName(mergedBps);
+    return mergedBps;
   };
 
+  sortAllPosition = (bpGroups: BpGroup[]) => {
+    const map: number[] = this.getMapPosition(bpGroups);
+    const allposition = this.convertMapToArrayInt(map);
+    const allSortedPostion = this.sortArray(allposition);
+    return allSortedPostion;
+  };
+
+  distinctGroupName = (mergedBps: MergedBasepairDto[]) => {
+    for (let i = 0; i < mergedBps.length; i++) {
+      const mergedBp = mergedBps[i];
+      let overlaps = mergedBp.overlaps;
+      mergedBp.overlaps = Array.from(new Set(overlaps));
+    }
+  };
   getVariantInRange(
     bpGroups: BpGroup[],
     expectedStartBp: number,
@@ -42,6 +53,9 @@ export class MergedBasepairModel {
       const groupName = bpGroup.groupName!;
       for (const bp of bps) {
         if (bp.startBp <= expectedStartBp && bp.endBp >= expectedEndBp) {
+          if (bp.startBp > expectedEndBp) {
+            break;
+          }
           namelist.push(groupName);
         }
       }
@@ -51,7 +65,7 @@ export class MergedBasepairModel {
   }
 
   getMapPosition(bpGroups: BpGroup[]) {
-    var map: number[] = [];
+    const map: number[] = [];
     for (const bpGroup of bpGroups) {
       const bps = bpGroup.basepairs!;
       for (const bp of bps) {
@@ -62,22 +76,22 @@ export class MergedBasepairModel {
     return map;
   }
 
-  sortArray(allkey) {
-    allkey.sort((a, b) => (a > b ? 1 : -1));
+  sortArray(allkey: any[]) {
+    return allkey.sort((a, b) => (a > b ? 1 : -1));
   }
 
   convertMapToArrayInt(map) {
-    var allkey: any[] = [];
-    for (var key in map) {
+    const allkey: any[] = [];
+    for (const key in map) {
       allkey.push(parseInt(key));
     }
     return allkey;
   }
 
   removeContingentList(alloverlapped) {
-    for (var i = 0; i < alloverlapped.length - 1; i++) {
+    for (let i = 0; i < alloverlapped.length - 1; i++) {
       if (alloverlapped[i].end == alloverlapped[i + 1].start) {
-        var iEnd = parseInt(alloverlapped[i].end) - 1;
+        const iEnd = parseInt(alloverlapped[i].end) - 1;
         alloverlapped[i].end = iEnd;
       }
     }

@@ -1,13 +1,13 @@
 const fs = require('fs');
-import { bioGrch37Pool, bioGrch38Pool } from './../configs/database';
+import { bioGrch37Pool, bioGrch38Pool } from '../../config/database';
 const mysql = require('mysql2/promise');
 
 export class DgvDataSource {
   pool;
-  filePath;
-  reference;
+  filePath: string;
+  reference: string;
 
-  constructor(reference, filePath) {
+  constructor(reference: string, filePath: string) {
     if (reference === 'grch37') {
       this.reference = reference;
       this.pool = bioGrch37Pool;
@@ -17,12 +17,12 @@ export class DgvDataSource {
       this.pool = bioGrch38Pool;
       this.filePath = filePath;
     } else {
-      console.log(`Error! need to specify reference: 'grch37' or 'grch38'`);
+      throw `Error! need to specify reference: 'grch37' or 'grch38'`;
     }
   }
 
   createVariantTable = async () => {
-    await this.pool.execute(`DROP TABLE IF EXISTS variant`);
+    await this.pool.execute(`DROP TABLE IF EXISTS dgv`);
     const sql = `CREATE TABLE dgv (
   variant_accession varchar(20) NOT NULL,
   chromosome varchar(45) NOT NULL,

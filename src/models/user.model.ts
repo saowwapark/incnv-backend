@@ -63,10 +63,10 @@ export class UserModel {
         userId: user.userId
       },
       'secret_this_should_be_longer',
-      { expiresIn: '1h' }
+      { expiresIn: '3h' }
     );
     const authenData: AuthenResDto = {
-      expiresIn: 3600,
+      expiresIn: 10800, // 3 * 60 * 60  = 10800 seconds
       token: token
     };
     return authenData;

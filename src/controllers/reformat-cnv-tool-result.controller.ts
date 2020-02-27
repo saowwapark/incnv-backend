@@ -80,6 +80,22 @@ export class ReformatCnvToolResultController {
       next(err);
     }
   };
+
+  public addReformatCnvToolResult = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const reformatCnvToolResult = req.body.reformatCnvToolResult;
+      await reformatCnvToolResultDao.addReformatCnvToolResult(
+        reformatCnvToolResult
+      );
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
 }
 
 export const reformatCnvToolResultController = new ReformatCnvToolResultController();

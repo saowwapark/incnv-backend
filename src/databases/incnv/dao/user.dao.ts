@@ -1,6 +1,6 @@
 import { UserDto } from '../dto/user.dto';
 import * as mysql from 'mysql2/promise';
-import { inCnvPool } from '../../../configs/database';
+import { inCnvPool } from '../../../config/database';
 
 export class UserDao {
   private parse(userDb) {

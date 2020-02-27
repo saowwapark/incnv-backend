@@ -1,11 +1,12 @@
 import { RegionBpDto } from './../../../dto/basepair.dto';
 export class DgvAnnotationDto {
   variantAccession?: number;
+  startBp?: number;
+  endBp?: number;
 
-  basepair?: RegionBpDto;
-
-  constructor(variantAccession?, basepair?) {
+  constructor(variantAccession?, startBp?, endBp?) {
     this.variantAccession = variantAccession || undefined;
-    this.basepair = basepair || {};
+    this.startBp = startBp || undefined;
+    this.endBp = endBp || undefined;
   }
 }

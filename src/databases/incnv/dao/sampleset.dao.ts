@@ -1,5 +1,5 @@
 import * as mysql from 'mysql2/promise';
-import { inCnvPool } from '../../../configs/database';
+import { inCnvPool } from '../../../config/database';
 import { IdAndNameDto } from '../../../dto/id-and-name.dto';
 import { SamplesetDto } from '../dto/sampleset.dto';
 import { userService } from '../../../services/user.service';
@@ -34,7 +34,7 @@ export class SamplesetDao {
     const [rows] = await inCnvPool.query<mysql.OkPacket>(sql);
   }
 
-  public getIdAndNames = async userId => {
+  public getIdAndNames = async (userId: number) => {
     const sql = mysql.format(
       `SELECT sampleset_id AS id,
             sampleset_name AS name

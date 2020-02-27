@@ -1,6 +1,6 @@
 import { ReformatCnvToolResultDto } from './../dto/reformat-cnv-tool-result.dto';
 import * as mysql from 'mysql2/promise';
-import { inCnvPool } from '../../../configs/database';
+import { inCnvPool } from '../../../config/database';
 import { RegionBpDto } from '../../../dto/basepair.dto';
 
 export class ReformatCnvToolResultDao {
@@ -35,7 +35,7 @@ export class ReformatCnvToolResultDao {
       ) VALUES (?, ?, ?, ?, ?, ?)`,
         post
       );
-      // console.log(sql);
+      console.log(sql);
       const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
       return resultSetHeader.insertId;
     } catch (err) {
@@ -68,7 +68,7 @@ export class ReformatCnvToolResultDao {
       ) VALUES ?`,
         [posts]
       );
-      // console.log(sql);
+      console.log(sql);
       const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
       return resultSetHeader.insertId;
     } catch (err) {
@@ -103,7 +103,7 @@ export class ReformatCnvToolResultDao {
     const sql = mysql.format(
       `SELECT * FROM reformat_cnv_tool_result
     WHERE upload_cnv_tool_result_id = ?
-    ORDER BY sample, chromosome, start_bp
+    ORDER BY sample, chromosome, start_bp, end_bp
     LIMIT ?, ? `,
       [uploadCnvToolResultId, initialPos, pageSize]
     );
@@ -213,7 +213,7 @@ export class ReformatCnvToolResultDao {
     uploadCnvToolResultId: number
   ): Promise<number> {
     const sql = mysql.format(
-      `DELETE FROM reformat_cnv_tool_result (
+      `DELETE FROM reformat_cnv_tool_result 
       WHERE upload_cnv_tool_result_id = ?`,
       [uploadCnvToolResultId]
     );

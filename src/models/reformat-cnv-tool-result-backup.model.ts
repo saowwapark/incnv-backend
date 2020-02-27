@@ -9,33 +9,6 @@ import { reformatCnvToolResultDao } from '../databases/incnv/dao/reformat-cnv-to
 import fs from 'fs';
 import { ReformatCnvToolResultDto } from '../databases/incnv/dto/reformat-cnv-tool-result.dto';
 
-const allChrNames = [
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
-  '10',
-  '11',
-  '12',
-  '13',
-  '14',
-  '15',
-  '16',
-  '17',
-  '18',
-  '19',
-  '20',
-  '21',
-  '22',
-  'x',
-  'y'
-];
-
 class ReformatCnvToolResultModel {
   /**
    * Define Index for each column
@@ -147,7 +120,32 @@ class ReformatCnvToolResultModel {
           );
         }
         const chrName = originalChromosome.substring(chrIndex).toLowerCase();
-
+        const allChrNames = [
+          '1',
+          '2',
+          '3',
+          '4',
+          '5',
+          '6',
+          '7',
+          '8',
+          '9',
+          '10',
+          '11',
+          '12',
+          '13',
+          '14',
+          '15',
+          '16',
+          '17',
+          '18',
+          '19',
+          '20',
+          '21',
+          '22',
+          'x',
+          'y'
+        ];
         if (allChrNames.includes(chrName)) {
           mappedData.chromosome = chrName;
         } else {

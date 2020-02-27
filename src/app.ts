@@ -1,8 +1,13 @@
+import {
+  cnvToolResultTmpDir,
+  datasourceTmpDir,
+  staticDir
+} from './config/path-config';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import * as path from 'path';
-import mkdirp from 'mkdirp';
+import * as mkdirp from 'mkdirp';
 
 // Use Only Dev
 import logger from 'morgan';
@@ -30,12 +35,11 @@ export class App {
 
   public config() {
     // add static paths
-    this.app.use(express.static(path.join(__dirname, 'public')));
+    this.app.use(express.static(staticDir));
 
     // path
-    mkdirp.sync(path.join(__dirname, 'tmp', 'cnv-tool-result'));
-
-    mkdirp.sync(path.join(__dirname, 'tmp', 'datasource'));
+    mkdirp.sync(cnvToolResultTmpDir);
+    mkdirp.sync(datasourceTmpDir);
 
     // use logger middlware
     this.app.use(logger('dev'));

@@ -3,7 +3,7 @@ import {
   UploadCnvToolResultViewDto
 } from '../dto/upload-cnv-tool-result.dto';
 import * as mysql from 'mysql2/promise';
-import { inCnvPool } from '../../../configs/database';
+import { inCnvPool } from '../../../config/database';
 
 export class UploadCnvToolResultDao {
   public parse(upload) {
@@ -79,18 +79,6 @@ export class UploadCnvToolResultDao {
     }
   };
 
-  public deleteUploadCnvToolResult = async (uploadCnvToolResultId: number) => {
-    const post = [uploadCnvToolResultId];
-    const sql = mysql.format(
-      `DELETE FROM upload_cnv_tool_result
-        WHERE upload_cnv_tool_result_id = ?`,
-      post
-    );
-    console.log(sql);
-    const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
-    return resultSetHeader.affectedRows;
-  };
-
   public addUploadCnvToolResult = async (
     upload: UploadCnvToolResultDto
   ): Promise<number> => {
@@ -117,6 +105,54 @@ export class UploadCnvToolResultDao {
     const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
     return resultSetHeader.insertId;
   };
+
+  public editUploadCnvToolResult = async (
+    uploadCnvToolResult: UploadCnvToolResultDto
+  ) => {
+    const upload = uploadCnvToolResult;
+    const post = [
+      upload.fileName,
+      upload.fileInfo,
+      upload.referenceGenome,
+      upload.cnvToolName,
+      upload.tabFileMappingId,
+      upload.samplesetId,
+      JSON.stringify(upload.tagDescriptions),
+      upload.uploadCnvToolResultId
+    ];
+    const sql = mysql.format(
+      `UPDATE upload_cnv_tool_result
+           SET file_name = ?, file_info = ?,
+          reference_genome = ?, cnv_tool_name = ?, tab_file_mapping_id = ?,
+          sampleset_id = ?, tag_descriptions = ?
+           WHERE upload_cnv_tool_result_id = ?`,
+      post
+    );
+    console.log(sql);
+    const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
+  };
+
+  public deleteUploadCnvToolResult = async (uploadCnvToolResultId: number) => {
+    const post = [uploadCnvToolResultId];
+    const sql = mysql.format(
+      `DELETE FROM upload_cnv_tool_result
+        WHERE upload_cnv_tool_result_id = ?`,
+      post
+    );
+    console.log(sql);
+    const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
+    return resultSetHeader.affectedRows;
+  };
+
+  public async deleteUploadCnvToolResults(uploadCnvToolResultIds: number[]) {
+    const sql = mysql.format(
+      `DELETE FROM upload_cnv_tool_result
+               WHERE upload_cnv_tool_result_id IN (?)`,
+      [uploadCnvToolResultIds]
+    );
+    console.log(sql);
+    const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
+  }
 }
 
 export const uploadCnvToolResultDao = new UploadCnvToolResultDao();

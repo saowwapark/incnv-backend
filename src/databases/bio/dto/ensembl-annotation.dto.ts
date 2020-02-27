@@ -2,11 +2,13 @@ import { RegionBpDto } from './../../../dto/basepair.dto';
 export class EnsemblAnnotationDto {
   geneId?: string;
   geneSymbol?: string;
-  basepair?: RegionBpDto;
+  startBp?: number;
+  endBp?: number;
 
-  constructor(geneId?, geneSymbol?, basepair?) {
+  constructor(geneId?, geneSymbol?, startBp?, endBp?) {
     this.geneId = geneId || '';
     this.geneSymbol = geneSymbol || '';
-    this.basepair = basepair || {};
+    this.startBp = startBp || undefined;
+    this.endBp = endBp || undefined;
   }
 }

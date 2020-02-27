@@ -1,3 +1,12 @@
+import {
+  dgvAllVariantsGrch38FilePath,
+  referenceGenomeGrch38FastaFilePath,
+  referenceGenomeGrch37FastaFilePath,
+  referenceGenomeGrch37FaiFilePath,
+  referenceGenomeGrch38FaiFilePath
+} from './../config/path-config';
+import { AnnotationStoredproc } from './../databases/bio/dao/annotation-storedproc.dao';
+import { SequenceDto } from './../dto/analysis/sequence.dto';
 import { samplesetDao } from '../databases/incnv/dao/sampleset.dao';
 import { uploadCnvToolResultDao } from '../databases/incnv/dao/upload-cnv-tool-result.dao';
 import { DgvDao } from '../databases/bio/dao/dgv.dao';
@@ -14,8 +23,110 @@ import { CnvGroupDto } from '../dto/analysis/cnv-group.dto';
 import { MERGED_RESULT_NAME } from '../dto/analysis/constants';
 import { DgvAnnotationDto } from '../databases/bio/dto/dgv-annotation.dto';
 import { mergedBasepairModel } from './merged-basepair.model';
+import * as path from 'path';
+import fs from 'fs';
+import { dgvAllVariantsGrch37FilePath } from '../config/path-config';
+const { IndexedFasta, BgzipIndexedFasta } = require('@gmod/indexedfasta');
 
 export class AnalysisModel {
+  public getDgvAllVarirants = (refereceGenome: string, chromosome: string) => {
+    let dir: string;
+    if (refereceGenome === 'grch37') {
+      dir = dgvAllVariantsGrch37FilePath;
+    } else if (refereceGenome === 'grch38') {
+      dir = dgvAllVariantsGrch38FilePath;
+    } else {
+      throw `reference genome must be 'grch37' or 'grch38'`;
+    }
+    // const dir = path.join(
+    //   __dirname,
+    //   '..',
+    //   'datasource',
+    //   'dgv_all_variants',
+    //   refereceGenome
+    // );
+    const fileName = `dgv_chr${chromosome.toUpperCase()}_all_variants.txt`;
+    const context = fs.readFileSync(path.join(dir, fileName));
+    const dgvAllVariants = JSON.parse(context.toString());
+    return dgvAllVariants;
+  };
+
+  public getFlanking = async (
+    referenceGenome: string,
+    chromosome: string,
+    startBp: number,
+    endBp: number,
+    size: number
+  ): Promise<[SequenceDto, SequenceDto]> => {
+    let fastaPath: string;
+    let faiPath: string;
+    const chr = `chr${chromosome}`;
+    const leftFlanking: SequenceDto = new SequenceDto();
+    const rightFlanking: SequenceDto = new SequenceDto();
+
+    if (referenceGenome === 'grch37') {
+      fastaPath = referenceGenomeGrch37FastaFilePath;
+      faiPath = referenceGenomeGrch37FaiFilePath;
+    } else if (referenceGenome === 'grch38') {
+      fastaPath = referenceGenomeGrch38FastaFilePath;
+      faiPath = referenceGenomeGrch38FaiFilePath;
+    } else {
+      throw `reference genome must be 'grch37' or 'grch38'`;
+    }
+    const t = new IndexedFasta({
+      path: fastaPath,
+      faiPath: faiPath
+    });
+
+    try {
+      // left flanking
+      leftFlanking.chromosome = chromosome;
+      const leftFlankingStartBp = startBp - size; // this library use 0-based ex. get first 10 bases, "t.getSequence('chr1', 0, 10)"
+      leftFlanking.startBp = leftFlankingStartBp <= 0 ? 0 : leftFlankingStartBp;
+      leftFlanking.endBp = startBp - 1 <= 0 ? 0 : startBp;
+      leftFlanking.sequence = await t.getSequence(
+        chr,
+        leftFlanking.startBp,
+        leftFlanking.endBp
+      );
+
+      // right flanking
+      const chrSize = await t.getSequenceSize(chr); // t.getSequenceSize('chr1');
+      rightFlanking.chromosome = chromosome;
+
+      rightFlanking.startBp = endBp <= chrSize ? endBp : chrSize;
+      rightFlanking.endBp = endBp + size <= chrSize ? endBp + size : chrSize;
+      rightFlanking.sequence = await t.getSequence(
+        chr,
+        rightFlanking.startBp,
+        rightFlanking.endBp
+      );
+    } catch (err) {
+      throw `reference_genome: ${referenceGenome}, chromosome: ${chromosome}, start_bp: ${startBp}, end_bp: ${endBp}\n${err}`;
+    }
+
+    return [leftFlanking, rightFlanking];
+  };
+
+  public getStartAndEndSequence(
+    fn,
+    chr: string,
+    startBp: number,
+    endBp: number
+  ) {
+    let startSequence = new SequenceDto();
+    let endSequence = new SequenceDto();
+    const size = 150;
+    if (endBp - startBp > size) {
+      startSequence.sequence = fn(chr, startBp, startBp + size - 1);
+      endSequence.sequence = fn(chr, endBp - size, endBp);
+    } else {
+      startSequence.sequence = fn(chr, startBp, endBp);
+      endSequence.sequence = '';
+    }
+    return [startSequence, endSequence];
+  }
+
   public getSamplesetsToAnalyze = async (userId: number) => {
     return await samplesetDao.getSamplesetsToAnalyze(userId);
   };
@@ -30,101 +141,110 @@ export class AnalysisModel {
     );
   };
 
+  private generateCnvInfo = async (
+    referenceGenome: string,
+    chromosome: string,
+    cnvType: string,
+    regionBp: RegionBpDto
+  ): Promise<CnvInfoDto> => {
+    const cnvInfo = new CnvInfoDto();
+    cnvInfo.referenceGenome = referenceGenome;
+    cnvInfo.chromosome = chromosome;
+    cnvInfo.cnvType = cnvType;
+    cnvInfo.startBp = regionBp.startBp;
+    cnvInfo.endBp = regionBp.endBp;
+
+    if (regionBp.constructor.name === 'MergedBasepairDto') {
+      cnvInfo.overlaps = (regionBp as MergedBasepairDto).overlaps;
+    }
+
+    [
+      cnvInfo.ensembls,
+      cnvInfo.dgvs,
+      cnvInfo.clinvar
+    ] = await this.getCnvAnnotations(cnvInfo);
+
+    const [leftFlanking, rightFlanking] = await this.getFlanking(
+      referenceGenome,
+      chromosome,
+      regionBp.startBp,
+      regionBp.endBp,
+      150
+    );
+    cnvInfo.leftFlanking = leftFlanking;
+    cnvInfo.rightFlanking = rightFlanking;
+    return cnvInfo;
+  };
+
   /**
    *  @param RegionBpDto[]
    *  Get CNV Infos of basepair regions and bio database
    */
   public generateCnvInfos = async (
-    referenceGenome,
-    chromosome,
-    cnvType,
-    regionBps: RegionBpDto[] | MergedBasepairDto[]
+    referenceGenome: string,
+    chromosome: string,
+    cnvType: string,
+    regionBps: RegionBpDto[]
   ): Promise<CnvInfoDto[]> => {
-    const cnvInfos: CnvInfoDto[] = [];
-    const dgvDao = new DgvDao(referenceGenome);
-    const ensemblDao = new EnsemblDao(referenceGenome);
-    const clinvarDao = new ClinvarDao(referenceGenome);
-
-    for (const regionBp of regionBps) {
-      const cnvInfo = new CnvInfoDto();
-      cnvInfo.referenceGenome = referenceGenome;
-      cnvInfo.chromosome = chromosome;
-      cnvInfo.cnvType = cnvType;
-      cnvInfo.startBp = regionBp.startBp;
-      cnvInfo.endBp = regionBp.endBp;
-
-      if (regionBp.constructor.name === 'MergedBasepairDto') {
-        cnvInfo.overlaps = (regionBp as MergedBasepairDto).overlaps;
-      }
-
-      // dgv
-      cnvInfo.dgvs = await this.getDgvAnnotations(
-        dgvDao,
-        cnvType,
-        chromosome,
-        regionBp.startBp,
-        regionBp.endBp
-      );
-
-      // ensembl
-      cnvInfo.ensembls = await this.getEnsemblAnnotations(
-        ensemblDao,
-        chromosome,
-        regionBp.startBp,
-        regionBp.endBp
-      );
-
-      // clinvar
-      cnvInfo.clinvar = await this.getClinvarAnnotations(
-        clinvarDao,
-        chromosome,
-        regionBp.startBp,
-        regionBp.endBp
-      );
-
-      cnvInfos.push(cnvInfo);
-    }
+    console.log('-- generateCnvInfos');
+    const cnvInfos: Promise<CnvInfoDto[]> = Promise.all(
+      regionBps.map(regionBp => {
+        return this.generateCnvInfo(
+          referenceGenome,
+          chromosome,
+          cnvType,
+          regionBp
+        );
+      })
+    );
     return cnvInfos;
   };
 
-  public updateCnvInfo = async (cnvInfo: CnvInfoDto) => {
+  public getCnvAnnotations = async (
+    cnvInfo: CnvInfoDto
+  ): Promise<
+    [EnsemblAnnotationDto[], DgvAnnotationDto[], ClinvarAnnotationListDto]
+  > => {
     let newCnvInfo = new CnvInfoDto();
     newCnvInfo = { ...cnvInfo };
-    const dgvDao = new DgvDao(cnvInfo.referenceGenome);
-    const ensemblDao = new EnsemblDao(cnvInfo.referenceGenome);
-    const clinvarDao = new ClinvarDao(cnvInfo.referenceGenome);
+    const dgvDao = new DgvDao(cnvInfo.referenceGenome!);
+    const ensemblDao = new EnsemblDao(cnvInfo.referenceGenome!);
+    const clinvarDao = new ClinvarDao(cnvInfo.referenceGenome!);
 
-    // ensembl
-    newCnvInfo.ensembls = await this.getEnsemblAnnotations(
-      ensemblDao,
-      cnvInfo.chromosome,
-      cnvInfo.startBp,
-      cnvInfo.endBp
-    );
-    // dgv
-    newCnvInfo.dgvs = await this.getDgvAnnotations(
-      dgvDao,
-      cnvInfo.cnvType,
-      cnvInfo.chromosome,
-      cnvInfo.startBp,
-      cnvInfo.endBp
-    );
+    [
+      newCnvInfo.ensembls,
+      newCnvInfo.dgvs,
+      newCnvInfo.clinvar
+    ] = await Promise.all([
+      ensemblDao.getGeneAnnotaions(
+        cnvInfo.chromosome!,
+        cnvInfo.startBp!,
+        cnvInfo.endBp!
+      ),
+      dgvDao.getVariantAccession(
+        cnvInfo.cnvType!,
+        cnvInfo.chromosome!,
+        cnvInfo.startBp!,
+        cnvInfo.endBp!
+      ),
+      this.getClinvarAnnotations(
+        clinvarDao,
+        cnvInfo.chromosome!,
+        cnvInfo.startBp!,
+        cnvInfo.endBp!
+      )
+    ]);
 
-    // clivar
-    newCnvInfo.clinvar = await this.getClinvarAnnotations(
-      clinvarDao,
-      cnvInfo.chromosome!,
-      cnvInfo.startBp!,
-      cnvInfo.endBp!
-    );
-
-    return newCnvInfo;
+    return [newCnvInfo.ensembls, newCnvInfo.dgvs, newCnvInfo.clinvar];
   };
 
-  private mergedClinvarAnnotations = async (clinvars: ClinvarDto[]) => {
+  public mergedClinvarAnnotations = (
+    clinvars: ClinvarDto[]
+  ): ClinvarAnnotationListDto => {
     let uniqueOmims: string[] = [];
     let uniquePhenotypes: string[] = [];
     let uniqueSignificances: string[] = [];
+    if (!clinvars) return {};
     for (let clinvarIndex = 0; clinvarIndex < clinvars.length; clinvarIndex++) {
       const clinvar = clinvars[clinvarIndex];
       const omims = clinvar.omimIdList!.split(';');
@@ -167,11 +287,12 @@ export class AnalysisModel {
    * Annotate Merged Tools
    */
   public annotateMergedBpGroup = async (
-    referenceGenome,
-    chromosome,
-    cnvType,
+    referenceGenome: string,
+    chromosome: string,
+    cnvType: string,
     toolBpGroups: BpGroup[]
   ): Promise<CnvGroupDto> => {
+    console.log('-- annotateMergedBpGroup');
     const mergedBps: MergedBasepairDto[] = mergedBasepairModel.mergeBpGroups(
       toolBpGroups
     );
@@ -182,30 +303,6 @@ export class AnalysisModel {
       mergedBps
     );
     return new CnvGroupDto(MERGED_RESULT_NAME, cnvInfos);
-  };
-
-  private getEnsemblAnnotations = async (
-    ensemblDao: EnsemblDao,
-    chromosome,
-    startBp,
-    endBp
-  ): Promise<EnsemblAnnotationDto[]> => {
-    return await ensemblDao.getGeneAnnotaions(chromosome, startBp, endBp);
-  };
-
-  private getDgvAnnotations = async (
-    dgvDao: DgvDao,
-    cnvType,
-    chromosome,
-    startBp,
-    endBp
-  ): Promise<DgvAnnotationDto[]> => {
-    return await dgvDao.getVariantAccession(
-      cnvType,
-      chromosome,
-      startBp,
-      endBp
-    );
   };
 
   private getClinvarAnnotations = async (

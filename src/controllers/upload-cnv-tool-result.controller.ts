@@ -44,6 +44,20 @@ export class UploadCnvToolResultController {
     }
   };
 
+  public editUploadCnvToolResult = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const uploadCnvToolResult = req.body.uploadCnvToolResult;
+      await uploadCnvToolResultDao.editUploadCnvToolResult(uploadCnvToolResult);
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
   public deleteUploadCnvToolResult = async (
     req: express.Request,
     res: express.Response,
@@ -54,6 +68,21 @@ export class UploadCnvToolResultController {
       await uploadCnvToolResultDao.deleteUploadCnvToolResult(
         uploadCnvToolResultId
       );
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public deleteUploadCnvToolResults = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    try {
+      const uploadIds = req.body.uploadCnvToolResultIds;
+      await uploadCnvToolResultDao.deleteUploadCnvToolResults(uploadIds);
+
       res.status(200).end();
     } catch (err) {
       next(err);

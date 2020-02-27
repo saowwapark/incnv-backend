@@ -31,7 +31,7 @@ export class UploadMiddleware {
 
     upload(req, res, err => {
       if (err) {
-        console.log(err);
+        console.error(err);
         res.status(500).end();
       } else {
         console.log(req.file);

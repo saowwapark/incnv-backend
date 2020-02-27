@@ -1,5 +1,5 @@
 const fs = require('fs');
-import { bioGrch37Pool, bioGrch38Pool } from './../configs/database';
+import { bioGrch37Pool, bioGrch38Pool } from '../../config/database';
 import * as mysql from 'mysql2/promise';
 const path = require('path');
 const readline = require('readline-sync');
@@ -24,8 +24,8 @@ export class EnsemblDataSource {
     }
   }
   createGeneTable = async () => {
-    await this.pool.execute(`DROP TABLE IF EXISTS gene`);
-    const sql = `CREATE TABLE gene (
+    await this.pool.execute(`DROP TABLE IF EXISTS ensembl`);
+    const sql = `CREATE TABLE ensembl (
       gene_id VARCHAR(15) NOT NULL,
       gene_type VARCHAR(45) NULL,
       gene_symbol VARCHAR(45),
@@ -41,7 +41,7 @@ export class EnsemblDataSource {
   addGene = async mapped => {
     console.log(mapped[0]);
     const sql = mysql.format(
-      `INSERT INTO gene (gene_id, gene_type, gene_symbol, chromosome, start_bp, end_bp) VALUES ?`,
+      `INSERT INTO ensembl (gene_id, gene_type, gene_symbol, chromosome, start_bp, end_bp) VALUES ?`,
       [mapped]
     );
 

@@ -21,9 +21,17 @@ router
   )
   // must to remove lataer get('', uploadCnvToolResultController.getUploadCnvToolResultViews);
   .get('', uploadCnvToolResultController.getUploadCnvToolResultViews)
-  .delete(
+  .put(
     '/:uploadCnvToolResultId',
+    uploadCnvToolResultController.editUploadCnvToolResult
+  )
+  .delete(
+    '/single-upload-cnv-tool-result/:uploadCnvToolResultId',
     uploadCnvToolResultController.deleteUploadCnvToolResult
+  )
+  .delete(
+    '/multiple-upload-cnv-tool-result',
+    uploadCnvToolResultController.deleteUploadCnvToolResults
   );
 
 export default router;

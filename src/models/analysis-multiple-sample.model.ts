@@ -11,9 +11,9 @@ import { BpGroup } from '../dto/analysis/bp-group';
 
 export class AnalysisMultipleSampleModel {
   public annotate = async (
-    referenceGenome,
-    chromosome,
-    cnvType,
+    referenceGenome: string,
+    chromosome: string,
+    cnvType: string,
     samples: string[],
     uploadCnvToolResult: UploadCnvToolResultDto
   ): Promise<[CnvGroupDto[], CnvGroupDto]> => {
@@ -24,43 +24,84 @@ export class AnalysisMultipleSampleModel {
       chromosome
     );
 
-    const annotatedMultipleSamples = await this.annotateMultipleSamples(
-      referenceGenome,
-      chromosome,
-      cnvType,
-      sampleBpGroups
-    );
-    const annotatedMergedSample = await analysisModel.annotateMergedBpGroup(
-      referenceGenome,
-      chromosome,
-      cnvType,
-      sampleBpGroups
-    );
-    return [annotatedMultipleSamples, annotatedMergedSample];
-  };
-
-  public annotateMultipleSamples = async (
-    referenceGenome,
-    chromosome,
-    cnvType,
-    sampleBpGroups: BpGroup[]
-  ) => {
-    // add annotation of all samples
-    const annotatedSamples: any[] = [];
-    for (const sampleBpGroup of sampleBpGroups) {
-      const sampleAnnotation = await analysisModel.generateCnvInfos(
+    const [
+      annotatedMultipleSamples,
+      annotatedMergedSample
+    ] = await Promise.all([
+      this.annotateMultipleSamples(
         referenceGenome,
         chromosome,
         cnvType,
-        sampleBpGroup.basepairs!
-      );
-      const annotatedSample: CnvGroupDto = {
-        cnvGroupName: sampleBpGroup.groupName,
-        cnvInfos: sampleAnnotation
-      };
-      annotatedSamples.push(annotatedSample);
-    }
+        sampleBpGroups
+      ),
+      analysisModel.annotateMergedBpGroup(
+        referenceGenome,
+        chromosome,
+        cnvType,
+        sampleBpGroups
+      )
+    ]);
+    return [annotatedMultipleSamples, annotatedMergedSample];
+  };
+
+  private annotateSample = async (
+    referenceGenome: string,
+    chromosome: string,
+    cnvType: string,
+    sampleBpGroup: BpGroup
+  ): Promise<CnvGroupDto> => {
+    const sampleAnnotation = await analysisModel.generateCnvInfos(
+      referenceGenome,
+      chromosome,
+      cnvType,
+      sampleBpGroup.basepairs!
+    );
+    const annotatedSample: CnvGroupDto = {
+      cnvGroupName: sampleBpGroup.groupName,
+      cnvInfos: sampleAnnotation
+    };
+
+    return annotatedSample;
+  };
+
+  public annotateMultipleSamples = async (
+    referenceGenome: string,
+    chromosome: string,
+    cnvType: string,
+    sampleBpGroups: BpGroup[]
+  ) => {
+    // add annotation of all samples
+    const annotatedSamples: Promise<CnvGroupDto[]> = Promise.all(
+      sampleBpGroups.map(sampleBpGroup => {
+        return this.annotateSample(
+          referenceGenome,
+          chromosome,
+          cnvType,
+          sampleBpGroup
+        );
+      })
+    );
     return annotatedSamples;
+  };
+
+  public getSampleBpGroup = async (
+    uploadCnvToolResultId: number,
+    sample: string,
+    cnvType: string,
+    chromosome: string
+  ): Promise<BpGroup> => {
+    let bps: RegionBpDto[] = await reformatCnvToolResultDao.getBasepairs(
+      uploadCnvToolResultId,
+      sample,
+      cnvType,
+      chromosome
+    );
+    const sampleBpGroup: BpGroup = {
+      groupName: sample,
+      basepairs: bps
+    };
+
+    return sampleBpGroup;
   };
 
   /**
@@ -69,23 +110,19 @@ export class AnalysisMultipleSampleModel {
   public getSampleBpGroups = async (
     uploadCnvToolResultId: number,
     samples: string[],
-    cnvType,
-    chromosome
+    cnvType: string,
+    chromosome: string
   ): Promise<BpGroup[]> => {
-    const sampleBpGroups: BpGroup[] = [];
-    for (const sample of samples) {
-      let bps: RegionBpDto[] = await reformatCnvToolResultDao.getBasepairs(
-        uploadCnvToolResultId,
-        sample,
-        cnvType,
-        chromosome
-      );
-      const sampleBpGroup: BpGroup = {
-        groupName: sample,
-        basepairs: bps
-      };
-      sampleBpGroups.push(sampleBpGroup);
-    }
+    const sampleBpGroups: Promise<BpGroup[]> = Promise.all(
+      samples.map(sample => {
+        return this.getSampleBpGroup(
+          uploadCnvToolResultId,
+          sample,
+          cnvType,
+          chromosome
+        );
+      })
+    );
     return sampleBpGroups;
   };
 }

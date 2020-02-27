@@ -10,14 +10,21 @@ import analysisRoutes from './analysis.route';
 
 export default function(app: express.Application) {
   app.use('/api/users', userRoutes);
-  app.use('/api/upload-cnv-tool-results', uploadRoutes);
-  app.use('/api/reformat-cnv-tool-results', reformatRoutes);
-  // app.use('/api/sampleset', [AuthenMiddleware.checkAuth], samplesetRoutes);
-  app.use('/api/samplesets', samplesetRoutes);
+  app.use(
+    '/api/upload-cnv-tool-results',
+    [AuthenMiddleware.checkAuth],
+    uploadRoutes
+  );
+  app.use(
+    '/api/reformat-cnv-tool-results',
+    [AuthenMiddleware.checkAuth],
+    reformatRoutes
+  );
+  app.use('/api/samplesets', [AuthenMiddleware.checkAuth], samplesetRoutes);
   app.use(
     '/api/tab-file-mappings',
-    //  [AuthenMiddleware.checkAuth],
+    [AuthenMiddleware.checkAuth],
     tabFileMappingRoutes
   );
-  app.use('/api/analysises', analysisRoutes);
+  app.use('/api/analysises', [AuthenMiddleware.checkAuth], analysisRoutes);
 }

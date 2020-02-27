@@ -1,0 +1,80 @@
+{
+   "dbVersions":[
+      {
+         "databaseName":"bio_grch37",
+         "tables":[
+            {
+               "tableName":"ensembl",
+               "releasedDate":"",
+               "modifiedDate":""
+            },
+            {
+               "tableName":"dgv",
+               "releasedDate":"",
+               "modifiedDate":""
+            },
+            {
+               "tableName":"clinvar",
+               "releasedDate":"",
+               "modifiedDate":""
+            }
+         ]
+      },
+      {
+         "databaseName":"bio_grch38",
+         "tables":[
+            {
+               "tableName":"ensembl",
+               "releasedDate":"",
+               "modifiedDate":""
+            },
+            {
+               "tableName":"dgv",
+               "releasedDate":"",
+               "modifiedDate":""
+            },
+            {
+               "tableName":"clinvar",
+               "releasedDate":"",
+               "modifiedDate":""
+            }
+         ]
+      }
+   ],
+   "dgvAllVariantsVersions": [
+     {
+       "fileName": "",
+       "releasedDate": "",
+       "modifiedDate": ""
+     },
+     {
+       "fileName": "",
+       "releasedDate": "",
+       "modifiedDate": ""
+     }
+   ],
+   "referenceGenomeGrch37Versions": [
+     {
+       "fileName": "",
+       "releasedDate": "",
+       "modifiedDate": ""
+     },
+     {
+       "fileName": "",
+       "releasedDate": "",
+       "modifiedDate": ""
+     }
+   ],
+   "referenceGenomeGrch38Versions": [
+     {
+       "fileName": "",
+       "releasedDate": "",
+       "modifiedDate": ""
+     },
+     {
+       "fileName": "",
+       "releasedDate": "",
+       "modifiedDate": ""
+     }
+    ]
+}

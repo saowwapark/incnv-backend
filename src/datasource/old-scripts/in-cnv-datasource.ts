@@ -1,4 +1,4 @@
-import { inCnvPool } from '../configs/database';
+import { inCnvPool } from '../../config/database';
 import mysql from 'mysql2/promise';
 
 export class inCnvDataSource {

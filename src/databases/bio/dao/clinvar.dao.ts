@@ -1,11 +1,11 @@
 import * as mysql from 'mysql2/promise';
-import { bioGrch37Pool, bioGrch38Pool } from '../../../configs/database';
+import { bioGrch37Pool, bioGrch38Pool } from '../../../config/database';
 import { ClinvarDto } from '../dto/clinvar.dto';
 
 export class ClinvarDao {
   pool: mysql.Pool;
 
-  constructor(referenceGenome) {
+  constructor(referenceGenome: string) {
     if (referenceGenome === 'grch37') {
       this.pool = bioGrch37Pool;
     } else if (referenceGenome === 'grch38') {
@@ -28,7 +28,7 @@ export class ClinvarDao {
     const data = [chromosome, startBp, endBp, startBp, endBp];
 
     const sql = mysql.format(statement, data);
-    console.log(sql);
+    // console.log(sql);
     const [rows] = await this.pool.query<mysql.RowDataPacket[]>(sql);
     let clinvars: ClinvarDto[] = [];
     rows.forEach(row => {
@@ -39,5 +39,29 @@ export class ClinvarDao {
       clinvars.push(clinvar);
     });
     return clinvars;
+  };
+
+  addClinvar = async (mapped: any[]) => {
+    const sql = `INSERT INTO clinvar (
+          clinvar_id, 
+          allele_id,
+          type,
+          name,
+          gene_id,
+          gene_symbol,
+          hgnc_id,
+          clinical_significance,
+          last_evaluated,
+          rs_dbSNP,
+          omim_id_list,
+          phenotype_list,
+          chromosome,
+          start_bp,
+          end_bp,
+          cytogenetic) VALUES ?`;
+    const statement = mysql.format(sql, mapped);
+    console.log(statement);
+    const [resultSetHeader] = await this.pool.query(statement);
+    console.log(resultSetHeader);
   };
 }

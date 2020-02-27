@@ -24,25 +24,18 @@ export class UploadCnvToolResultModel {
         filePath,
         tabFileMapping
       );
+      fs.unlink(filePath, err => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+      });
       return uploadCnvToolResultId;
     } catch (err) {
       await uploadCnvToolResultDao.deleteUploadCnvToolResult(
         uploadCnvToolResultId
       );
-      fs.unlink(filePath, err => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      });
       throw err;
-    } finally {
-      fs.unlink(filePath, err => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      });
     }
   };
 }
