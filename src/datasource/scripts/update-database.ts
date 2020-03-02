@@ -3,7 +3,7 @@ import axios from 'axios';
 import fs from 'fs-extra';
 import * as path from 'path';
 import unzipper from 'unzipper';
-import { connectionPromise } from '../../config/database';
+import { dbPool } from '../../config/database';
 import { datasourceTmpDir } from './../../config/path-config';
 
 import mysqlPromise from 'mysql2/promise';
@@ -33,8 +33,8 @@ export class UpdateDatabase {
       const tableVersions: TableVersion[] = currentDbVersion.tables;
       for (const tableVersion of tableVersions) {
         const tableName = tableVersion.tableName;
-        const releasedDate = tableVersion.releasedDate;
-        if (releasedDate && releasedDate.length > 0) {
+        const releasedVersion = tableVersion.releasedVersion;
+        if (releasedVersion && releasedVersion.length > 0) {
           console.log('not update table');
           isShouldUpdate = false;
           return isShouldUpdate;
@@ -86,8 +86,8 @@ export class UpdateDatabase {
     for (const dbVersion of dbVersions) {
       const tableVersions: TableVersion[] = dbVersion.tables;
       for (const tableVersion of tableVersions) {
-        tableVersion.releasedDate = 'new released date';
-        tableVersion.modifiedDate = 'new modified';
+        tableVersion.releasedVersion = 'new released version';
+        tableVersion.srcReleasedDate = 'new released date';
       }
     }
     return datasourceVersion;
@@ -181,26 +181,23 @@ export class UpdateDatabase {
     // remove data
     const removedSql = `TRUNCATE TABLE ${databaseName}.${tableName}`;
 
-    (await connectionPromise).query(
-      removedSql,
-      async (error, results, fields) => {
-        if (error) throw error;
+    (await dbPool).query(removedSql, async (error, results, fields) => {
+      if (error) throw error;
+      // console.log('The solution is: ', results[0].solution);
+      console.log(removedSql);
+
+      // add data
+      const statement = mysqlPromise.format(insertSql, [dataList]);
+
+      dbPool.query(statement, (error, results, fields) => {
+        console.log(insertSql);
+        if (error) {
+          throw error;
+        }
+        console.log(`INSERT TABLE ${databaseName}.${tableName} SUCCESS!!`);
         // console.log('The solution is: ', results[0].solution);
-        console.log(removedSql);
-
-        // add data
-        const statement = mysqlPromise.format(insertSql, [dataList]);
-
-        (await connectionPromise).query(statement, (error, results, fields) => {
-          console.log(insertSql);
-          if (error) {
-            throw error;
-          }
-          console.log(`INSERT TABLE ${databaseName}.${tableName} SUCCESS!!`);
-          // console.log('The solution is: ', results[0].solution);
-        });
-      }
-    );
+      });
+    });
   };
 
   private getTableData = (filePath: string) => {

@@ -1,4 +1,5 @@
 export class DatasourceVersion {
+  latestReleasedVersion: string = '';
   dbVersions: DatabaseVersion[] = [];
   dgvAllVariantsVersions: FileVersion[] = [];
   referenceGenomeGrch37Versions: FileVersion[] = [];
@@ -12,12 +13,12 @@ export class DatabaseVersion {
 
 export class TableVersion {
   tableName: string = '';
-  releasedDate: string = '';
-  modifiedDate: string = '';
+  releasedVersion: string = ''; // git hub released version
+  srcReleasedDate: string = ''; // source released date
 }
 
 export class FileVersion {
   fileName: string = '';
-  releasedDate: string = '';
-  modifiedDate: string = '';
+  releasedVersion: string = '';
+  srcReleasedDate: string = '';
 }

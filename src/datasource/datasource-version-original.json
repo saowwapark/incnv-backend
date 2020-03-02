@@ -1,22 +1,23 @@
 {
+   "latestReleasedVersion": "",
    "dbVersions":[
       {
          "databaseName":"bio_grch37",
          "tables":[
             {
                "tableName":"ensembl",
-               "releasedDate":"",
-               "modifiedDate":""
+               "releasedVersion": "",
+               "srcReleasedDate": ""
             },
             {
                "tableName":"dgv",
-               "releasedDate":"",
-               "modifiedDate":""
+               "releasedVersion": "",
+               "srcReleasedDate": ""
             },
             {
                "tableName":"clinvar",
-               "releasedDate":"",
-               "modifiedDate":""
+               "releasedVersion": "",
+               "srcReleasedDate": ""
             }
          ]
       },
@@ -25,18 +26,18 @@
          "tables":[
             {
                "tableName":"ensembl",
-               "releasedDate":"",
-               "modifiedDate":""
+               "releasedVersion": "",
+               "srcReleasedDate": ""
             },
             {
                "tableName":"dgv",
-               "releasedDate":"",
-               "modifiedDate":""
+               "releasedVersion": "",
+               "srcReleasedDate": ""
             },
             {
                "tableName":"clinvar",
-               "releasedDate":"",
-               "modifiedDate":""
+               "releasedVersion": "",
+               "srcReleasedDate": ""
             }
          ]
       }
@@ -44,37 +45,37 @@
    "dgvAllVariantsVersions": [
      {
        "fileName": "",
-       "releasedDate": "",
-       "modifiedDate": ""
+       "releasedVersion": "",
+       "srcReleasedDate": ""
      },
      {
        "fileName": "",
-       "releasedDate": "",
-       "modifiedDate": ""
+       "releasedVersion": "",
+       "srcReleasedDate": ""
      }
    ],
    "referenceGenomeGrch37Versions": [
      {
        "fileName": "",
-       "releasedDate": "",
-       "modifiedDate": ""
+       "releasedVersion": "",
+       "srcReleasedDate": ""
      },
      {
        "fileName": "",
-       "releasedDate": "",
-       "modifiedDate": ""
+       "releasedVersion": "",
+       "srcReleasedDate": ""
      }
    ],
    "referenceGenomeGrch38Versions": [
      {
        "fileName": "",
-       "releasedDate": "",
-       "modifiedDate": ""
+       "releasedVersion": "",
+       "srcReleasedDate": ""
      },
      {
        "fileName": "",
-       "releasedDate": "",
-       "modifiedDate": ""
+       "releasedVersion": "",
+       "srcReleasedDate": ""
      }
     ]
 }

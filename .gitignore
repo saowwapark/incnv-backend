@@ -46,10 +46,6 @@ Thumbs.db
 /app_copy
 
 # bio data source
-/src/datasource/clinvar/source/variant_summary_2019-03-12.txt
-/src/datasource/ensembl/source/Homo_sapiens.GRCh37.87.chr.gff3
-/src/datasource/ensembl/source/Homo_sapiens.GRCh38.98.chr.gff3
-/src/datasource/dgv/source/GRCh37_hg19_variants_2016-05-15.txt
-/src/datasource/dgv/source/GRCh38_hg38_variants_2016-08-31.txt
-
-
+/src/datasource/reference_genome/
+/src/datasource/dgv_all_variants/dgv_all_variants_grch37/
+/src/datasource/dgv_all_variants/dgv_all_variants_grch38/

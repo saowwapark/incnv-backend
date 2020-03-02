@@ -1,5 +1,4 @@
-import { connectionPromise } from '../../config/database';
-import { inCnvPool, connection } from '../../config/database';
+import { inCnvPool, dbPool } from '../../config/database';
 
 import * as mysql from 'mysql2/promise';
 import { DatabaseScript } from './database-const';
@@ -60,9 +59,9 @@ export class CreateDatabase {
   crateDb = async (databases: DatabaseScript[]) => {
     for (const database of databases) {
       const databaseSql = `CREATE DATABASE IF NOT EXISTS ${database.databaseName}`;
-      (await connectionPromise).query(databaseSql, async () => {
+      dbPool.query(databaseSql, async () => {
         for (const dbTable of database.tables) {
-          (await connectionPromise).query(dbTable.createSql);
+          dbPool.query(dbTable.createSql);
         }
       });
     }

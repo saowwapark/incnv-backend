@@ -1,3 +1,5 @@
+import { indexedFastaGrch37, indexedFastaGrch38 } from './../server';
+import { IndexedFasta } from './read-reference-genome/Indexed-fasta';
 import {
   dgvAllVariantsGrch38FilePath,
   referenceGenomeGrch38FastaFilePath,
@@ -21,12 +23,14 @@ import { CnvInfoDto } from '../dto/analysis/cnv-info.dto';
 import { BpGroup } from '../dto/analysis/bp-group';
 import { CnvGroupDto } from '../dto/analysis/cnv-group.dto';
 import { MERGED_RESULT_NAME } from '../dto/analysis/constants';
-import { DgvAnnotationDto } from '../databases/bio/dto/dgv-annotation.dto';
+import {
+  DgvAnnotationDto,
+  DgvAnnotationKey
+} from '../databases/bio/dto/dgv-annotation.dto';
 import { mergedBasepairModel } from './merged-basepair.model';
 import * as path from 'path';
 import fs from 'fs';
 import { dgvAllVariantsGrch37FilePath } from '../config/path-config';
-const { IndexedFasta, BgzipIndexedFasta } = require('@gmod/indexedfasta');
 
 export class AnalysisModel {
   public getDgvAllVarirants = (refereceGenome: string, chromosome: string) => {
@@ -58,25 +62,31 @@ export class AnalysisModel {
     endBp: number,
     size: number
   ): Promise<[SequenceDto, SequenceDto]> => {
-    let fastaPath: string;
-    let faiPath: string;
+    // let fastaPath: string;
+    // let faiPath: string;
+    let t: IndexedFasta;
     const chr = `chr${chromosome}`;
     const leftFlanking: SequenceDto = new SequenceDto();
     const rightFlanking: SequenceDto = new SequenceDto();
 
     if (referenceGenome === 'grch37') {
-      fastaPath = referenceGenomeGrch37FastaFilePath;
-      faiPath = referenceGenomeGrch37FaiFilePath;
+      // fastaPath = referenceGenomeGrch37FastaFilePath;
+      // faiPath = referenceGenomeGrch37FaiFilePath;
+      t = indexedFastaGrch37;
     } else if (referenceGenome === 'grch38') {
-      fastaPath = referenceGenomeGrch38FastaFilePath;
-      faiPath = referenceGenomeGrch38FaiFilePath;
+      // fastaPath = referenceGenomeGrch38FastaFilePath;
+      // faiPath = referenceGenomeGrch38FaiFilePath;
+      t = indexedFastaGrch38;
     } else {
       throw `reference genome must be 'grch37' or 'grch38'`;
     }
-    const t = new IndexedFasta({
-      path: fastaPath,
-      faiPath: faiPath
-    });
+
+    // const fasta = new LocalFile(fastaPath);
+    // const fai = new LocalFile(faiPath);
+    // const t = new IndexedFasta({
+    //   fasta: fasta,
+    //   fai: fai
+    // });
 
     try {
       // left flanking
@@ -200,10 +210,43 @@ export class AnalysisModel {
     return cnvInfos;
   };
 
+  mapVariantSubtypeKey = (
+    dgvAnnotations: DgvAnnotationDto[]
+  ): DgvAnnotationKey[] => {
+    const keys = ['duplication', 'deletion', 'gain', 'loss', 'gain+loss'];
+    const duplicationArray: DgvAnnotationDto[] = [];
+    const deletionArray: DgvAnnotationDto[] = [];
+    const gainArray: DgvAnnotationDto[] = [];
+    const lossArray: DgvAnnotationDto[] = [];
+    const gainAndLossArray: DgvAnnotationDto[] = [];
+
+    for (const dgvAnnotation of dgvAnnotations) {
+      if (dgvAnnotation.variantSubtype === 'duplication') {
+        duplicationArray.push(dgvAnnotation);
+      } else if (dgvAnnotation.variantSubtype === 'deletion') {
+        deletionArray.push(dgvAnnotation);
+      } else if (dgvAnnotation.variantSubtype === 'gain') {
+        gainArray.push(dgvAnnotation);
+      } else if (dgvAnnotation.variantSubtype === 'loss') {
+        lossArray.push(dgvAnnotation);
+      } else if (dgvAnnotation.variantSubtype === 'gain+loss') {
+        gainAndLossArray.push(dgvAnnotation);
+      }
+    }
+
+    const DgvAnnotationKeys: DgvAnnotationKey[] = [];
+    DgvAnnotationKeys.push({ key: 'duplication', values: duplicationArray });
+    DgvAnnotationKeys.push({ key: 'deletion', values: deletionArray });
+    DgvAnnotationKeys.push({ key: 'gain', values: gainArray });
+    DgvAnnotationKeys.push({ key: 'loss', values: lossArray });
+    DgvAnnotationKeys.push({ key: 'gain+loss', values: gainAndLossArray });
+    return DgvAnnotationKeys;
+  };
+
   public getCnvAnnotations = async (
     cnvInfo: CnvInfoDto
   ): Promise<
-    [EnsemblAnnotationDto[], DgvAnnotationDto[], ClinvarAnnotationListDto]
+    [EnsemblAnnotationDto[], DgvAnnotationKey[], ClinvarAnnotationListDto]
   > => {
     let newCnvInfo = new CnvInfoDto();
     newCnvInfo = { ...cnvInfo };
@@ -211,9 +254,11 @@ export class AnalysisModel {
     const ensemblDao = new EnsemblDao(cnvInfo.referenceGenome!);
     const clinvarDao = new ClinvarDao(cnvInfo.referenceGenome!);
 
+    let dgvAnnotations: DgvAnnotationDto[];
+
     [
       newCnvInfo.ensembls,
-      newCnvInfo.dgvs,
+      dgvAnnotations,
       newCnvInfo.clinvar
     ] = await Promise.all([
       ensemblDao.getGeneAnnotaions(
@@ -221,8 +266,7 @@ export class AnalysisModel {
         cnvInfo.startBp!,
         cnvInfo.endBp!
       ),
-      dgvDao.getVariantAccession(
-        cnvInfo.cnvType!,
+      dgvDao.getVariantAccessions(
         cnvInfo.chromosome!,
         cnvInfo.startBp!,
         cnvInfo.endBp!
@@ -235,7 +279,8 @@ export class AnalysisModel {
       )
     ]);
 
-    return [newCnvInfo.ensembls, newCnvInfo.dgvs, newCnvInfo.clinvar];
+    const dgvKeys = this.mapVariantSubtypeKey(dgvAnnotations);
+    return [newCnvInfo.ensembls, dgvKeys, newCnvInfo.clinvar];
   };
 
   public mergedClinvarAnnotations = (

@@ -14,7 +14,7 @@ export class AnalysisResultModel {
       result += `${cnvInfo.endBp}\t`;
       result += `${cnvInfo.cnvType}\t`;
       const ensembls = cnvInfo.ensembls;
-      const dgvs: DgvAnnotationDto[] = cnvInfo.dgvs!;
+      // const dgvs: DgvAnnotationDto[] = cnvInfo.dgvs!;
       const clinvar: ClinvarAnnotationListDto = cnvInfo.clinvar!;
       if (!ensembls || ensembls.length === 0) {
         result += `\t\t`;
@@ -32,21 +32,21 @@ export class AnalysisResultModel {
         result += `\t`;
       }
 
-      if (!dgvs || dgvs.length === 0) {
-        result += `\t\t`;
-      } else if (dgvs.length > 0) {
-        for (let index = 0; index < dgvs.length; index++) {
-          const dgv = dgvs[index];
-          // last
-          if (index === dgvs.length - 1) {
-            result += `${dgv.variantAccession}`;
-          } else {
-            // general
-            result += `${dgv.variantAccession};`;
-          }
-        }
-        result += `\t`;
-      }
+      // if (!dgvs || dgvs.length === 0) {
+      //   result += `\t\t`;
+      // } else if (dgvs.length > 0) {
+      //   for (let index = 0; index < dgvs.length; index++) {
+      //     const dgv = dgvs[index];
+      //     // last
+      //     if (index === dgvs.length - 1) {
+      //       result += `${dgv.variantAccession}`;
+      //     } else {
+      //       // general
+      //       result += `${dgv.variantAccession};`;
+      //     }
+      //   }
+      //   result += `\t`;
+      // }
 
       if (!clinvar) {
         result += `\t\t\t\t\t\t`;

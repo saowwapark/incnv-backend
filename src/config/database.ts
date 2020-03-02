@@ -14,7 +14,7 @@ const inCnvConfig = {
   port: Number(dbEnv.port),
   user: dbEnv.user,
   password: dbEnv.password,
-  database: 'inCnv'
+  database: 'inCNV'
   // // --- only mysql --
   // connectionLimit: 10,
   // supportBigNumbers: true,
@@ -47,19 +47,19 @@ const bioGrch38Config = {
   // multipleStatements: true
 };
 
-export const connectionPromise = mysqlPromise.createConnection(
-  connectionConfig
-);
-export const connection = mysql.createConnection(connectionConfig);
+// // in case use connection instread pool
+// export let connectionPromise;
+// const connectDb = () => {
+//   connectionPromise = mysqlPromise
+//     .createConnection(connectionConfig)
+//     .catch(err => {
+//       console.error(err);
+//       connectDb();
+//     });
+// };
+// connectDb();
+
 export const bioGrch37Pool = mysqlPromise.createPool(bioGrch37Config);
 export const bioGrch38Pool = mysqlPromise.createPool(bioGrch38Config);
 export const inCnvPool = mysqlPromise.createPool(inCnvConfig);
-
-// connection.connect(function(err) {
-//   if (err) {
-//     console.error('error connecting: ' + err.stack);
-//     return;
-//   }
-
-//   console.log('connected as id ' + connection.threadId);
-// });
+export const dbPool = mysqlPromise.createPool(connectionConfig);

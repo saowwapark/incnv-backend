@@ -4,7 +4,14 @@ import express from 'express';
 import { App } from './app';
 import * as config from './db-env';
 import { updateDatasource } from './datasource/scripts/update-datasource';
-
+import { LocalFile } from './models/read-reference-genome/local-file';
+import { IndexedFasta } from './models/read-reference-genome/indexed-fasta';
+import {
+  referenceGenomeGrch37FastaFilePath,
+  referenceGenomeGrch37FaiFilePath,
+  referenceGenomeGrch38FastaFilePath,
+  referenceGenomeGrch38FaiFilePath
+} from './config/path-config';
 class Server {
   port: number;
   hostname: string;
@@ -79,7 +86,37 @@ const server = new Server(config.port, config.host, app).server;
 
 // async-await at top level
 (async () => {
+  console.log(
+    '--------------------------------- Check Update Datasource --------------------------------'
+  );
   await updateDatasource.main();
+
+  console.log(
+    '--------------------------------- Check Update Datasource SUCCESS!!--------------------------------'
+  );
 })();
+
+// open reference genome both grch37 and grch38
+const fastaGrch37 = new LocalFile(referenceGenomeGrch37FastaFilePath);
+const faiGrch37 = new LocalFile(referenceGenomeGrch37FaiFilePath);
+const configGrch37 = {
+  fasta: fastaGrch37,
+  fai: faiGrch37,
+  path: '',
+  faiPath: '',
+  chunkSizeLimit: 1000000
+};
+export const indexedFastaGrch37 = new IndexedFasta(configGrch37);
+
+const fastaGrch38 = new LocalFile(referenceGenomeGrch38FastaFilePath);
+const faiGrch38 = new LocalFile(referenceGenomeGrch38FaiFilePath);
+const configGrch38 = {
+  fasta: fastaGrch38,
+  fai: faiGrch38,
+  path: '',
+  faiPath: '',
+  chunkSizeLimit: 1000000
+};
+export const indexedFastaGrch38 = new IndexedFasta(configGrch38);
 
 module.exports = server;

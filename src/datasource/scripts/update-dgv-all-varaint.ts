@@ -33,8 +33,8 @@ export class UpdateDgvAllVariants {
 
     let isShouldUpdate: boolean = true;
     for (const dgvAllVariantsVersion of dgvAllVariantsVersions) {
-      const releasedDate = dgvAllVariantsVersion.releasedDate;
-      if (releasedDate && releasedDate.length > 0) {
+      const releasedVersion = dgvAllVariantsVersion.releasedVersion;
+      if (releasedVersion && releasedVersion.length > 0) {
         console.log('not update DGV all variants');
         isShouldUpdate = false;
         return isShouldUpdate;
@@ -108,8 +108,8 @@ export class UpdateDgvAllVariants {
     // update db version
     for (const dgvAllVariantsVersion of dgvAllVariantsVersions) {
       dgvAllVariantsVersion.fileName = 'new dgvAllVariants';
-      dgvAllVariantsVersion.releasedDate = 'new released date';
-      dgvAllVariantsVersion.modifiedDate = 'new modified';
+      dgvAllVariantsVersion.releasedVersion = 'new released version';
+      dgvAllVariantsVersion.srcReleasedDate = 'new released date';
     }
     return datasourceVersion;
   };

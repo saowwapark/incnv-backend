@@ -11,14 +11,14 @@ import { utilityDatasource } from './utility-datasource';
 export class UpdateReferenceGenomeGrch38 {
   private readonly url =
     'https://api.github.com/repos/saowwapark/inCNV-datasource/releases/latest';
-  private readonly expectedZipFileName = 'ucsc__hg19__2018-8-21.zip';
+  private readonly expectedZipFileName = 'reference_genome_grch38.zip';
   private readonly expectedZipFilePath = path.join(
     datasourceTmpDir,
     this.expectedZipFileName
   );
   private readonly tmpExtractedDirPath = path.join(
     datasourceTmpDir,
-    'ucsc__hg19__2018-8-21'
+    'reference_genome_grch38'
   );
 
   checkShouldUpdateVersion = () => {
@@ -28,8 +28,8 @@ export class UpdateReferenceGenomeGrch38 {
 
     let isShouldUpdate: boolean = true;
     for (const referenceGenomeGrch38Version of referenceGenomeGrch38Versions) {
-      const releasedDate = referenceGenomeGrch38Version.releasedDate;
-      if (releasedDate && releasedDate.length > 0) {
+      const releasedVersion = referenceGenomeGrch38Version.releasedVersion;
+      if (releasedVersion && releasedVersion.length > 0) {
         console.log('not update reference genome GRCh38');
         isShouldUpdate = false;
         return isShouldUpdate;
@@ -77,10 +77,10 @@ export class UpdateReferenceGenomeGrch38 {
     console.log('fileNames: ' + fileNames);
     for (const fileName of fileNames) {
       const extractedFilePath = path.join(this.tmpExtractedDirPath, fileName);
-      if (fileName.includes('ucsc_hg19.fa')) {
-        this.moveFile(extractedFilePath, referenceGenomeGrch38FastaFilePath);
-      } else if (fileName.includes('ucsc_hg19.fa.fai')) {
+      if (fileName.includes('.fa.fai')) {
         this.moveFile(extractedFilePath, referenceGenomeGrch38FaiFilePath);
+      } else if (fileName.includes('.fa')) {
+        this.moveFile(extractedFilePath, referenceGenomeGrch38FastaFilePath);
       }
     }
   }
@@ -99,12 +99,12 @@ export class UpdateReferenceGenomeGrch38 {
       datasourceVersion.referenceGenomeGrch38Versions;
     // update db version
     referenceGenomeGrch38Versions[0].fileName = 'new fasta grch38';
-    referenceGenomeGrch38Versions[0].releasedDate = 'new released date';
-    referenceGenomeGrch38Versions[0].modifiedDate = 'new modified';
+    referenceGenomeGrch38Versions[0].releasedVersion = 'new released version';
+    referenceGenomeGrch38Versions[0].srcReleasedDate = 'new released date';
 
     referenceGenomeGrch38Versions[1].fileName = 'new fasta index grch38';
-    referenceGenomeGrch38Versions[1].releasedDate = 'new released date';
-    referenceGenomeGrch38Versions[1].modifiedDate = 'new modified';
+    referenceGenomeGrch38Versions[1].releasedVersion = 'new released version';
+    referenceGenomeGrch38Versions[1].srcReleasedDate = 'new released date';
 
     return datasourceVersion;
   };

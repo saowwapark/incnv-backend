@@ -23,19 +23,19 @@ export const referenceGenomeDirPath = path.join(
 );
 export const referenceGenomeGrch37FastaFilePath = path.join(
   referenceGenomeDirPath,
-  'ucsc_hg18.fa'
+  'reference_genome_grch37.fa'
 );
 export const referenceGenomeGrch37FaiFilePath = path.join(
   referenceGenomeDirPath,
-  'ucsc_hg18.fa.fai'
+  'reference_genome_grch37.fa.fai'
 );
 export const referenceGenomeGrch38FastaFilePath = path.join(
   referenceGenomeDirPath,
-  'ucsc_hg19.fa'
+  'reference_genome_grch38.fa'
 );
 export const referenceGenomeGrch38FaiFilePath = path.join(
   referenceGenomeDirPath,
-  'ucsc_hg19.fa.fai'
+  'reference_genome_grch38.fa.fai'
 );
 export const dgvAllVariantsDirPath = path.join(
   datasourceDirPath,
