@@ -1,7 +1,9 @@
 import {
   cnvToolResultTmpDir,
   datasourceTmpDir,
-  staticDir
+  staticDir,
+  referenceGenomeDirPath,
+  dgvAllVariantsDirPath
 } from './config/path-config';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -40,6 +42,8 @@ export class App {
     // path
     mkdirp.sync(cnvToolResultTmpDir);
     mkdirp.sync(datasourceTmpDir);
+    mkdirp.sync(referenceGenomeDirPath);
+    mkdirp.sync(dgvAllVariantsDirPath);
 
     // use logger middlware
     this.app.use(logger('dev'));
@@ -81,7 +85,7 @@ export class App {
     this.app.use(methodOverride());
 
     // catch 404 and forward to error handler
-    this.app.use(function (
+    this.app.use(function(
       err: any,
       req: express.Request,
       res: express.Response,
