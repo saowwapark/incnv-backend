@@ -1,5 +1,5 @@
 import { indexedFastaGrch37, indexedFastaGrch38 } from './../server';
-import { IndexedFasta } from './read-reference-genome/Indexed-fasta';
+import { IndexedFasta } from './read-reference-genome/indexed-fasta';
 import {
   dgvAllVariantsGrch38FilePath,
   referenceGenomeGrch38FastaFilePath,

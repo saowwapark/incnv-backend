@@ -10,7 +10,7 @@ function _faiOffset(idx, pos) {
 
 export class IndexedFasta {
   fasta!: LocalFile; // Local File
-  fai!: LocalFile;
+  fai!: LocalFile; // Local File
   path?: string;
   faiPath?: string;
   chunkSizeLimit!: number;
