@@ -72,6 +72,15 @@ export class UtilityDatasource {
       }
     });
   };
+
+  readStream = (stream, encoding = 'utf8') => {
+    stream.setEncoding(encoding);
+
+    return new Promise((resolve, reject) => {
+      stream.on('end', () => resolve());
+      stream.on('error', error => reject(error));
+    });
+  };
 }
 
 export const utilityDatasource = new UtilityDatasource();

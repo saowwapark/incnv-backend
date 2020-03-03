@@ -12,7 +12,7 @@ router
     analysisController.getIndividualSample
   )
   .post('/multiple-sample', analysisController.getMultipleSample)
-  .post('/cnv-infos', analysisController.updateCnvInfos)
+  // .post('/cnv-infos', analysisController.updateCnvInfos)
   .post('/cnv-info', analysisController.getCnvInfo)
   .post('/download/cnv-infos', analysisController.exportCnvInfos);
 

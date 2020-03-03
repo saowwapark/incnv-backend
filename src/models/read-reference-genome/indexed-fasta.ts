@@ -33,6 +33,10 @@ export class IndexedFasta {
     this.chunkSizeLimit = chunkSizeLimit;
   }
 
+  async closeFiles() {
+    this.fasta.closeFile();
+    this.fai.closeFile();
+  }
   async _getIndexes() {
     if (!this.indexes) this.indexes = await this._readFAI();
     return this.indexes;

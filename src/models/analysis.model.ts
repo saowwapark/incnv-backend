@@ -1,4 +1,3 @@
-import { indexedFastaGrch37, indexedFastaGrch38 } from './../server';
 import { IndexedFasta } from './read-reference-genome/indexed-fasta';
 import {
   dgvAllVariantsGrch38FilePath,
@@ -31,6 +30,7 @@ import { mergedBasepairModel } from './merged-basepair.model';
 import * as path from 'path';
 import fs from 'fs';
 import { dgvAllVariantsGrch37FilePath } from '../config/path-config';
+import { LocalFile } from './read-reference-genome/local-file';
 
 export class AnalysisModel {
   public getDgvAllVarirants = (refereceGenome: string, chromosome: string) => {
@@ -55,38 +55,51 @@ export class AnalysisModel {
     return dgvAllVariants;
   };
 
+  public createIndexedFasta(referenceGenome: string): IndexedFasta {
+    let indexedFasta;
+    if (referenceGenome === 'grch37') {
+      const fastaGrch37 = new LocalFile(referenceGenomeGrch37FastaFilePath);
+      const faiGrch37 = new LocalFile(referenceGenomeGrch37FaiFilePath);
+      const configGrch37 = {
+        fasta: fastaGrch37,
+        fai: faiGrch37,
+        path: '',
+        faiPath: '',
+        chunkSizeLimit: 1000000
+      };
+      const indexedFastaGrch37 = new IndexedFasta(configGrch37);
+      indexedFasta = indexedFastaGrch37;
+    } else if (referenceGenome === 'grch38') {
+      const fastaGrch38 = new LocalFile(referenceGenomeGrch38FastaFilePath);
+      const faiGrch38 = new LocalFile(referenceGenomeGrch38FaiFilePath);
+      const configGrch38 = {
+        fasta: fastaGrch38,
+        fai: faiGrch38,
+        path: '',
+        faiPath: '',
+        chunkSizeLimit: 1000000
+      };
+      const indexedFastaGrch38 = new IndexedFasta(configGrch38);
+      indexedFasta = indexedFastaGrch38;
+    } else {
+      throw `reference genome must between 'grch37' or 'grch38'`;
+    }
+    return indexedFasta;
+  }
   public getFlanking = async (
     referenceGenome: string,
     chromosome: string,
     startBp: number,
     endBp: number,
-    size: number
+    size: number,
+    indexedFasta: IndexedFasta
   ): Promise<[SequenceDto, SequenceDto]> => {
     // let fastaPath: string;
     // let faiPath: string;
-    let t: IndexedFasta;
+
     const chr = `chr${chromosome}`;
     const leftFlanking: SequenceDto = new SequenceDto();
     const rightFlanking: SequenceDto = new SequenceDto();
-
-    if (referenceGenome === 'grch37') {
-      // fastaPath = referenceGenomeGrch37FastaFilePath;
-      // faiPath = referenceGenomeGrch37FaiFilePath;
-      t = indexedFastaGrch37;
-    } else if (referenceGenome === 'grch38') {
-      // fastaPath = referenceGenomeGrch38FastaFilePath;
-      // faiPath = referenceGenomeGrch38FaiFilePath;
-      t = indexedFastaGrch38;
-    } else {
-      throw `reference genome must be 'grch37' or 'grch38'`;
-    }
-
-    // const fasta = new LocalFile(fastaPath);
-    // const fai = new LocalFile(faiPath);
-    // const t = new IndexedFasta({
-    //   fasta: fasta,
-    //   fai: fai
-    // });
 
     try {
       // left flanking
@@ -94,19 +107,19 @@ export class AnalysisModel {
       const leftFlankingStartBp = startBp - size; // this library use 0-based ex. get first 10 bases, "t.getSequence('chr1', 0, 10)"
       leftFlanking.startBp = leftFlankingStartBp <= 0 ? 0 : leftFlankingStartBp;
       leftFlanking.endBp = startBp - 1 <= 0 ? 0 : startBp;
-      leftFlanking.sequence = await t.getSequence(
+      leftFlanking.sequence = await indexedFasta.getSequence(
         chr,
         leftFlanking.startBp,
         leftFlanking.endBp
       );
 
       // right flanking
-      const chrSize = await t.getSequenceSize(chr); // t.getSequenceSize('chr1');
+      const chrSize = await indexedFasta.getSequenceSize(chr); // t.getSequenceSize('chr1');
       rightFlanking.chromosome = chromosome;
 
       rightFlanking.startBp = endBp <= chrSize ? endBp : chrSize;
       rightFlanking.endBp = endBp + size <= chrSize ? endBp + size : chrSize;
-      rightFlanking.sequence = await t.getSequence(
+      rightFlanking.sequence = await indexedFasta.getSequence(
         chr,
         rightFlanking.startBp,
         rightFlanking.endBp
@@ -155,7 +168,8 @@ export class AnalysisModel {
     referenceGenome: string,
     chromosome: string,
     cnvType: string,
-    regionBp: RegionBpDto
+    regionBp: RegionBpDto,
+    indexedFasta: IndexedFasta
   ): Promise<CnvInfoDto> => {
     const cnvInfo = new CnvInfoDto();
     cnvInfo.referenceGenome = referenceGenome;
@@ -172,14 +186,15 @@ export class AnalysisModel {
       cnvInfo.ensembls,
       cnvInfo.dgvs,
       cnvInfo.clinvar
-    ] = await this.getCnvAnnotations(cnvInfo);
+    ] = await this.getCnvAnnotations(cnvInfo, indexedFasta);
 
     const [leftFlanking, rightFlanking] = await this.getFlanking(
       referenceGenome,
       chromosome,
       regionBp.startBp,
       regionBp.endBp,
-      150
+      150,
+      indexedFasta
     );
     cnvInfo.leftFlanking = leftFlanking;
     cnvInfo.rightFlanking = rightFlanking;
@@ -194,7 +209,8 @@ export class AnalysisModel {
     referenceGenome: string,
     chromosome: string,
     cnvType: string,
-    regionBps: RegionBpDto[]
+    regionBps: RegionBpDto[],
+    indexedFasta: IndexedFasta
   ): Promise<CnvInfoDto[]> => {
     console.log('-- generateCnvInfos');
     const cnvInfos: Promise<CnvInfoDto[]> = Promise.all(
@@ -203,7 +219,8 @@ export class AnalysisModel {
           referenceGenome,
           chromosome,
           cnvType,
-          regionBp
+          regionBp,
+          indexedFasta
         );
       })
     );
@@ -244,7 +261,8 @@ export class AnalysisModel {
   };
 
   public getCnvAnnotations = async (
-    cnvInfo: CnvInfoDto
+    cnvInfo: CnvInfoDto,
+    indexedFasta: IndexedFasta
   ): Promise<
     [EnsemblAnnotationDto[], DgvAnnotationKey[], ClinvarAnnotationListDto]
   > => {
@@ -335,7 +353,8 @@ export class AnalysisModel {
     referenceGenome: string,
     chromosome: string,
     cnvType: string,
-    toolBpGroups: BpGroup[]
+    toolBpGroups: BpGroup[],
+    indexedFasta: IndexedFasta
   ): Promise<CnvGroupDto> => {
     console.log('-- annotateMergedBpGroup');
     const mergedBps: MergedBasepairDto[] = mergedBasepairModel.mergeBpGroups(
@@ -345,7 +364,8 @@ export class AnalysisModel {
       referenceGenome,
       chromosome,
       cnvType,
-      mergedBps
+      mergedBps,
+      indexedFasta
     );
     return new CnvGroupDto(MERGED_RESULT_NAME, cnvInfos);
   };

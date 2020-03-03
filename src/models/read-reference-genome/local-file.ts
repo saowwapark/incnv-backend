@@ -18,8 +18,8 @@ export class LocalFile {
     this.fd = fsOpen(this.filename, 'r');
   }
 
-  async closeFile(fileDescriptor) {
-    return fsClose(fileDescriptor);
+  async closeFile() {
+    return fsClose(this.fd);
   }
   async read(buffer, offset = 0, length, position) {
     let readPosition = position;

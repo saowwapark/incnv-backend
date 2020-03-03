@@ -5,6 +5,7 @@ import { UploadCnvToolResultDto } from '../databases/incnv/dto/upload-cnv-tool-r
 import { analysisModel } from './analysis.model';
 import { CnvGroupDto } from '../dto/analysis/cnv-group.dto';
 import { BpGroup } from '../dto/analysis/bp-group';
+import { IndexedFasta } from './read-reference-genome/indexed-fasta';
 /**
  * Multiple samples in one CNV tool result
  */
@@ -17,6 +18,7 @@ export class AnalysisMultipleSampleModel {
     samples: string[],
     uploadCnvToolResult: UploadCnvToolResultDto
   ): Promise<[CnvGroupDto[], CnvGroupDto]> => {
+    const indexedFasta = analysisModel.createIndexedFasta(referenceGenome);
     const sampleBpGroups: BpGroup[] = await this.getSampleBpGroups(
       uploadCnvToolResult!.uploadCnvToolResultId!,
       samples,
@@ -32,15 +34,18 @@ export class AnalysisMultipleSampleModel {
         referenceGenome,
         chromosome,
         cnvType,
-        sampleBpGroups
+        sampleBpGroups,
+        indexedFasta
       ),
       analysisModel.annotateMergedBpGroup(
         referenceGenome,
         chromosome,
         cnvType,
-        sampleBpGroups
+        sampleBpGroups,
+        indexedFasta
       )
     ]);
+    indexedFasta.closeFiles();
     return [annotatedMultipleSamples, annotatedMergedSample];
   };
 
@@ -48,13 +53,15 @@ export class AnalysisMultipleSampleModel {
     referenceGenome: string,
     chromosome: string,
     cnvType: string,
-    sampleBpGroup: BpGroup
+    sampleBpGroup: BpGroup,
+    indexedFasta: IndexedFasta
   ): Promise<CnvGroupDto> => {
     const sampleAnnotation = await analysisModel.generateCnvInfos(
       referenceGenome,
       chromosome,
       cnvType,
-      sampleBpGroup.basepairs!
+      sampleBpGroup.basepairs!,
+      indexedFasta
     );
     const annotatedSample: CnvGroupDto = {
       cnvGroupName: sampleBpGroup.groupName,
@@ -68,7 +75,8 @@ export class AnalysisMultipleSampleModel {
     referenceGenome: string,
     chromosome: string,
     cnvType: string,
-    sampleBpGroups: BpGroup[]
+    sampleBpGroups: BpGroup[],
+    indexedFasta: IndexedFasta
   ) => {
     // add annotation of all samples
     const annotatedSamples: Promise<CnvGroupDto[]> = Promise.all(
@@ -77,7 +85,8 @@ export class AnalysisMultipleSampleModel {
           referenceGenome,
           chromosome,
           cnvType,
-          sampleBpGroup
+          sampleBpGroup,
+          indexedFasta
         );
       })
     );

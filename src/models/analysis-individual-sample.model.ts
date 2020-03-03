@@ -1,3 +1,4 @@
+import { IndexedFasta } from './read-reference-genome/indexed-fasta';
 import { RegionBpDto } from './../dto/basepair.dto';
 /**
  * Shared individual sample from multiple CNV tool results
@@ -114,6 +115,10 @@ export class AnalysisIndividualSampleModel {
     uploadCnvToolResults: UploadCnvToolResultDto[]
   ): Promise<[CnvGroupDto[], CnvGroupDto]> => {
     console.log('-------- annotate --------');
+
+    const indexedFasta: IndexedFasta = analysisModel.createIndexedFasta(
+      referenceGenome
+    );
     const toolBpGroups = await this.getToolBpGroups(
       chromosome,
       cnvType,
@@ -142,17 +147,19 @@ export class AnalysisIndividualSampleModel {
         referenceGenome,
         chromosome,
         cnvType,
-        toolBpGroups
+        toolBpGroups,
+        indexedFasta
       ),
 
       analysisModel.annotateMergedBpGroup(
         referenceGenome,
         chromosome,
         cnvType,
-        toolBpGroups
+        toolBpGroups,
+        indexedFasta
       )
     ]);
-
+    indexedFasta.closeFiles();
     return [annotatedMultipleTools, annotatedMergedTool];
   };
 
@@ -194,13 +201,15 @@ export class AnalysisIndividualSampleModel {
     referenceGenome: string,
     chromosome: string,
     cnvType: string,
-    toolBpGroup: BpGroup
+    toolBpGroup: BpGroup,
+    indexedFasta: IndexedFasta
   ): Promise<CnvGroupDto> => {
     const cnvInfos: CnvInfoDto[] = await analysisModel.generateCnvInfos(
       referenceGenome,
       chromosome,
       cnvType,
-      toolBpGroup.basepairs!
+      toolBpGroup.basepairs!,
+      indexedFasta
     );
     const annotatedTool: CnvGroupDto = {
       cnvGroupName: toolBpGroup.groupName,
@@ -216,7 +225,8 @@ export class AnalysisIndividualSampleModel {
     referenceGenome: string,
     chromosome: string,
     cnvType: string,
-    toolBpGroups: BpGroup[]
+    toolBpGroups: BpGroup[],
+    indexedFasta: IndexedFasta
   ): Promise<CnvGroupDto[]> => {
     console.log('-- annotateMultipleTools');
     const annotatedTools: Promise<CnvGroupDto[]> = Promise.all(
@@ -225,7 +235,8 @@ export class AnalysisIndividualSampleModel {
           referenceGenome,
           chromosome,
           cnvType,
-          toolBpGroup
+          toolBpGroup,
+          indexedFasta
         );
       })
     );

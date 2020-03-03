@@ -180,24 +180,14 @@ export class UpdateDatabase {
   ) => {
     // remove data
     const removedSql = `TRUNCATE TABLE ${databaseName}.${tableName}`;
+    await dbPool.query(removedSql);
+    console.log(removedSql);
 
-    (await dbPool).query(removedSql, async (error, results, fields) => {
-      if (error) throw error;
-      // console.log('The solution is: ', results[0].solution);
-      console.log(removedSql);
+    // add data
+    const insertStatement = mysqlPromise.format(insertSql, [dataList]);
 
-      // add data
-      const statement = mysqlPromise.format(insertSql, [dataList]);
-
-      dbPool.query(statement, (error, results, fields) => {
-        console.log(insertSql);
-        if (error) {
-          throw error;
-        }
-        console.log(`INSERT TABLE ${databaseName}.${tableName} SUCCESS!!`);
-        // console.log('The solution is: ', results[0].solution);
-      });
-    });
+    await dbPool.query(insertStatement);
+    console.log(`INSERT TABLE ${databaseName}.${tableName} SUCCESS!!`);
   };
 
   private getTableData = (filePath: string) => {

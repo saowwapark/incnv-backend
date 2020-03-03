@@ -1,3 +1,4 @@
+import { IndexedFasta } from './../models/read-reference-genome/indexed-fasta';
 import { DgvVariantDto } from './../dto/analysis/dgv-variant.dto';
 import { analysisIndividualSampleModel } from '../models/analysis-individual-sample.model';
 import { analysisModel } from './../models/analysis.model';
@@ -131,28 +132,28 @@ export class AnalysisController {
     }
   };
 
-  public updateCnvInfos = async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    try {
-      const cnvInfos: CnvInfoDto[] = req.body;
-
-      for (const cnvInfo of cnvInfos) {
-        [
-          cnvInfo.ensembls,
-          cnvInfo.dgvs,
-          cnvInfo.clinvar
-        ] = await analysisModel.getCnvAnnotations(cnvInfo);
-      }
-      res.status(200).json({
-        payload: cnvInfos
-      });
-    } catch (err) {
-      next(err);
-    }
-  };
+  // public updateCnvInfos = async (
+  //   req: express.Request,
+  //   res: express.Response,
+  //   next: express.NextFunction
+  // ) => {
+  //   try {
+  //     const cnvInfos: CnvInfoDto[] = req.body;
+  //     const indexedFasta = analysisModel.createIndexedFasta(cnvInfo.referenceGenome!);
+  //     for (const cnvInfo of cnvInfos) {
+  //       [
+  //         cnvInfo.ensembls,
+  //         cnvInfo.dgvs,
+  //         cnvInfo.clinvar
+  //       ] = await analysisModel.getCnvAnnotations(cnvInfo);
+  //     }
+  //     res.status(200).json({
+  //       payload: cnvInfos
+  //     });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // };
 
   public getCnvInfo = async (
     req: express.Request,
@@ -161,17 +162,22 @@ export class AnalysisController {
   ) => {
     try {
       const cnvInfo: CnvInfoDto = req.body;
+      const indexedFasta: IndexedFasta = analysisModel.createIndexedFasta(
+        cnvInfo.referenceGenome!
+      );
       [
         cnvInfo.ensembls,
         cnvInfo.dgvs,
         cnvInfo.clinvar
-      ] = await analysisModel.getCnvAnnotations(cnvInfo);
+      ] = await analysisModel.getCnvAnnotations(cnvInfo, indexedFasta);
 
+      indexedFasta.closeFiles();
       res.status(200).json({
         payload: cnvInfo
       });
     } catch (err) {
       next(err);
+    } finally {
     }
   };
 
