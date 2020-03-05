@@ -24,7 +24,8 @@ export class UploadCnvToolResultDao {
     return uploadCnvToolResultDto;
   }
 
-  public getUploadCnvToolResultViews = async () => {
+  public getUploadCnvToolResultViews = async (userId: number) => {
+    const post = [userId];
     const sql = mysql.format(
       `SELECT T1.*, T2.tab_file_mapping_name, T3.sampleset_name
         FROM upload_cnv_tool_result AS T1
@@ -32,10 +33,12 @@ export class UploadCnvToolResultDao {
           ON T1.tab_file_mapping_id = T2.tab_file_mapping_id
         INNER JOIN sampleset AS T3
           ON T1.sampleset_id = T3.sampleset_id
+        WHERE T1.user_id = ? 
         ORDER BY T1.file_name`
     );
-    console.log(sql);
-    const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
+    const statement = mysql.format(sql, post);
+    console.log(statement);
+    const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(statement);
     if (rows && rows.length > 0) {
       const uploadCnvToolResultViews: UploadCnvToolResultViewDto[] = [];
 

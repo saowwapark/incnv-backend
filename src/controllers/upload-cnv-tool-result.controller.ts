@@ -37,7 +37,10 @@ export class UploadCnvToolResultController {
     next: express.NextFunction
   ) => {
     try {
-      const uploadCnvToolResults = await uploadCnvToolResultDao.getUploadCnvToolResultViews();
+      const userId = Number(userService.getUserId(req));
+      const uploadCnvToolResults = await uploadCnvToolResultDao.getUploadCnvToolResultViews(
+        userId
+      );
       res.status(200).json({ payload: uploadCnvToolResults });
     } catch (err) {
       next(err);
