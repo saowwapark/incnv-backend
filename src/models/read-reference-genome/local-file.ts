@@ -8,20 +8,25 @@ const fsReadFile = fs && promisify(fs.readFile);
 const fsClose = fs && promisify(fs.close);
 
 export class LocalFile {
-  position;
-  filename;
-  fd;
+  position: number;
+  filename: string;
+  fd: Promise<number>;
   _stat;
-  constructor(source) {
+  constructor(filePath: string) {
     this.position = 0;
-    this.filename = source;
+    this.filename = filePath;
     this.fd = fsOpen(this.filename, 'r');
+    console.log('filePath: ' + this.filename);
+    console.log(this.fd);
   }
 
   async closeFile() {
-    return fsClose(this.fd);
+    this.fd.then(fd => {
+      console.log(fd);
+      fsClose(fd);
+    });
   }
-  async read(buffer, offset = 0, length, position) {
+  async read(buffer: Buffer, offset = 0, length: number, position: number) {
     let readPosition = position;
     if (readPosition === null) {
       readPosition = this.position;

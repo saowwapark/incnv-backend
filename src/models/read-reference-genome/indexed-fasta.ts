@@ -145,7 +145,7 @@ export class IndexedFasta {
    * @param {number} min
    * @param {number} max
    */
-  async getResiduesById(seqId, min, max) {
+  async getResiduesById(seqId: number, min: number, max: number) {
     const indexEntry = (await this._getIndexes()).id[seqId];
     if (!indexEntry) return undefined;
     return this._fetchFromIndexEntry(indexEntry, min, max);
@@ -156,13 +156,13 @@ export class IndexedFasta {
    * @param {number} min
    * @param {number} max
    */
-  async getResiduesByName(seqName, min, max) {
+  async getResiduesByName(seqName: string, min: number, max: number) {
     const indexEntry = (await this._getIndexes()).name[seqName];
     if (!indexEntry) return undefined;
     return this._fetchFromIndexEntry(indexEntry, min, max);
   }
 
-  async getSequence(seqName, min, max) {
+  async getSequence(seqName: string, min: number, max: number) {
     return this.getResiduesByName(seqName, min, max);
   }
 
