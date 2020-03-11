@@ -189,8 +189,7 @@ export class AnalysisController {
     try {
       const cnvInfos: CnvInfoDto[] = req.body;
 
-      const dataFile = await analysisResultModel.createDataFile(cnvInfos);
-      console.log(dataFile);
+      const dataFile = analysisResultModel.createDataFile(cnvInfos);
       res.contentType('text/plain');
       res.set({
         'Content-Disposition': 'attachment; filename=name.txt'
