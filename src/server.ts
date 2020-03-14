@@ -1,3 +1,4 @@
+import { bioGrch38Pool, inCnvPool, dbPool } from './config/database';
 /** Third Party Packages **/
 import http from 'http';
 import express from 'express';
@@ -12,6 +13,7 @@ import {
   referenceGenomeGrch38FastaFilePath,
   referenceGenomeGrch38FaiFilePath
 } from './config/path-config';
+import { bioGrch37Pool } from './config/database';
 class Server {
   port: number;
   hostname: string;
@@ -28,10 +30,13 @@ class Server {
   }
 
   config() {
-    this.server.on('error', this.onError);
+    this.server.on('error', error => {
+      this.onError(error);
+    });
   }
 
   private onError(error) {
+    console.log(error);
     if (error.syscall !== 'listen') {
       throw error;
     }
@@ -39,11 +44,11 @@ class Server {
       typeof this.port === 'string' ? 'pipe ' + this.port : 'port ' + this.port;
     switch (error.code) {
       case 'EACCES':
-        console.error(bind + ' requires elevated privileges');
+        console.error(bind + ' requires elevated privileges.');
         process.exit(1);
         break;
       case 'EADDRINUSE':
-        console.error(bind + ' is already in use');
+        console.error(bind + ' is already in use.');
         process.exit(1);
         break;
       default:
@@ -119,4 +124,42 @@ const server = new Server(config.port, config.host, app).server;
 // };
 // export const indexedFastaGrch38 = new IndexedFasta(configGrch38);
 
-module.exports = server;
+// kill [ps_id]
+process.on('SIGTERM', () => {
+  console.info('SIGTERM signal received.');
+  console.log('Closing http server.');
+  server.close(() => {
+    console.log('Http server closed.');
+    try {
+      console.log('Ending Db connection.');
+      bioGrch37Pool.end();
+      bioGrch38Pool.end();
+      inCnvPool.end();
+      dbPool.end();
+      process.exit(0);
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
+});
+
+// ctrl + c
+process.on('SIGINT', () => {
+  console.log('SIGINT signal received.');
+  console.log('Closing http server.');
+  server.close(() => {
+    console.log('Http server closed.');
+    try {
+      console.log('Ending Db connection.');
+      bioGrch37Pool.end();
+      bioGrch38Pool.end();
+      inCnvPool.end();
+      dbPool.end();
+      process.exit(0);
+    } catch (err) {
+      console.error(err);
+      process.exit(1);
+    }
+  });
+});
