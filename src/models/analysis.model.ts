@@ -1,3 +1,4 @@
+import pLimit from 'p-limit';
 import { IndexedFasta } from './read-reference-genome/indexed-fasta';
 import {
   dgvAllVariantsGrch38FilePath,
@@ -29,6 +30,7 @@ import {
 import { mergedBasepairModel } from './merged-basepair.model';
 import * as path from 'path';
 import fs from 'fs';
+
 import { dgvAllVariantsGrch37FilePath } from '../config/path-config';
 import { LocalFile } from './read-reference-genome/local-file';
 
@@ -42,16 +44,9 @@ export class AnalysisModel {
     } else {
       throw `reference genome must be 'grch37' or 'grch38'`;
     }
-    // const dir = path.join(
-    //   __dirname,
-    //   '..',
-    //   'datasource',
-    //   'dgv_all_variants',
-    //   refereceGenome
-    // );
     const fileName = `dgv_chr${chromosome.toUpperCase()}_all_variants.txt`;
-    const context = fs.readFileSync(path.join(dir, fileName));
-    const dgvAllVariants = JSON.parse(context.toString());
+    const context = fs.readFileSync(path.join(dir, fileName), 'utf8');
+    const dgvAllVariants = JSON.parse(context);
     return dgvAllVariants;
   };
 
@@ -212,16 +207,18 @@ export class AnalysisModel {
     regionBps: RegionBpDto[],
     indexedFasta: IndexedFasta
   ): Promise<CnvInfoDto[]> => {
-    console.log('-- generateCnvInfos');
+    const limit = pLimit(20);
     const cnvInfos: Promise<CnvInfoDto[]> = Promise.all(
       regionBps.map(regionBp => {
-        return this.generateCnvInfo(
-          referenceGenome,
-          chromosome,
-          cnvType,
-          regionBp,
-          indexedFasta
-        );
+        return limit(() => {
+          return this.generateCnvInfo(
+            referenceGenome,
+            chromosome,
+            cnvType,
+            regionBp,
+            indexedFasta
+          );
+        });
       })
     );
     return cnvInfos;
@@ -356,10 +353,12 @@ export class AnalysisModel {
     toolBpGroups: BpGroup[],
     indexedFasta: IndexedFasta
   ): Promise<CnvGroupDto> => {
-    console.log('-- annotateMergedBpGroup');
     const mergedBps: MergedBasepairDto[] = mergedBasepairModel.mergeBpGroups(
       toolBpGroups
     );
+    console.log('group name: ' + MERGED_RESULT_NAME);
+    console.log('basepair numbers: ' + mergedBps.length);
+
     const cnvInfos = await analysisModel.generateCnvInfos(
       referenceGenome,
       chromosome,
@@ -367,6 +366,7 @@ export class AnalysisModel {
       mergedBps,
       indexedFasta
     );
+
     return new CnvGroupDto(MERGED_RESULT_NAME, cnvInfos);
   };
 
