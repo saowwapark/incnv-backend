@@ -7,7 +7,10 @@ const connectionConfig = {
   port: Number(dbEnv.port),
   user: dbEnv.user,
   password: dbEnv.password,
-  connectTimeout: 60000
+  connectTimeout: 100000,
+  //acquireTimeout: 100000,
+  connectionLimit: 30,
+  queueLimit: 1000
 };
 
 const inCnvConfig = {
@@ -16,7 +19,10 @@ const inCnvConfig = {
   user: dbEnv.user,
   password: dbEnv.password,
   database: 'inCNV',
-  connectTimeout: 60000
+  connectTimeout: 100000,
+  //acquireTimeout: 100000,
+  connectionLimit: 30,
+  queueLimit: 1000
   // // --- only mysql --
   // connectionLimit: 10,
   // supportBigNumbers: true,
@@ -29,7 +35,10 @@ const bioGrch37Config = {
   user: dbEnv.user,
   password: dbEnv.password,
   database: 'bio_grch37',
-  connectTimeout: 60000
+  connectTimeout: 100000,
+  //acquireTimeout: 100000,
+  connectionLimit: 30,
+  queueLimit: 1000
   // // --- only mysql --
   // connectionLimit: 10,
   // supportBigNumbers: true,
@@ -43,7 +52,10 @@ const bioGrch38Config = {
   user: dbEnv.user,
   password: dbEnv.password,
   database: 'bio_grch38',
-  connectTimeout: 60000
+  connectTimeout: 100000,
+  //acquireTimeout: 100000,
+  connectionLimit: 30,
+  queueLimit: 1000
   // // --- only mysql --
   // connectionLimit: 10,
   // supportBigNumbers: true,
