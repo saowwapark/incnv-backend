@@ -61,7 +61,7 @@ export class CreateDatabase {
       const databaseSql = `CREATE DATABASE IF NOT EXISTS ${database.databaseName}`;
       dbPool.query(databaseSql, async () => {
         for (const dbTable of database.tables) {
-          dbPool.query(dbTable.createSql);
+          await dbPool.query(dbTable.createSql);
         }
       });
     }
