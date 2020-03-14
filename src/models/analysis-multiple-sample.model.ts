@@ -56,6 +56,8 @@ export class AnalysisMultipleSampleModel {
     sampleBpGroup: BpGroup,
     indexedFasta: IndexedFasta
   ): Promise<CnvGroupDto> => {
+    console.log('group name: ' + sampleBpGroup.groupName);
+    console.log('basepair numbers: ' + sampleBpGroup.basepairs.length);
     const sampleAnnotation = await analysisModel.generateCnvInfos(
       referenceGenome,
       chromosome,

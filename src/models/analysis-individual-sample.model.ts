@@ -204,6 +204,8 @@ export class AnalysisIndividualSampleModel {
     toolBpGroup: BpGroup,
     indexedFasta: IndexedFasta
   ): Promise<CnvGroupDto> => {
+    console.log('group name: ' + toolBpGroup.groupName);
+    console.log('basepair numbers: ' + toolBpGroup.basepairs.length);
     const cnvInfos: CnvInfoDto[] = await analysisModel.generateCnvInfos(
       referenceGenome,
       chromosome,
