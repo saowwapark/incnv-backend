@@ -207,7 +207,7 @@ export class AnalysisModel {
     regionBps: RegionBpDto[],
     indexedFasta: IndexedFasta
   ): Promise<CnvInfoDto[]> => {
-    const limit = pLimit(20);
+    const limit = pLimit(40);
     const cnvInfos: Promise<CnvInfoDto[]> = Promise.all(
       regionBps.map(regionBp => {
         return limit(() => {
