@@ -8,9 +8,9 @@ const connectionConfig = {
   user: dbEnv.user,
   password: dbEnv.password,
   connectTimeout: 100000,
-  //acquireTimeout: 100000,
-  connectionLimit: 30,
-  queueLimit: 1000
+  // acquireTimeout: 100000,
+  connectionLimit: 50,
+  queueLimit: 10000
 };
 
 const inCnvConfig = {
@@ -20,13 +20,9 @@ const inCnvConfig = {
   password: dbEnv.password,
   database: 'inCNV',
   connectTimeout: 100000,
-  //acquireTimeout: 100000,
-  connectionLimit: 30,
-  queueLimit: 1000
-  // // --- only mysql --
-  // connectionLimit: 10,
-  // supportBigNumbers: true,
-  // bigNumberStrings: true
+  // acquireTimeout: 100000,
+  connectionLimit: 50,
+  queueLimit: 10000
 };
 
 const bioGrch37Config = {
@@ -36,14 +32,9 @@ const bioGrch37Config = {
   password: dbEnv.password,
   database: 'bio_grch37',
   connectTimeout: 100000,
-  //acquireTimeout: 100000,
-  connectionLimit: 30,
-  queueLimit: 1000
-  // // --- only mysql --
-  // connectionLimit: 10,
-  // supportBigNumbers: true,
-  // bigNumberStrings: true
-  // multipleStatements: true
+  // acquireTimeout: 100000,
+  connectionLimit: 50,
+  queueLimit: 10000
 };
 
 const bioGrch38Config = {
@@ -53,27 +44,10 @@ const bioGrch38Config = {
   password: dbEnv.password,
   database: 'bio_grch38',
   connectTimeout: 100000,
-  //acquireTimeout: 100000,
-  connectionLimit: 30,
-  queueLimit: 1000
-  // // --- only mysql --
-  // connectionLimit: 10,
-  // supportBigNumbers: true,
-  // bigNumberStrings: true
-  // multipleStatements: true
+  // acquireTimeout: 100000,
+  connectionLimit: 50,
+  queueLimit: 10000
 };
-
-// // in case use connection instread pool
-// export let connectionPromise;
-// const connectDb = () => {
-//   connectionPromise = mysqlPromise
-//     .createConnection(connectionConfig)
-//     .catch(err => {
-//       console.error(err);
-//       connectDb();
-//     });
-// };
-// connectDb();
 
 export const bioGrch37Pool = mysqlPromise.createPool(bioGrch37Config);
 export const bioGrch38Pool = mysqlPromise.createPool(bioGrch38Config);
