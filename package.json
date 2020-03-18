@@ -4,7 +4,7 @@
   "description": "",
   "main": "./dist/app.js",
   "scripts": {
-    "tsc": "tsc",
+    "build": "tsc",
     "clean": "rimraf ./dist",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "dev_backup": "ts-node-dev --respawn --require dotenv/config ./src/server.ts",
@@ -32,7 +32,7 @@
     "mkdirp": "^0.5.1",
     "morgan": "^1.9.1",
     "multer": "^1.4.2",
-    "mysql2": "^2.0.2",
+    "mysql2": "^2.1.0",
     "p-limit": "^2.2.2",
     "path": "^0.12.7",
     "readline-sync": "^1.4.10",
