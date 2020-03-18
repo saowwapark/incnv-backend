@@ -9,7 +9,7 @@ const connectionConfig = {
   password: dbEnv.password,
   connectTimeout: 100000,
   // acquireTimeout: 100000,
-  connectionLimit: 50,
+  connectionLimit: 30,
   queueLimit: 10000
 };
 
@@ -21,7 +21,7 @@ const inCnvConfig = {
   database: 'inCNV',
   connectTimeout: 100000,
   // acquireTimeout: 100000,
-  connectionLimit: 50,
+  connectionLimit: 30,
   queueLimit: 10000
 };
 
@@ -33,7 +33,7 @@ const bioGrch37Config = {
   database: 'bio_grch37',
   connectTimeout: 100000,
   // acquireTimeout: 100000,
-  connectionLimit: 50,
+  connectionLimit: 80,
   queueLimit: 10000
 };
 
@@ -45,7 +45,7 @@ const bioGrch38Config = {
   database: 'bio_grch38',
   connectTimeout: 100000,
   // acquireTimeout: 100000,
-  connectionLimit: 50,
+  connectionLimit: 80,
   queueLimit: 10000
 };
 
