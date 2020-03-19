@@ -1,4 +1,4 @@
-FROM node:latest
+FROM keymetrics/pm2:latest-jessie
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -9,4 +9,4 @@ RUN npm install pm2 -g
 WORKDIR /usr/src/app/dist/src
 RUN ls
 EXPOSE 3000
-CMD ["pm2-runtime","start","server.js","-i","4"]
+CMD ["pm2-runtime", "start", "pm2.json" ]
