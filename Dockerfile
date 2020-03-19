@@ -6,6 +6,7 @@ COPY . ./
 RUN npm install
 RUN npm run build
 RUN npm install pm2 -g
+WORKDIR /usr/src/dist
 RUN ls
 EXPOSE 3000
-CMD ["pm2","start","app.js","-i","4"]
+CMD ["pm2","start","app.js","-i","0"]
