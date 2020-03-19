@@ -1,6 +1,6 @@
 {
     "name": "your-app-name",
-    "script": "src/app.js",
+    "script": "/usr/src/app/dist/src/server.js",
     "instances": "2",
     "env": {
         "NODE_ENV": "development"
