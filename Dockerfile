@@ -1,13 +1,12 @@
-FROM node:latest
+FROM keymetrics/pm2:latest-alpine
 
-RUN mkdir -p /usr/src/app
+# Bundle APP files
+COPY . app/
+# Install app dependencies
+ENV NPM_CONFIG_LOGLEVEL warn
+RUN npm install --production
 
-WORKDIR /usr/src/app
+# Show current folder structure in logs
+RUN ls -al -R
 
-COPY . .
-
-RUN npm install
-
-EXPOSE 3000
-
-CMD ["npm", "run", "dev"]
+CMD [ "pm2-runtime", "start", "pm2.json" ]
