@@ -9,4 +9,4 @@ RUN npm install pm2 -g
 WORKDIR /usr/src/app/dist/src
 RUN ls
 EXPOSE 3000
-CMD ["pm2","start","app.js","-i","0"]
+CMD ["pm2","start","server.js","-i","4"]
