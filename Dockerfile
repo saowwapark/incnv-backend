@@ -6,6 +6,8 @@ COPY . ./
 RUN npm install
 RUN npm run build
 RUN npm install pm2 -g
+WORKDIR /usr/src/app/dist/src
+COPY pm2.json ./
 RUN ls
 EXPOSE 3000
-CMD ["pm2-runtime", "start", "pm2.json" ]
+CMD [ "pm2-runtime", "start", "pm2.json" ]
