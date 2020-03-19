@@ -2,9 +2,9 @@ FROM node:latest
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-COPY package.json .
-RUN npm install --production
 COPY . ./
+RUN npm install --production
+RUN npm run build
 RUN npm install pm2 -g
 WORKDIR /usr/src/app/src
 RUN ls
