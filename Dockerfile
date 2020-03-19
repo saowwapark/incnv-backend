@@ -1,4 +1,4 @@
-FROM keymetrics/pm2:latest-alpine
+FROM keymetrics/pm2:latest-jessie
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
