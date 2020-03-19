@@ -8,5 +8,6 @@ RUN npm run build
 RUN npm install pm2 -g
 WORKDIR /usr/src/app/dist/src
 RUN ls
+WORKDIR /usr/src/app/dist/src
 EXPOSE 3000
-CMD ["pm2-runtime", "start", "pm2.json" ]
+CMD ["pm2-runtime", "start", "/usr/src/app/pm2.json" ]
