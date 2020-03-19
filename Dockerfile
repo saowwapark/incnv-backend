@@ -6,6 +6,7 @@ COPY package.json .
 COPY pm2.json .
 COPY tsconfig.json .
 
+RUN npm run build
 # Install app dependencies
 ENV NPM_CONFIG_LOGLEVEL warn
 RUN npm install --production
