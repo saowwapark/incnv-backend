@@ -19,7 +19,15 @@ export class AuthenMiddleware {
         try {
           decodedToken = jwt.verify(token, 'secret_this_should_be_longer');
         } catch (err) {
-          res.status(500).json(err);
+          console.error(err);
+          if (err.name === 'TokenExpiredError') {
+            res
+              .status(500)
+              .json(
+                'Authentication is expired.\nPlease sign out and sign in again.'
+              );
+          }
+          res.status(500).json(err + '\nPlease sign out and sign in again.');
         }
         if (!decodedToken) {
           res.status(401).json('Not authenticated.');
