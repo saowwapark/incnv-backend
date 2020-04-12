@@ -16,7 +16,7 @@ export class UtilityDatasource {
     const version = lastest.tag_name;
     const assets = lastest.assets;
 
-    let data: any;
+    let data: ArrayBuffer;
     for (const asset of assets) {
       const url = asset.browser_download_url;
       const filename = asset.name;
@@ -30,9 +30,9 @@ export class UtilityDatasource {
         ).data;
         break;
       }
-      if (data) break;
+      if (data! !== undefined) break;
     }
-    return data;
+    return data!;
   };
 
   /**
@@ -73,7 +73,7 @@ export class UtilityDatasource {
     });
   };
 
-  readStream = (stream, encoding = 'utf8') => {
+  readStream = (stream: any, encoding = 'utf8') => {
     stream.setEncoding(encoding);
 
     return new Promise((resolve, reject) => {

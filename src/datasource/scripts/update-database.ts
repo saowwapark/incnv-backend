@@ -1,5 +1,4 @@
 import { TableVersion } from './datasource-version.model';
-import axios from 'axios';
 import fs from 'fs-extra';
 import * as path from 'path';
 import unzipper from 'unzipper';
@@ -35,7 +34,6 @@ export class UpdateDatabase {
         const tableName = tableVersion.tableName;
         const releasedVersion = tableVersion.releasedVersion;
         if (releasedVersion && releasedVersion.length > 0) {
-          console.log('not update table');
           isShouldUpdate = false;
           return isShouldUpdate;
         }
@@ -44,9 +42,10 @@ export class UpdateDatabase {
     return isShouldUpdate;
   };
 
-  main = async () => {
+  main = async (): Promise<string> => {
     let shouldUpdate: boolean = this.checkShouldUpdateVersion();
-    if (!shouldUpdate) return;
+    if (!shouldUpdate)
+      return Promise.resolve('-> Bio database should not be updated');
 
     const data = await utilityDatasource.getDatasource(
       this.url,
@@ -58,25 +57,28 @@ export class UpdateDatabase {
 
     // extract zip file
     const readStream = fs.createReadStream(zipFilePath);
-    readStream
-      .pipe(unzipper.Extract({ path: datasourceTmpDir }))
-      .on('error', function(err) {
-        console.log('error to unzip', err);
-      })
-      .on('close', async () => {
-        console.log('extract zip SUCCESS!!');
+    return new Promise((resolve, reject) => {
+      readStream
+        .pipe(unzipper.Extract({ path: datasourceTmpDir }))
+        .on('error', function(err) {
+          reject('!! error to unzip Bio database\n' + err.stack);
+        })
+        .on('close', async () => {
+          await this.updateTable();
 
-        await this.updateTable();
+          // remove zip file
+          fs.removeSync(this.expectedZipFilePath);
+          // remove extracted directory
+          fs.removeSync(this.tmpExtractedDirPath);
 
-        // remove zip file
-        fs.removeSync(this.expectedZipFilePath);
-        // remove extracted directory
-        fs.removeSync(this.tmpExtractedDirPath);
-
-        // update db version
-        const updatedDatasourceVersion = this.createUpdatedDatasourceVersion();
-        utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
-      });
+          // update db version
+          const updatedDatasourceVersion = this.createUpdatedDatasourceVersion();
+          utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
+          resolve(
+            '--------------------- update db success!! ---------------------'
+          );
+        });
+    });
   };
 
   private createUpdatedDatasourceVersion = () => {

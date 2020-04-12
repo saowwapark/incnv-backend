@@ -56,15 +56,20 @@ export class CreateDatabase {
   //   }
   // };
 
-  crateDb = async (databases: DatabaseScript[]) => {
-    for (const database of databases) {
-      const databaseSql = `CREATE DATABASE IF NOT EXISTS ${database.databaseName}`;
-      dbPool.query(databaseSql, async () => {
-        for (const dbTable of database.tables) {
-          await dbPool.query(dbTable.createSql);
-        }
-      });
-    }
+  crateDb = async (databases: DatabaseScript[]): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      for (const database of databases) {
+        const databaseSql = `CREATE DATABASE IF NOT EXISTS ${database.databaseName}`;
+        dbPool.query(databaseSql, async () => {
+          for (const dbTable of database.tables) {
+            await dbPool.query(dbTable.createSql);
+          }
+        });
+      }
+      resolve(
+        '--------------------- create Bio databases and their tables if not exists success!! --------------------'
+      );
+    });
   };
 
   // updateDbVersion = async (dbDatabase: SchmaConfig)

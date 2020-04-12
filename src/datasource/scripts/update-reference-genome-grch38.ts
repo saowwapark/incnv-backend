@@ -30,7 +30,6 @@ export class UpdateReferenceGenomeGrch38 {
     for (const referenceGenomeGrch38Version of referenceGenomeGrch38Versions) {
       const releasedVersion = referenceGenomeGrch38Version.releasedVersion;
       if (releasedVersion && releasedVersion.length > 0) {
-        console.log('not update reference genome GRCh38');
         isShouldUpdate = false;
         return isShouldUpdate;
       }
@@ -38,9 +37,12 @@ export class UpdateReferenceGenomeGrch38 {
     return isShouldUpdate;
   };
 
-  main = async () => {
+  main = async (): Promise<string> => {
     let shouldUpdate: boolean = this.checkShouldUpdateVersion();
-    if (!shouldUpdate) return;
+    if (!shouldUpdate)
+      return Promise.resolve(
+        '-> Reference genome GRCh38 should not be updated'
+      );
 
     const data = await utilityDatasource.getDatasource(
       this.url,
@@ -51,24 +53,28 @@ export class UpdateReferenceGenomeGrch38 {
 
     // extract zip file
     const readStream = fs.createReadStream(this.expectedZipFilePath);
-    readStream
-      .pipe(unzipper.Extract({ path: datasourceTmpDir }))
-      .on('error', function(err) {
-        console.log('error to unzip', err);
-      })
-      .on('close', async () => {
-        console.log('extract zip SUCCESS!!');
-        this.modifyFile();
+    return new Promise((resolve, reject) => {
+      readStream
+        .pipe(unzipper.Extract({ path: datasourceTmpDir }))
+        .on('error', function(err) {
+          reject('!! error to unzip Reference genome GRCh38\n' + err.stack);
+        })
+        .on('close', async () => {
+          this.modifyFile();
 
-        // remove zip file
-        fs.removeSync(this.expectedZipFilePath);
-        // remove extracted directory
-        fs.removeSync(this.tmpExtractedDirPath);
+          // remove zip file
+          fs.removeSync(this.expectedZipFilePath);
+          // remove extracted directory
+          fs.removeSync(this.tmpExtractedDirPath);
 
-        // update db version
-        const updatedDatasourceVersion = this.createDatasourceVersion();
-        utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
-      });
+          // update db version
+          const updatedDatasourceVersion = this.createDatasourceVersion();
+          utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
+          resolve(
+            '---------------------  update Reference genome GRCh38 success!! --------------------'
+          );
+        });
+    });
   };
 
   private modifyFile() {

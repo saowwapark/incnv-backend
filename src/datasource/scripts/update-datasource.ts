@@ -10,26 +10,50 @@ import { datasourceTmpDir } from '../../config/path-config';
 export class UpdateDatasource {
   main = async () => {
     try {
-      await createDatabase.crateDb(databases);
-      console.log(
-        '---------------------  check create db success!! --------------------'
+      await createDatabase.crateDb(databases).then(
+        result => {
+          console.log(result);
+        },
+        error => {
+          console.error(error);
+        }
       );
-      await updateDatabase.main();
-      console.log(
-        '--------------------- check update db success!! ---------------------'
+
+      await updateDatabase.main().then(
+        result => {
+          console.log(result);
+        },
+        error => {
+          console.error(error);
+        }
       );
-      await updateDgvAllVariants.main();
-      console.log(
-        '---------------------  Update DGV all variant success!! --------------------'
+
+      await updateDgvAllVariants.main().then(
+        result => {
+          console.log(result);
+        },
+        error => {
+          console.error(error);
+        }
       );
-      await updateReferenceGenomeGrch37.main();
-      console.log(
-        '---------------------  Update Reference Genome Grch37 success!! --------------------'
+      await updateReferenceGenomeGrch37.main().then(
+        result => {
+          console.log(result);
+        },
+        error => {
+          console.error(error);
+        }
       );
-      await updateReferenceGenomeGrch38.main();
-      console.log(
-        '---------------------  Update Reference Genome Grch38 success!! --------------------'
+
+      await updateReferenceGenomeGrch38.main().then(
+        result => {
+          console.log(result);
+        },
+        error => {
+          console.error(error);
+        }
       );
+
       utilityDatasource.deleteFiles(datasourceTmpDir);
     } catch (err) {
       const originalVersion = utilityDatasource.getDatasourceOriginalVersion();

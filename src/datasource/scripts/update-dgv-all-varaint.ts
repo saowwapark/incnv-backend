@@ -1,5 +1,4 @@
 import { DatasourceVersion, TableVersion } from './datasource-version.model';
-import axios from 'axios';
 import fs from 'fs-extra';
 import * as path from 'path';
 import unzipper from 'unzipper';
@@ -35,7 +34,6 @@ export class UpdateDgvAllVariants {
     for (const dgvAllVariantsVersion of dgvAllVariantsVersions) {
       const releasedVersion = dgvAllVariantsVersion.releasedVersion;
       if (releasedVersion && releasedVersion.length > 0) {
-        console.log('not update DGV all variants');
         isShouldUpdate = false;
         return isShouldUpdate;
       }
@@ -43,38 +41,43 @@ export class UpdateDgvAllVariants {
     return isShouldUpdate;
   };
 
-  main = async () => {
+  main = async (): Promise<string> => {
     let shouldUpdate: boolean = this.checkShouldUpdateVersion();
-    if (!shouldUpdate) return;
+    if (!shouldUpdate)
+      return Promise.resolve('-> Dgv all varaint should not be updated');
 
-    const data = await utilityDatasource.getDatasource(
+    const data: ArrayBuffer = await utilityDatasource.getDatasource(
       this.url,
       this.expectedZipFileName
     );
     // /tmp/datasource/db__datasource.zip
     utilityDatasource.saveRetrievedFile(this.expectedZipFilePath, data);
 
-    // extract zip file
     const readStream = fs.createReadStream(this.expectedZipFilePath);
-    readStream
-      .pipe(unzipper.Extract({ path: datasourceTmpDir }))
-      .on('error', function(err) {
-        console.log('error to unzip', err);
-      })
-      .on('close', async () => {
-        console.log('extract zip SUCCESS!!');
 
-        this.modifyFile();
+    return new Promise((resolve, reject) => {
+      // extract a zip file and write new files
+      readStream
+        .pipe(unzipper.Extract({ path: datasourceTmpDir }))
+        .on('error', function(err) {
+          reject('!! Error to unzip DGV all varaint\n' + err.stack);
+        })
+        .on('close', async () => {
+          this.modifyFile();
 
-        // remove zip file
-        fs.removeSync(this.expectedZipFilePath);
-        // remove extracted directory
-        fs.removeSync(this.tmpExtractedDirPath);
+          // remove zip file
+          fs.removeSync(this.expectedZipFilePath);
+          // remove extracted directory
+          fs.removeSync(this.tmpExtractedDirPath);
 
-        // update DatasourceVersion
-        const updatedDatasourceVersion = this.createDatasourceVersion();
-        utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
-      });
+          // // update DatasourceVersion
+          // const updatedDatasourceVersion = this.createDatasourceVersion();
+          // utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
+          resolve(
+            '---------------------  update DGV all variant success!! --------------------'
+          );
+        });
+    });
   };
 
   private modifyFile() {
