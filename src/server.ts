@@ -1,4 +1,4 @@
-import { bioGrch38Pool, inCnvPool, dbPool } from './config/database';
+import { bioGrch38Pool, inCnvPool, dbPool } from './config/database.config';
 /** Third Party Packages **/
 import http from 'http';
 import express from 'express';
@@ -12,8 +12,8 @@ import {
   referenceGenomeGrch37FaiFilePath,
   referenceGenomeGrch38FastaFilePath,
   referenceGenomeGrch38FaiFilePath
-} from './config/path-config';
-import { bioGrch37Pool } from './config/database';
+} from './config/path.config';
+import { bioGrch37Pool } from './config/database.config';
 class Server {
   port: number;
   hostname: string;

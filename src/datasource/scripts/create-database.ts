@@ -1,4 +1,4 @@
-import { inCnvPool, dbPool } from '../../config/database';
+import { inCnvPool, dbPool } from '../../config/database.config';
 
 import * as mysql from 'mysql2/promise';
 import { DatabaseScript } from './database-const';

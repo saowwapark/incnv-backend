@@ -1,5 +1,5 @@
 const fs = require('fs');
-import { bioGrch37Pool, bioGrch38Pool } from '../../config/database';
+import { bioGrch37Pool, bioGrch38Pool } from '../../config/database.config';
 import * as mysql from 'mysql2/promise';
 const path = require('path');
 const readline = require('readline-sync');

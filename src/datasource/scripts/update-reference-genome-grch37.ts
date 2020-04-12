@@ -5,7 +5,7 @@ import {
   datasourceTmpDir,
   referenceGenomeGrch37FastaFilePath,
   referenceGenomeGrch37FaiFilePath
-} from '../../config/path-config';
+} from '../../config/path.config';
 import { utilityDatasource } from './utility-datasource';
 
 export class UpdateReferenceGenomeGrch37 {

@@ -1,6 +1,6 @@
 import { ReformatCnvToolResultDto } from './../dto/reformat-cnv-tool-result.dto';
 import * as mysql from 'mysql2/promise';
-import { inCnvPool } from '../../../config/database';
+import { inCnvPool } from '../../../config/database.config';
 import { RegionBpDto } from '../../../dto/basepair.dto';
 
 export class ReformatCnvToolResultDao {

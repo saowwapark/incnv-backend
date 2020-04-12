@@ -5,7 +5,7 @@ import { DatasourceVersion } from './datasource-version.model';
 import {
   datasourceVersionPath,
   datasourceOriginalVersionPath
-} from '../../config/path-config';
+} from '../../config/path.config';
 export class UtilityDatasource {
   public getDatasource = async (
     downloadedUrl: string,

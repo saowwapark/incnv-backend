@@ -1,6 +1,6 @@
 import { RegionBpDto } from './../../../dto/basepair.dto';
 import * as mysql from 'mysql2/promise';
-import { bioGrch37Pool, bioGrch38Pool } from '../../../config/database';
+import { bioGrch37Pool, bioGrch38Pool } from '../../../config/database.config';
 import { DgvAnnotationDto } from '../dto/dgv-annotation.dto';
 
 export class DgvDao {

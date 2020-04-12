@@ -7,7 +7,7 @@ import {
   datasourceTmpDir,
   dgvAllVariantsGrch37FilePath,
   dgvAllVariantsGrch38FilePath
-} from '../../config/path-config';
+} from '../../config/path.config';
 import { utilityDatasource } from './utility-datasource';
 
 /**

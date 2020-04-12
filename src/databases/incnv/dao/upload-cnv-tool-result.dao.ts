@@ -3,7 +3,7 @@ import {
   UploadCnvToolResultViewDto
 } from '../dto/upload-cnv-tool-result.dto';
 import * as mysql from 'mysql2/promise';
-import { inCnvPool } from '../../../config/database';
+import { inCnvPool } from '../../../config/database.config';
 
 export class UploadCnvToolResultDao {
   public parse(upload) {

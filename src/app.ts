@@ -4,7 +4,7 @@ import {
   staticDir,
   referenceGenomeDirPath,
   dgvAllVariantsDirPath
-} from './config/path-config';
+} from './config/path.config';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';

@@ -6,7 +6,7 @@ import {
   referenceGenomeGrch37FastaFilePath,
   referenceGenomeGrch37FaiFilePath,
   referenceGenomeGrch38FaiFilePath
-} from './../config/path-config';
+} from '../config/path.config';
 import { AnnotationStoredproc } from './../databases/bio/dao/annotation-storedproc.dao';
 import { SequenceDto } from './../dto/analysis/sequence.dto';
 import { samplesetDao } from '../databases/incnv/dao/sampleset.dao';
@@ -31,7 +31,7 @@ import { mergedBasepairModel } from './merged-basepair.model';
 import * as path from 'path';
 import fs from 'fs';
 
-import { dgvAllVariantsGrch37FilePath } from '../config/path-config';
+import { dgvAllVariantsGrch37FilePath } from '../config/path.config';
 import { LocalFile } from './read-reference-genome/local-file';
 
 export class AnalysisModel {

@@ -1,5 +1,5 @@
 const fs = require('fs');
-import { bioGrch37Pool, bioGrch38Pool } from '../../config/database';
+import { bioGrch37Pool, bioGrch38Pool } from '../../config/database.config';
 const mysql = require('mysql2/promise');
 
 export class DgvDataSource {

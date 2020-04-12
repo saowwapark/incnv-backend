@@ -1,7 +1,7 @@
 import { RegionBpDto } from './../../../dto/basepair.dto';
 import { EnsemblAnnotationDto } from './../dto/ensembl-annotation.dto';
 import * as mysql from 'mysql2/promise';
-import { bioGrch37Pool, bioGrch38Pool } from '../../../config/database';
+import { bioGrch37Pool, bioGrch38Pool } from '../../../config/database.config';
 
 export class EnsemblDao {
   pool: mysql.Pool;

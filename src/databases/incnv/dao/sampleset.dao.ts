@@ -1,5 +1,5 @@
 import * as mysql from 'mysql2/promise';
-import { inCnvPool } from '../../../config/database';
+import { inCnvPool } from '../../../config/database.config';
 import { IdAndNameDto } from '../../../dto/id-and-name.dto';
 import { SamplesetDto } from '../dto/sampleset.dto';
 import { userService } from '../../../services/user.service';

@@ -5,7 +5,7 @@ import { updateDgvAllVariants } from './update-dgv-all-varaint';
 import { updateReferenceGenomeGrch37 } from './update-reference-genome-grch37';
 import { updateReferenceGenomeGrch38 } from './update-reference-genome-grch38';
 import { utilityDatasource } from './utility-datasource';
-import { datasourceTmpDir } from '../../config/path-config';
+import { datasourceTmpDir } from '../../config/path.config';
 
 export class UpdateDatasource {
   main = async () => {

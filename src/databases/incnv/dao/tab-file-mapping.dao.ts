@@ -1,6 +1,6 @@
 import * as mysql from 'mysql2/promise';
 import { TabFileMappingDto } from '../dto/tab-file-mapping.dto';
-import { inCnvPool } from '../../../config/database';
+import { inCnvPool } from '../../../config/database.config';
 import { IdAndNameDto } from '../../../dto/id-and-name.dto';
 import { userModel } from '../../../models/user.model';
 import { userService } from '../../../services/user.service';

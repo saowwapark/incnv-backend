@@ -2,8 +2,8 @@ import { TableVersion } from './datasource-version.model';
 import fs from 'fs-extra';
 import * as path from 'path';
 import unzipper from 'unzipper';
-import { dbPool } from '../../config/database';
-import { datasourceTmpDir } from './../../config/path-config';
+import { dbPool } from '../../config/database.config';
+import { datasourceTmpDir } from '../../config/path.config';
 
 import mysqlPromise from 'mysql2/promise';
 import { databases, TableScript } from './database-const';

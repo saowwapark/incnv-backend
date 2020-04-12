@@ -1,4 +1,4 @@
-import { inCnvPool } from '../config/database';
+import { inCnvPool } from '../config/database.config';
 import * as mysql from 'mysql2';
 
 console.log('generate-date.js');

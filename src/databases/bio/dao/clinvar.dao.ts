@@ -1,5 +1,5 @@
 import * as mysql from 'mysql2/promise';
-import { bioGrch37Pool, bioGrch38Pool } from '../../../config/database';
+import { bioGrch37Pool, bioGrch38Pool } from '../../../config/database.config';
 import { ClinvarDto } from '../dto/clinvar.dto';
 
 export class ClinvarDao {
