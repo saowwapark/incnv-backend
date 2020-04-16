@@ -70,9 +70,9 @@ export class UpdateDgvAllVariants {
           // remove extracted directory
           fs.removeSync(this.tmpExtractedDirPath);
 
-          // // update DatasourceVersion
-          // const updatedDatasourceVersion = this.createDatasourceVersion();
-          // utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
+          // update DatasourceVersion
+          const updatedDatasourceVersion = this.createDatasourceVersion();
+          utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
           resolve(
             '---------------------  update DGV all variant success!! --------------------'
           );
