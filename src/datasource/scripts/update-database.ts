@@ -61,7 +61,7 @@ export class UpdateDatabase {
       readStream
         .pipe(unzipper.Extract({ path: datasourceTmpDir }))
         .on('error', function(err) {
-          reject('!! error to unzip Bio database\n' + err.stack);
+          reject(new Error('Error!! to unzip Bio database\n' + err.stack));
         })
         .on('close', async () => {
           await this.updateTable();

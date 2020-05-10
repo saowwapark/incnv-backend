@@ -4,7 +4,7 @@ import unzipper from 'unzipper';
 import {
   datasourceTmpDir,
   referenceGenomeGrch37FastaFilePath,
-  referenceGenomeGrch37FaiFilePath
+  referenceGenomeGrch37FaiFilePath,
 } from '../../config/path.config';
 import { utilityDatasource } from './utility-datasource';
 
@@ -58,7 +58,9 @@ export class UpdateReferenceGenomeGrch37 {
       readStream
         .pipe(unzipper.Extract({ path: datasourceTmpDir }))
         .on('error', function(err) {
-          reject('!! error to unzip Reference genome GRCh37\n' + err.stack);
+          reject(
+            new Error('Error!! unzip Reference genome GRCh37\n' + err.stack)
+          );
         })
         .on('close', async () => {
           this.modifyFile();

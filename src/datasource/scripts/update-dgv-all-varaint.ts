@@ -6,7 +6,7 @@ import rimraf from 'rimraf';
 import {
   datasourceTmpDir,
   dgvAllVariantsGrch37FilePath,
-  dgvAllVariantsGrch38FilePath
+  dgvAllVariantsGrch38FilePath,
 } from '../../config/path.config';
 import { utilityDatasource } from './utility-datasource';
 
@@ -60,7 +60,7 @@ export class UpdateDgvAllVariants {
       readStream
         .pipe(unzipper.Extract({ path: datasourceTmpDir }))
         .on('error', function(err) {
-          reject('!! Error to unzip DGV all varaint\n' + err.stack);
+          reject(new Error('Error!! unzip DGV all varaint\n' + err.stack));
         })
         .on('close', async () => {
           this.modifyFile();

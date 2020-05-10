@@ -65,8 +65,8 @@ export class CreateDatabase {
             try {
               await dbPool.query(dbTable.createSql);
             } catch (err) {
-              console.log('for loop');
-              console.error(err);
+              const errMsg = 'Error!! ' + databaseSql + '\n' + err;
+              reject(new Error(errMsg));
             }
           }
         });
@@ -74,11 +74,6 @@ export class CreateDatabase {
       resolve(
         '--------------------- create Bio databases if not existing success!! --------------------'
       );
-      reject((reason) => {
-        return new Error(
-          '----------- cannot create Bio databases -----------\n' + reason
-        );
-      });
     });
   };
 
