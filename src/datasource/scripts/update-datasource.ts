@@ -10,54 +10,26 @@ import { datasourceTmpDir } from '../../config/path.config';
 export class UpdateDatasource {
   main = async () => {
     try {
-      await createDatabase.crateDb(databases).then(
-        result => {
-          console.log(result);
-        },
-        error => {
-          console.error(error);
-        }
-      );
+      const createDbLog = await createDatabase.crateDb(databases);
+      console.log(createDbLog);
 
-      await updateDatabase.main().then(
-        result => {
-          console.log(result);
-        },
-        error => {
-          console.error(error);
-        }
-      );
+      const updateDbLog = await updateDatabase.main();
+      console.log(updateDbLog);
 
-      await updateDgvAllVariants.main().then(
-        result => {
-          console.log(result);
-        },
-        error => {
-          console.error(error);
-        }
-      );
-      await updateReferenceGenomeGrch37.main().then(
-        result => {
-          console.log(result);
-        },
-        error => {
-          console.error(error);
-        }
-      );
+      const updateDgvAllVariantsLog = await updateDgvAllVariants.main();
+      console.log(updateDgvAllVariantsLog);
 
-      await updateReferenceGenomeGrch38.main().then(
-        result => {
-          console.log(result);
-        },
-        error => {
-          console.error(error);
-        }
-      );
+      const updateReferenceGenomeGrch37Log = await updateReferenceGenomeGrch37.main();
+      console.log(updateReferenceGenomeGrch37Log);
+
+      const updateReferenceGenomeGrch38Log = await updateReferenceGenomeGrch38.main();
+      console.log(updateReferenceGenomeGrch38Log);
 
       utilityDatasource.deleteFiles(datasourceTmpDir);
     } catch (err) {
       const originalVersion = utilityDatasource.getDatasourceOriginalVersion();
       utilityDatasource.writeDatasourceVersion(originalVersion);
+      console.error(err);
     }
   };
 }
