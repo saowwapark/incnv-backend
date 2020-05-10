@@ -57,7 +57,7 @@ export class CreateDatabase {
   // };
 
   crateDb = async (databases: DatabaseScript[]): Promise<string> => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       for (const database of databases) {
         const databaseSql = `CREATE DATABASE IF NOT EXISTS ${database.databaseName}`;
         dbPool.query(databaseSql, async () => {

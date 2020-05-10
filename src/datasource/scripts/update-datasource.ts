@@ -27,9 +27,9 @@ export class UpdateDatasource {
 
       utilityDatasource.deleteFiles(datasourceTmpDir);
     } catch (err) {
+      console.error(err);
       const originalVersion = utilityDatasource.getDatasourceOriginalVersion();
       utilityDatasource.writeDatasourceVersion(originalVersion);
-      console.error(err);
     }
   };
 }
