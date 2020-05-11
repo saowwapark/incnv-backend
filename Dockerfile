@@ -10,4 +10,4 @@ WORKDIR /usr/src/app/dist/src
 COPY pm2.json ./
 RUN ls
 EXPOSE 3000
-CMD [ "pm2-runtime", "start", "pm2.json" ]
+CMD [ "pm2-runtime", "start", "pm2.json" , "--node-args="--max-old-space-size=2048""]
