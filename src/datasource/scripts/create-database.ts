@@ -57,26 +57,27 @@ export class CreateDatabase {
   // };
 
   crateDb = async (databases: DatabaseScript[]): Promise<string> => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       for (const database of databases) {
         const databaseSql = `CREATE DATABASE IF NOT EXISTS ${database.databaseName}`;
-        dbPool
-          .query(databaseSql, async () => {
-            for (const dbTable of database.tables) {
-              try {
-                await dbPool.query(dbTable.createSql);
-              } catch (err) {
-                const errMsg = 'Error!! ' + databaseSql + '\n' + err;
-                reject(new Error(errMsg));
-              }
-            }
-          })
-          .then(() => {
-            resolve(
-              '--------------------- create Bio databases if not existing success!! --------------------'
-            );
-          });
+        try {
+          await dbPool.query(databaseSql);
+        } catch (err) {
+          const errMsg = 'Error!! ' + databaseSql + '\n' + err;
+          reject(new Error(errMsg));
+        }
+        for (const dbTable of database.tables) {
+          try {
+            await dbPool.query(dbTable.createSql);
+          } catch (err) {
+            const errMsg = 'Error!! ' + dbTable.createSql + '\n' + err;
+            reject(new Error(errMsg));
+          }
+        }
       }
+      resolve(
+        '--------------------- create Bio databases if not existing success!! --------------------'
+      );
     });
   };
 
