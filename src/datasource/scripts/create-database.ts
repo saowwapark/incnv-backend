@@ -60,20 +60,23 @@ export class CreateDatabase {
     return new Promise((resolve, reject) => {
       for (const database of databases) {
         const databaseSql = `CREATE DATABASE IF NOT EXISTS ${database.databaseName}`;
-        dbPool.query(databaseSql, async () => {
-          for (const dbTable of database.tables) {
-            try {
-              await dbPool.query(dbTable.createSql);
-            } catch (err) {
-              const errMsg = 'Error!! ' + databaseSql + '\n' + err;
-              reject(new Error(errMsg));
+        dbPool
+          .query(databaseSql, async () => {
+            for (const dbTable of database.tables) {
+              try {
+                await dbPool.query(dbTable.createSql);
+              } catch (err) {
+                const errMsg = 'Error!! ' + databaseSql + '\n' + err;
+                reject(new Error(errMsg));
+              }
             }
-          }
-        });
+          })
+          .then(() => {
+            resolve(
+              '--------------------- create Bio databases if not existing success!! --------------------'
+            );
+          });
       }
-      resolve(
-        '--------------------- create Bio databases if not existing success!! --------------------'
-      );
     });
   };
 
