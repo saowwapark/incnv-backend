@@ -8,7 +8,7 @@
     "clean": "rimraf ./dist",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "dev_backup": "ts-node-dev --respawn --require dotenv/config ./src/server.ts",
-    "dev": "ts-node-dev --max-old-space-size=4096 --respawn --transpileOnly ./src/app.ts",
+    "dev": "ts-node-dev --max-old-space-size=4096 --respawn ./src/server.ts",
     "prod": "tsc && node --max-old-space-size=2048 ./dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
