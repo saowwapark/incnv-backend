@@ -1,34 +1,38 @@
+import { DatasourceVersion, TableVersion } from './datasource-version.model';
 import fs from 'fs-extra';
 import * as path from 'path';
 import unzipper from 'unzipper';
+import rimraf from 'rimraf';
 import {
-  datasourceTmpDir,
-  referenceGenomeGrch37FastaFilePath,
-  referenceGenomeGrch37FaiFilePath,
+  DATASOURCES_TMP_DIR_PATH,
+  DGV_GRCH37_DIR_PATH,
+  DGV_GRCH38_DIR_PATH,
 } from '../../config/path.config';
 import { utilityDatasource } from './utility-datasource';
 
-export class UpdateReferenceGenomeGrch37 {
+/**
+ * download file
+ */
+export class UpdateDgvAllVariants {
   private readonly url =
     'https://api.github.com/repos/saowwapark/inCNV-datasource/releases/latest';
-  private readonly expectedZipFileName = 'reference_genome_grch37.zip';
+  private readonly expectedZipFileName = 'dgv_all_variants.zip';
   private readonly expectedZipFilePath = path.join(
-    datasourceTmpDir,
+    DATASOURCES_TMP_DIR_PATH,
     this.expectedZipFileName
   );
   private readonly tmpExtractedDirPath = path.join(
-    datasourceTmpDir,
-    'reference_genome_grch37'
+    DATASOURCES_TMP_DIR_PATH,
+    'dgv_all_variants'
   );
 
   checkShouldUpdateVersion = () => {
     const datasourceVersion = utilityDatasource.getDatasourceVersion();
-    const referenceGenomeGrch37Versions =
-      datasourceVersion.referenceGenomeGrch38Versions;
+    const dgvAllVariantsVersions = datasourceVersion.dgvAllVariantsVersions; // grch37 && grch38
 
     let isShouldUpdate: boolean = true;
-    for (const referenceGenomeGrch37Version of referenceGenomeGrch37Versions) {
-      const releasedVersion = referenceGenomeGrch37Version.releasedVersion;
+    for (const dgvAllVariantsVersion of dgvAllVariantsVersions) {
+      const releasedVersion = dgvAllVariantsVersion.releasedVersion;
       if (releasedVersion && releasedVersion.length > 0) {
         isShouldUpdate = false;
         return isShouldUpdate;
@@ -40,27 +44,23 @@ export class UpdateReferenceGenomeGrch37 {
   main = async (): Promise<string> => {
     let shouldUpdate: boolean = this.checkShouldUpdateVersion();
     if (!shouldUpdate)
-      return Promise.resolve(
-        '-> Reference genome GRCh37 should not be updated'
-      );
+      return Promise.resolve('-> Dgv all varaint should not be updated');
 
-    const data = await utilityDatasource.getDatasource(
+    const data: ArrayBuffer = await utilityDatasource.getDatasource(
       this.url,
       this.expectedZipFileName
     );
-
+    // /tmp/datasource/db__datasource.zip
     utilityDatasource.saveRetrievedFile(this.expectedZipFilePath, data);
 
-    // extract zip file
     const readStream = fs.createReadStream(this.expectedZipFilePath);
 
     return new Promise((resolve, reject) => {
+      // extract a zip file and write new files
       readStream
-        .pipe(unzipper.Extract({ path: datasourceTmpDir }))
+        .pipe(unzipper.Extract({ path: DATASOURCES_TMP_DIR_PATH }))
         .on('error', function(err) {
-          reject(
-            new Error('Error!! unzip Reference genome GRCh37\n' + err.stack)
-          );
+          reject(new Error('Error!! unzip DGV all varaint\n' + err.stack));
         })
         .on('close', async () => {
           this.modifyFile();
@@ -70,11 +70,11 @@ export class UpdateReferenceGenomeGrch37 {
           // remove extracted directory
           fs.removeSync(this.tmpExtractedDirPath);
 
-          // update db version
+          // update DatasourceVersion
           const updatedDatasourceVersion = this.createDatasourceVersion();
           utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
           resolve(
-            '---------------------  update Reference Genome GRCh37 success!! --------------------'
+            '---------------------  Updating DGV all variant SUCCESS!! --------------------'
           );
         });
     });
@@ -86,10 +86,10 @@ export class UpdateReferenceGenomeGrch37 {
     console.log('fileNames: ' + fileNames);
     for (const fileName of fileNames) {
       const extractedFilePath = path.join(this.tmpExtractedDirPath, fileName);
-      if (fileName.charAt(0) !== '.' && fileName.endsWith('.fa.fai')) {
-        this.moveFile(extractedFilePath, referenceGenomeGrch37FaiFilePath);
-      } else if (fileName.charAt(0) !== '.' && fileName.endsWith('.fa')) {
-        this.moveFile(extractedFilePath, referenceGenomeGrch37FastaFilePath);
+      if (fileName.includes('grch37')) {
+        this.moveFile(extractedFilePath, DGV_GRCH37_DIR_PATH);
+      } else if (fileName.includes('grch38')) {
+        this.moveFile(extractedFilePath, DGV_GRCH38_DIR_PATH);
       }
     }
   }
@@ -101,22 +101,21 @@ export class UpdateReferenceGenomeGrch37 {
     fs.moveSync(oldPath, newPath);
     console.log('moveFileSuccess!!');
   }
+  private deleteDir(dirPath: string) {
+    fs.rmdirSync(dirPath);
+  }
 
   private createDatasourceVersion = () => {
     const datasourceVersion = utilityDatasource.getDatasourceVersion();
-    const referenceGenomeGrch37Versions =
-      datasourceVersion.referenceGenomeGrch37Versions;
+    const dgvAllVariantsVersions = datasourceVersion.dgvAllVariantsVersions;
     // update db version
-    referenceGenomeGrch37Versions[0].fileName = 'new fasta grch37';
-    referenceGenomeGrch37Versions[0].releasedVersion = 'new released version';
-    referenceGenomeGrch37Versions[0].srcReleasedDate = 'new released date';
-
-    referenceGenomeGrch37Versions[1].fileName = 'new fasta index grch37';
-    referenceGenomeGrch37Versions[1].releasedVersion = 'new released version';
-    referenceGenomeGrch37Versions[1].srcReleasedDate = 'new released date';
-
+    for (const dgvAllVariantsVersion of dgvAllVariantsVersions) {
+      dgvAllVariantsVersion.fileName = 'new dgvAllVariants';
+      dgvAllVariantsVersion.releasedVersion = 'new released version';
+      dgvAllVariantsVersion.srcReleasedDate = 'new released date';
+    }
     return datasourceVersion;
   };
 }
 
-export const updateReferenceGenomeGrch37 = new UpdateReferenceGenomeGrch37();
+export const updateDgvAllVariants = new UpdateDgvAllVariants();

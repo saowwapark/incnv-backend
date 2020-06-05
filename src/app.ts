@@ -1,15 +1,20 @@
 import {
-  cnvToolResultTmpDir,
-  datasourceTmpDir,
-  staticDir,
-  referenceGenomeDirPath,
-  dgvAllVariantsDirPath
+  UPLOADED_CNV_RESULTS_TMP_DIR_PATH,
+  DATASOURCES_TMP_DIR_PATH,
+  STATIC_DIR_PATH,
+  REF_GENOME_DIR_PATH,
+  DGV_DIR_PATH,
+  DATASOURCES_VOLUME_DIR_PATH,
+  RESULTS_VOLUME_DIR_PATH,
+  DATASOURCES_ORIGINAL_VERSION_PATH,
+  DATASOURCES_VERSION_PATH
 } from './config/path.config';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import * as path from 'path';
 import * as mkdirp from 'mkdirp';
+import fs from 'fs-extra';
 
 // Use Only Dev
 import logger from 'morgan';
@@ -37,14 +42,20 @@ export class App {
 
   public config() {
     // add static paths
-    this.app.use(express.static(staticDir));
+    this.app.use(express.static(STATIC_DIR_PATH));
 
-    // path
-    mkdirp.sync(cnvToolResultTmpDir);
-    mkdirp.sync(datasourceTmpDir);
-    mkdirp.sync(referenceGenomeDirPath);
-    mkdirp.sync(dgvAllVariantsDirPath);
-
+    // tmp path
+    mkdirp.sync(UPLOADED_CNV_RESULTS_TMP_DIR_PATH);
+    mkdirp.sync(DATASOURCES_TMP_DIR_PATH);
+    
+    // volume path
+    mkdirp.sync(DATASOURCES_VOLUME_DIR_PATH);
+    mkdirp.sync(RESULTS_VOLUME_DIR_PATH);
+    mkdirp.sync(REF_GENOME_DIR_PATH);
+    mkdirp.sync(DGV_DIR_PATH);
+    if (!fs.existsSync(DATASOURCES_VERSION_PATH) ){
+      fs.copyFileSync(DATASOURCES_ORIGINAL_VERSION_PATH, DATASOURCES_VERSION_PATH);
+    } 
     // use logger middlware
     this.app.use(logger('dev'));
 

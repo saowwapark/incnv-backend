@@ -1,9 +1,10 @@
-import { TableVersion } from './datasource-version.model';
+import { TableVersion, DatasourceVersion } from './datasource-version.model';
 import fs from 'fs-extra';
 import * as path from 'path';
 import unzipper from 'unzipper';
 import { dbPool } from '../../config/database.config';
-import { datasourceTmpDir } from '../../config/path.config';
+import { DATASOURCES_TMP_DIR_PATH, DATASOURCES_VERSION_PATH, DATASOURCES_ORIGINAL_VERSION_PATH, DATASOURCES_VOLUME_DIR_PATH } from '../../config/path.config';
+import * as mkdirp from 'mkdirp';
 
 import mysqlPromise from 'mysql2/promise';
 import { databases, TableScript } from './database-const';
@@ -14,18 +15,17 @@ export class UpdateDatabase {
     'https://api.github.com/repos/saowwapark/inCNV-datasource/releases/latest';
   private readonly expectedZipFileName = 'db_datasource.zip';
   private readonly expectedZipFilePath = path.join(
-    datasourceTmpDir,
+    DATASOURCES_TMP_DIR_PATH,
     this.expectedZipFileName
   );
   private readonly tmpExtractedDirPath = path.join(
-    datasourceTmpDir,
+    DATASOURCES_TMP_DIR_PATH,
     'db_datasource'
   );
 
   checkShouldUpdateVersion = () => {
     const datasourceVersion = utilityDatasource.getDatasourceVersion();
     const dbVersions = datasourceVersion.dbVersions;
-
     let isShouldUpdate: boolean = true;
     for (const currentDbVersion of dbVersions) {
       const dbNameVersion = currentDbVersion.databaseName;
@@ -44,22 +44,24 @@ export class UpdateDatabase {
 
   main = async (): Promise<string> => {
     let shouldUpdate: boolean = this.checkShouldUpdateVersion();
-    if (!shouldUpdate)
-      return Promise.resolve('-> Bio database should not be updated');
-
+    console.log('Should update Bio DB: ' + shouldUpdate);
+    if (!shouldUpdate) {
+      return Promise.resolve('--------------------- Bio DB should not be updated --------------------- ');
+    }
+    console.log('--------------------- Upadating Bio DB released version XXX ... ')
     const data = await utilityDatasource.getDatasource(
       this.url,
       this.expectedZipFileName
     );
     // /tmp/datasource/db__datasource.zip
-    const zipFilePath = path.join(datasourceTmpDir, this.expectedZipFileName);
+    const zipFilePath = path.join(DATASOURCES_TMP_DIR_PATH, this.expectedZipFileName);
     utilityDatasource.saveRetrievedFile(zipFilePath, data);
 
     // extract zip file
     const readStream = fs.createReadStream(zipFilePath);
     return new Promise((resolve, reject) => {
       readStream
-        .pipe(unzipper.Extract({ path: datasourceTmpDir }))
+        .pipe(unzipper.Extract({ path: DATASOURCES_TMP_DIR_PATH }))
         .on('error', function(err) {
           reject(new Error('Error!! to unzip Bio database\n' + err.stack));
         })
@@ -75,7 +77,7 @@ export class UpdateDatabase {
           const updatedDatasourceVersion = this.createUpdatedDatasourceVersion();
           utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
           resolve(
-            '--------------------- update db success!! ---------------------'
+            '--------------------- Updating Bio DB SUCCESS!! ---------------------'
           );
         });
     });
@@ -125,6 +127,7 @@ export class UpdateDatabase {
         fileNameParts[1] === 'grch37' ? 'bio_grch37' : 'bio_grch38';
       // const releasedDate: Date = new Date(fileNameParts[2]);
 
+      console.log(`-> Updating table ${databaseName}.${tableName} ...`)
       if (tableList.indexOf(tableName) > -1) {
         const filePath = path.join(this.tmpExtractedDirPath, fullFileName);
         const dataList = this.getTableData(filePath);
@@ -183,13 +186,21 @@ export class UpdateDatabase {
     // remove data
     const removedSql = `TRUNCATE TABLE ${databaseName}.${tableName}`;
     await dbPool.query(removedSql);
-    console.log(removedSql);
+    console.log(`${removedSql} SUCCESS!!`);
 
-    // add data
-    const insertStatement = mysqlPromise.format(insertSql, [dataList]);
-
-    await dbPool.query(insertStatement);
-    console.log(`INSERT TABLE ${databaseName}.${tableName} SUCCESS!!`);
+    // devide inserting data as multiple chuncks (1000 records per chunck)
+    let start = 0;
+    let end: number;
+    const size = 1000;
+    while(start < dataList.length) {
+      end = start + size;
+      const records = dataList.slice(start, end);
+      // insert chunck of data into DB
+      const insertStatement = mysqlPromise.format(insertSql, [records]);
+      await dbPool.query(insertStatement);
+      start = end;
+    }
+    console.log(`INSERT ${databaseName}.${tableName} SUCCESS!!`);
   };
 
   private getTableData = (filePath: string) => {

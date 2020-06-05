@@ -1,5 +1,6 @@
 import { AuthenMiddleware } from '../middleware/authen.middleware';
 import express from 'express';
+const router = express.Router();
 
 import userRoutes from './user.route';
 import uploadRoutes from './upload-cnv-tool-result.route';
@@ -8,7 +9,13 @@ import samplesetRoutes from './sampleset.route';
 import tabFileMappingRoutes from './tab-file-mapping.route';
 import analysisRoutes from './analysis.route';
 
+
 export default function(app: express.Application) {
+  app.use('/api/ping', ((req, res, next) => {
+    return res.status(201).json({
+        message: 'pong'
+      });
+  }));
   app.use('/api/users', userRoutes);
   app.use(
     '/api/upload-cnv-tool-results',

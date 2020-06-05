@@ -5,7 +5,7 @@
 // }
 
 // configuration for production
-export const host = process.env.HOST || 'hostproduction';
+export const host = process.env.HOST;
 export const port = process.env.PORT;
 export const dbEnv = {
   host: process.env.DB_HOST,

@@ -3,8 +3,8 @@ import fs from 'fs-extra';
 import * as path from 'path';
 import { DatasourceVersion } from './datasource-version.model';
 import {
-  datasourceVersionPath,
-  datasourceOriginalVersionPath
+  DATASOURCES_VERSION_PATH,
+  DATASOURCES_ORIGINAL_VERSION_PATH
 } from '../../config/path.config';
 export class UtilityDatasource {
   public getDatasource = async (
@@ -46,17 +46,17 @@ export class UtilityDatasource {
   };
 
   public getDatasourceVersion = (): DatasourceVersion => {
-    let rawData = fs.readFileSync(datasourceVersionPath, 'utf8');
+    let rawData = fs.readFileSync(DATASOURCES_VERSION_PATH, 'utf8');
     return JSON.parse(rawData);
   };
 
   public getDatasourceOriginalVersion = (): DatasourceVersion => {
-    let rawData = fs.readFileSync(datasourceOriginalVersionPath, 'utf8');
+    let rawData = fs.readFileSync(DATASOURCES_ORIGINAL_VERSION_PATH, 'utf8');
     return JSON.parse(rawData);
   };
 
   public writeDatasourceVersion = (data: DatasourceVersion) => {
-    fs.writeFileSync(datasourceVersionPath, JSON.stringify(data));
+    fs.writeFileSync(DATASOURCES_VERSION_PATH, JSON.stringify(data));
   };
 
   deleteFiles = (directory: string) => {

@@ -76,7 +76,7 @@ export class CreateDatabase {
         }
       }
       resolve(
-        '--------------------- create Bio databases if not existing success!! --------------------'
+        '--------------------- Creating DB if not existing SUCCESS!! ---------------------'
       );
     });
   };

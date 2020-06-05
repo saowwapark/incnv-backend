@@ -1,4 +1,5 @@
 import { HttpException } from './../exceptions/http.exception';
+import es from 'event-stream';
 import {
   TabFileMappingDto,
   HeaderColumnMapping,
@@ -228,11 +229,43 @@ class ReformatCnvToolResultModel {
     filePath: string,
     tabFileMapping: TabFileMappingDto
   ) => {
-    // read file
-    const context = fs.readFileSync(filePath, 'utf8');
-    const lines = context.split('\n');
-
     try {
+      // read file
+      console.log('File path:' + filePath);
+      if (fs.existsSync(filePath)) {
+        //file exists
+        console.log('File exists.')
+      } else {
+        console.error('Fail to upload file.')
+        throw new HttpException(400, 'Fail to upload file.');
+      }
+  //     let lineNumber = 0;
+  //     const stream = fs.createReadStream(filePath).pipe(es.split())
+  //     .pipe(es.mapSync(function(line){
+
+  //         // pause the readstream
+  //         stream.pause();
+
+  //         lineNumber += 1;
+
+  //         // process line here and call s.resume() when rdy
+  //         // function below was for logging memory usage
+  //         logMemoryUsage(lineNr);
+
+  //         // resume the readstream, possibly from a callback
+  //         s.resume();
+  //     })
+  //     .on('error', function(err){
+  //         console.log('Error while reading file.', err);
+  //     })
+  //     .on('end', function(){
+  //         console.log('Read entire file.')
+  //     })
+  // );
+    
+    
+      const context = fs.readFileSync(filePath, 'utf8');
+      const lines = context.split('\n');
       // map file header
       const columnIndex = this.mapHeaderColumnIndexs(
         lines[0],

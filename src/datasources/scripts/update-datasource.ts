@@ -5,7 +5,7 @@ import { updateDgvAllVariants } from './update-dgv-all-varaint';
 import { updateReferenceGenomeGrch37 } from './update-reference-genome-grch37';
 import { updateReferenceGenomeGrch38 } from './update-reference-genome-grch38';
 import { utilityDatasource } from './utility-datasource';
-import { datasourceTmpDir } from '../../config/path.config';
+import { DATASOURCES_TMP_DIR_PATH } from '../../config/path.config';
 
 export class UpdateDatasource {
   main = async () => {
@@ -25,7 +25,7 @@ export class UpdateDatasource {
       const updateReferenceGenomeGrch38Log = await updateReferenceGenomeGrch38.main();
       console.log(updateReferenceGenomeGrch38Log);
 
-      utilityDatasource.deleteFiles(datasourceTmpDir);
+      utilityDatasource.deleteFiles(DATASOURCES_TMP_DIR_PATH);
     } catch (err) {
       console.error(err);
       const originalVersion = utilityDatasource.getDatasourceOriginalVersion();

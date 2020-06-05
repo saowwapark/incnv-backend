@@ -1,6 +1,7 @@
 import express from 'express';
 import * as path from 'path';
 import multer from 'multer';
+import { UPLOADED_CNV_RESULTS_TMP_DIR_PATH } from '../config/path.config';
 
 export class UploadMiddleware {
   static uploadFile = (
@@ -8,7 +9,7 @@ export class UploadMiddleware {
     res: express.Response,
     next: express.NextFunction
   ) => {
-    const tempFilePath = path.join(__dirname, '..', 'tmp', 'cnv-tool-result');
+    const tmpDirPath = UPLOADED_CNV_RESULTS_TMP_DIR_PATH;
     const MIME_TYPE_MAP = {
       'text/plain': 'txt'
     };
@@ -16,15 +17,15 @@ export class UploadMiddleware {
       destination: (req, file, cb) => {
         const isValid = MIME_TYPE_MAP[file.mimetype];
         const error = isValid ? null : new Error('Invalid mime type');
-        cb(error, tempFilePath);
+        cb(error, tmpDirPath);
       },
       filename: (req, file, cb) => {
         const name = file.originalname
           .toLowerCase()
           .split(' ')
           .join('-');
-        const ext = MIME_TYPE_MAP[file.mimetype];
-        cb(null, `${name}-${Date.now()}.${ext}`);
+        const extension = MIME_TYPE_MAP[file.mimetype];
+        cb(null, `${name}-${Date.now()}.${extension}`);
       }
     });
     const upload = multer({ storage: storage }).single('file');

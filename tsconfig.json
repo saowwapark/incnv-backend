@@ -19,6 +19,6 @@
     "resolveJsonModule": true
   },
 
-  "include": ["./src/**/*.ts", "./src/datasource/*.json", "package.json"],
+  "include": ["./src/**/*.ts", "src/datasources/*.json", "package.json"],
   "exclude": ["node_modules", "dist"]
 }

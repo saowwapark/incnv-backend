@@ -1,11 +1,11 @@
 import pLimit from 'p-limit';
 import { IndexedFasta } from './read-reference-genome/indexed-fasta';
 import {
-  dgvAllVariantsGrch38FilePath,
-  referenceGenomeGrch38FastaFilePath,
-  referenceGenomeGrch37FastaFilePath,
-  referenceGenomeGrch37FaiFilePath,
-  referenceGenomeGrch38FaiFilePath
+  DGV_GRCH38_DIR_PATH,
+  REF_GENOME_GRCH38_FASTA_PATH,
+  REF_GENOME_GRCH37_FASTA_PATH,
+  REF_GENOME_GRCH37_FAI_PATH,
+  REF_GENOME_GRCH38_FAI_PATH
 } from '../config/path.config';
 import { AnnotationStoredproc } from './../databases/bio/dao/annotation-storedproc.dao';
 import { SequenceDto } from './../dto/analysis/sequence.dto';
@@ -31,16 +31,16 @@ import { mergedBasepairModel } from './merged-basepair.model';
 import * as path from 'path';
 import fs from 'fs';
 
-import { dgvAllVariantsGrch37FilePath } from '../config/path.config';
+import { DGV_GRCH37_DIR_PATH } from '../config/path.config';
 import { LocalFile } from './read-reference-genome/local-file';
 
 export class AnalysisModel {
   public getDgvAllVarirants = (refereceGenome: string, chromosome: string) => {
     let dir: string;
     if (refereceGenome === 'grch37') {
-      dir = dgvAllVariantsGrch37FilePath;
+      dir = DGV_GRCH37_DIR_PATH;
     } else if (refereceGenome === 'grch38') {
-      dir = dgvAllVariantsGrch38FilePath;
+      dir = DGV_GRCH38_DIR_PATH;
     } else {
       throw `reference genome must be 'grch37' or 'grch38'`;
     }
@@ -53,8 +53,8 @@ export class AnalysisModel {
   public createIndexedFasta(referenceGenome: string): IndexedFasta {
     let indexedFasta;
     if (referenceGenome === 'grch37') {
-      const fastaGrch37 = new LocalFile(referenceGenomeGrch37FastaFilePath);
-      const faiGrch37 = new LocalFile(referenceGenomeGrch37FaiFilePath);
+      const fastaGrch37 = new LocalFile(REF_GENOME_GRCH37_FASTA_PATH);
+      const faiGrch37 = new LocalFile(REF_GENOME_GRCH37_FAI_PATH);
       const configGrch37 = {
         fasta: fastaGrch37,
         fai: faiGrch37,
@@ -65,8 +65,8 @@ export class AnalysisModel {
       const indexedFastaGrch37 = new IndexedFasta(configGrch37);
       indexedFasta = indexedFastaGrch37;
     } else if (referenceGenome === 'grch38') {
-      const fastaGrch38 = new LocalFile(referenceGenomeGrch38FastaFilePath);
-      const faiGrch38 = new LocalFile(referenceGenomeGrch38FaiFilePath);
+      const fastaGrch38 = new LocalFile(REF_GENOME_GRCH38_FASTA_PATH);
+      const faiGrch38 = new LocalFile(REF_GENOME_GRCH38_FAI_PATH);
       const configGrch38 = {
         fasta: fastaGrch38,
         fai: faiGrch38,

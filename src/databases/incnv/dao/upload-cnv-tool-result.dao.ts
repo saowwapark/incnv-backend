@@ -96,16 +96,17 @@ export class UploadCnvToolResultDao {
       JSON.stringify(upload.tagDescriptions)
     ];
 
-    const sql = mysql.format(
-      `INSERT INTO upload_cnv_tool_result (
+    const sql = `INSERT INTO upload_cnv_tool_result (
           user_id, file_name, file_info,
           reference_genome, cnv_tool_name, tab_file_mapping_id,
           sampleset_id, tag_descriptions, create_date)
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, NOW())`,
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, NOW())`
+    const statement = mysql.format(
+      sql,
       post
     );
     console.log(sql);
-    const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
+    const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(statement);
     return resultSetHeader.insertId;
   };
 

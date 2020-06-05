@@ -4,14 +4,14 @@ import http from 'http';
 import express from 'express';
 import { App } from './app';
 import * as config from './db-env';
-import { updateDatasource } from './datasource/scripts/update-datasource';
+import { updateDatasource } from './datasources/scripts/update-datasource';
 import { LocalFile } from './models/read-reference-genome/local-file';
 import { IndexedFasta } from './models/read-reference-genome/indexed-fasta';
 import {
-  referenceGenomeGrch37FastaFilePath,
-  referenceGenomeGrch37FaiFilePath,
-  referenceGenomeGrch38FastaFilePath,
-  referenceGenomeGrch38FaiFilePath
+  REF_GENOME_GRCH37_FASTA_PATH,
+  REF_GENOME_GRCH37_FAI_PATH,
+  REF_GENOME_GRCH38_FASTA_PATH,
+  REF_GENOME_GRCH38_FAI_PATH
 } from './config/path.config';
 import { bioGrch37Pool } from './config/database.config';
 class Server {
@@ -80,6 +80,11 @@ const app: express.Application = App.bootstrap().app;
 
 // create server
 const server = new Server(config.port, config.host, app).server;
+console.log('listen to host: ' + config.host);
+console.log('listen to port: ' + config.port);
+console.log('dbEnv.host: ' + config.dbEnv.host);
+console.log('dbEnv.password: ' + config.dbEnv.password);
+
 // // create socket io (don' need now)
 // const io = IO.init(server);
 // io.on('connection', function(socket: any) {
@@ -92,12 +97,12 @@ const server = new Server(config.port, config.host, app).server;
 // async-await at top level
 (async () => {
   console.log(
-    '--------------------------------- Check Update Datasource --------------------------------'
+    '\n#################################  CHECKING DATASOURCE VERSION ...  #################################'
   );
   await updateDatasource.main();
 
   console.log(
-    '--------------------------------- Check Update Datasource SUCCESS!!--------------------------------'
+    '#################################  CHECKING DATASOURCE VERSION SUCCESS!!  #################################'
   );
 })();
 

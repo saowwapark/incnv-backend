@@ -29,12 +29,6 @@ export class UploadCnvToolResultModel {
       await uploadCnvToolResultDao.deleteUploadCnvToolResult(
         uploadCnvToolResultId
       );
-      fs.unlink(filePath, err => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-      });
       throw err;
     } finally {
       fs.unlink(filePath, err => {
