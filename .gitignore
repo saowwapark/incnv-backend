@@ -45,8 +45,5 @@ Thumbs.db
 # backup first project with js
 /app_copy
 
-# bio data source
-/src/datasource/reference_genome/
-/src/datasource/dgv_all_variants/dgv_all_variants_grch37/
-/src/datasource/dgv_all_variants/dgv_all_variants_grch38/
+# bio data source 
 /volumes/
