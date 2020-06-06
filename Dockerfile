@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:13.14.0-stretch
 
 RUN mkdir -p /usr/src/app
 
