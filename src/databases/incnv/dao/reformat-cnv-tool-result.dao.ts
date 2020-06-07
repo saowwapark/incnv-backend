@@ -28,15 +28,13 @@ export class ReformatCnvToolResultDao {
         reformatDto.endBp,
         reformatDto.cnvType
       ];
-      const sql = mysql.format(
-        `INSERT INTO reformat_cnv_tool_result (
+      const sql = `INSERT INTO reformat_cnv_tool_result (
       upload_cnv_tool_result_id, sample,
       chromosome, start_bp, end_bp, cnv_type
-      ) VALUES (?, ?, ?, ?, ?, ?)`,
-        post
-      );
+      ) VALUES (?, ?, ?, ?, ?, ?)`
+      const statement = mysql.format(sql, post);
       console.log(sql);
-      const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
+      const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(statement);
       return resultSetHeader.insertId;
     } catch (err) {
       console.log(err);
