@@ -79,7 +79,7 @@ class Server {
 const app: express.Application = App.bootstrap().app;
 
 // create server
-const server = new Server(config.port, config.host, app).server;
+export const server = new Server(config.port, config.host, app).server;
 console.log('listen to host: ' + config.host);
 console.log('listen to port: ' + config.port);
 console.log('dbEnv.host: ' + config.dbEnv.host);

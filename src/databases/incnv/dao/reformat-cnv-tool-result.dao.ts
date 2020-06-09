@@ -26,15 +26,17 @@ export class ReformatCnvToolResultDao {
         reformatDto.chromosome,
         reformatDto.startBp,
         reformatDto.endBp,
-        reformatDto.cnvType
+        reformatDto.cnvType,
       ];
       const sql = `INSERT INTO reformat_cnv_tool_result (
       upload_cnv_tool_result_id, sample,
       chromosome, start_bp, end_bp, cnv_type
-      ) VALUES (?, ?, ?, ?, ?, ?)`
+      ) VALUES (?, ?, ?, ?, ?, ?)`;
       const statement = mysql.format(sql, post);
-      console.log(sql);
-      const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(statement);
+      // console.log(sql);
+      const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(
+        statement
+      );
       return resultSetHeader.insertId;
     } catch (err) {
       console.log(err);
@@ -47,27 +49,26 @@ export class ReformatCnvToolResultDao {
   ): Promise<number> {
     try {
       const posts: any[] = [];
-      reformatDtos.forEach(reformatDto => {
+      reformatDtos.forEach((reformatDto) => {
         const post = [
           reformatDto.uploadCnvToolResultId,
           reformatDto.sample,
           reformatDto.chromosome,
           reformatDto.startBp,
           reformatDto.endBp,
-          reformatDto.cnvType
+          reformatDto.cnvType,
         ];
         posts.push(post);
       });
-
-      const sql = mysql.format(
-        `INSERT INTO reformat_cnv_tool_result (
+      const sql = `INSERT INTO reformat_cnv_tool_result (
       upload_cnv_tool_result_id, sample,
       chromosome, start_bp, end_bp, cnv_type
-      ) VALUES ?`,
-        [posts]
-      );
+      ) VALUES ?`;
+      const statement = mysql.format(sql, [posts]);
       console.log(sql);
-      const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(sql);
+      const [resultSetHeader] = await inCnvPool.query<mysql.OkPacket>(
+        statement
+      );
       return resultSetHeader.insertId;
     } catch (err) {
       console.log(err);
@@ -108,7 +109,7 @@ export class ReformatCnvToolResultDao {
     console.log(sql);
     const [rows] = await inCnvPool.query<mysql.RowDataPacket[]>(sql);
     const reformatCnvToolResults: ReformatCnvToolResultDto[] = [];
-    rows.forEach(row => {
+    rows.forEach((row) => {
       const reformatCnvToolResult = this.parse(row);
       reformatCnvToolResults.push(reformatCnvToolResult);
     });
@@ -162,7 +163,7 @@ export class ReformatCnvToolResultDao {
       startBp,
       endBp,
       startBp,
-      endBp
+      endBp,
     ];
     const sql = mysql.format(statement, data);
     console.log(sql);
@@ -195,7 +196,7 @@ export class ReformatCnvToolResultDao {
       reformat.startBp,
       reformat.endBp,
       reformat.cnvType,
-      reformat.reformatCnvToolResultId
+      reformat.reformatCnvToolResultId,
     ];
     const sql = mysql.format(
       `UPDATE reformat_cnv_tool_result

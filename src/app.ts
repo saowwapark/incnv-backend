@@ -54,6 +54,7 @@ export class App {
     mkdirp.sync(REF_GENOME_DIR_PATH);
     mkdirp.sync(DGV_DIR_PATH);
     if (!fs.existsSync(DATASOURCES_VERSION_PATH) ){
+      console.log(`Creating 'datasources_version.json'`)
       fs.copyFileSync(DATASOURCES_ORIGINAL_VERSION_PATH, DATASOURCES_VERSION_PATH);
     } 
     // use logger middlware
