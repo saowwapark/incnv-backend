@@ -375,9 +375,7 @@ class ReformatCnvToolResultModel {
                     reformatCnvToolResult !== null &&
                     countLine === chunkSize
                   ) {
-                    console.log('Count lines === chunck size')
-                    console.log('Count lines of chunk:' + countLine);
-                    console.log('Chunk size: ' + chunkSize);
+                    console.log('Count lines === chunck size === ' + countLine);
                     readStream.pause();
                     await reformatCnvToolResultDao.addReformatCnvToolResults(
                       reformatCnvToolResults
@@ -401,9 +399,14 @@ class ReformatCnvToolResultModel {
               );
               reject(err);
             })
-            .on('end', function() {
-              resolve('success');
+            .on('end', async function() {
               console.log('Read entire file.');
+              if (reformatCnvToolResults.length > 0) {
+                await reformatCnvToolResultDao.addReformatCnvToolResults(
+                  reformatCnvToolResults
+                );
+              }
+              resolve('success');
             })
             .on('SIGINT', function() {
               console.log('SIGINT signal received.');
