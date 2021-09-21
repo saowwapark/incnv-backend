@@ -38,7 +38,7 @@
     "path": "^0.12.7",
     "readline-sync": "^1.4.10",
     "socket.io": "^2.3.0",
-    "ssh2": "^0.8.7",
+    "ssh2": "^1.4.0",
     "unzipper": "^0.10.7"
   },
   "devDependencies": {
