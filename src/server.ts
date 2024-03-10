@@ -83,6 +83,7 @@ export const server = new Server(config.port, config.host, app).server;
 console.log('listen to host: ' + config.host);
 console.log('listen to port: ' + config.port);
 console.log('dbEnv.host: ' + config.dbEnv.host);
+console.log('dbEnv.user: ' + config.dbEnv.user);
 console.log('dbEnv.password: ' + config.dbEnv.password);
 
 // // create socket io (don' need now)
