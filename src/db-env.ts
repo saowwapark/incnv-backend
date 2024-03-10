@@ -1,8 +1,12 @@
-// import * as dotenv from 'dotenv';
-// const env = dotenv.config();
-// if (env.error) {
-//   throw env.error;
-// }
+import * as dotenv from 'dotenv';
+
+if (process.env.NODE_ENV) {
+  dotenv.config({
+    path: `${__dirname}/../.env.${process.env.NODE_ENV}`
+  })
+} else {
+  dotenv.config()
+}
 
 // configuration for production
 export const host = process.env.HOST;
