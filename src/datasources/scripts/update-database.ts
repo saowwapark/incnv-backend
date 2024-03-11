@@ -9,6 +9,7 @@ import * as mkdirp from 'mkdirp';
 import mysqlPromise from 'mysql2/promise';
 import { databases, TableScript } from './database-const';
 import { utilityDatasource } from './utility-datasource';
+var AdmZip = require("adm-zip");
 
 export class UpdateDatabase {
   private readonly url =
@@ -58,16 +59,11 @@ export class UpdateDatabase {
     utilityDatasource.saveRetrievedFile(zipFilePath, data);
 
     // extract zip file
-    const readStream = fs.createReadStream(zipFilePath);
     return new Promise((resolve, reject) => {
-      readStream
-        .pipe(unzipper.Extract({ path: DATASOURCES_TMP_DIR_PATH }))
-        .on('error', function(err) {
-          reject(new Error('Error!! to unzip Bio database\n' + err.stack));
-        })
-        .on('close', async () => {
-          await this.updateTable();
-
+      try {
+        const zip = new AdmZip(zipFilePath);
+        zip.extractAllTo(DATASOURCES_TMP_DIR_PATH)
+        this.updateTable().then(() => {
           // remove zip file
           fs.removeSync(this.expectedZipFilePath);
           // remove extracted directory
@@ -80,6 +76,9 @@ export class UpdateDatabase {
             '--------------------- Updating Bio DB SUCCESS!! ---------------------'
           );
         });
+      } catch (err) {
+        reject(new Error('Error!! to unzip Bio database\n' + err));
+      }
     });
   };
 
