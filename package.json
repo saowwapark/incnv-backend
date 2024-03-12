@@ -39,7 +39,8 @@
     "path": "^0.12.7",
     "readline-sync": "^1.4.10",
     "socket.io": "^2.3.0",
-    "ssh2": "^0.8.7"
+    "ssh2": "^0.8.7",
+    "unzipper": "^0.10.14"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
