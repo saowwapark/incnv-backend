@@ -72,18 +72,18 @@ export class App {
     );
 
     // user CORS
-    this.app.use(
+    this.app.options('*',
       (
         req: express.Request,
         res: express.Response,
         next: express.NextFunction
       ) => {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader(
+        res.set('Access-Control-Allow-Origin', '*');
+        res.set(
           'Access-Control-Allow-Headers',
           'Origin, X-Requested-With, Content-Type, Accept, Authorization'
         );
-        res.setHeader(
+        res.set(
           'Access-Control-Allow-Methods',
           'GET, POST, PATCH, PUT, DELETE, OPTIONS'
         );
