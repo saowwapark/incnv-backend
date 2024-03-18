@@ -72,7 +72,7 @@ export class App {
     );
 
     // user CORS
-    this.app.options('*',
+    this.app.use(
       (
         req: express.Request,
         res: express.Response,
@@ -90,6 +90,10 @@ export class App {
         next();
       }
     );
+    // Respond to preflight requests
+    this.app.options('*', (req, res) => {
+      res.sendStatus(204);
+    });
     // use cookie parser middleware
     this.app.use(cookieParser('SECRET_GOES_HERE'));
 
