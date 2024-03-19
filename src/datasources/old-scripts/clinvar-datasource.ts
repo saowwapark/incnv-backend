@@ -1,8 +1,6 @@
-const fs = require('fs');
+import fs from 'fs';
 import { bioGrch37Pool, bioGrch38Pool } from '../../config/database.config';
-const mysql = require('mysql2/promise');
-const path = require('path');
-const readline = require('readline-sync');
+import mysql from 'mysql2/promise';
 
 /**
  *  This version keep omim_id_list in form of separed string by semi-colon

@@ -1,4 +1,4 @@
-const { promisify } = require('es6-promisify');
+import { promisify } from 'es6-promisify';
 import fs from 'fs';
 
 const fsOpen = fs && promisify(fs.open);
