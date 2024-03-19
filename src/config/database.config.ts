@@ -1,5 +1,4 @@
 import mysqlPromise from 'mysql2/promise';
-import mysql from 'mysql2';
 import { dbEnv } from '../db-env';
 
 const connectionConfig = {

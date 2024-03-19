@@ -1,6 +1,6 @@
-const fs = require('fs');
+import fs from 'fs';
 import { bioGrch37Pool, bioGrch38Pool } from '../../config/database.config';
-const mysql = require('mysql2/promise');
+import mysql from 'mysql2/promise';
 
 export class DgvDataSource {
   pool;

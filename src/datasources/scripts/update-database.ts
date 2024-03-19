@@ -1,15 +1,13 @@
 import { TableVersion, DatasourceVersion } from './datasource-version.model';
 import fs from 'fs-extra';
 import * as path from 'path';
-import unzipper from 'unzipper';
 import { dbPool } from '../../config/database.config';
 import { DATASOURCES_TMP_DIR_PATH, DATASOURCES_VERSION_PATH, DATASOURCES_ORIGINAL_VERSION_PATH, DATASOURCES_VOLUME_DIR_PATH } from '../../config/path.config';
-import * as mkdirp from 'mkdirp';
 
 import mysqlPromise from 'mysql2/promise';
 import { databases, TableScript } from './database-const';
 import { utilityDatasource } from './utility-datasource';
-var AdmZip = require("adm-zip");
+import AdmZip from 'adm-zip';
 
 export class UpdateDatabase {
   private readonly url =

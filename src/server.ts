@@ -5,14 +5,6 @@ import express from 'express';
 import { App } from './app';
 import * as config from './db-env';
 import { updateDatasource } from './datasources/scripts/update-datasource';
-import { LocalFile } from './models/read-reference-genome/local-file';
-import { IndexedFasta } from './models/read-reference-genome/indexed-fasta';
-import {
-  REF_GENOME_GRCH37_FASTA_PATH,
-  REF_GENOME_GRCH37_FAI_PATH,
-  REF_GENOME_GRCH38_FASTA_PATH,
-  REF_GENOME_GRCH38_FAI_PATH
-} from './config/path.config';
 import { bioGrch37Pool } from './config/database.config';
 class Server {
   port: number;
@@ -86,15 +78,6 @@ console.log('dbEnv.host: ' + config.dbEnv.host);
 console.log('dbEnv.user: ' + config.dbEnv.user);
 console.log('dbEnv.password: ' + config.dbEnv.password);
 
-// // create socket io (don' need now)
-// const io = IO.init(server);
-// io.on('connection', function(socket: any) {
-//   console.log('a user connected');
-//   socket.on('disconnect', () => {
-//     console.log('Client disconnected');
-//   });
-// });
-
 // async-await at top level
 (async () => {
   console.log(
@@ -106,29 +89,6 @@ console.log('dbEnv.password: ' + config.dbEnv.password);
     '#################################  CHECKING DATASOURCE VERSION SUCCESS!!  #################################'
   );
 })();
-
-// // open reference genome both grch37 and grch38
-// const fastaGrch37 = new LocalFile(referenceGenomeGrch37FastaFilePath);
-// const faiGrch37 = new LocalFile(referenceGenomeGrch37FaiFilePath);
-// const configGrch37 = {
-//   fasta: fastaGrch37,
-//   fai: faiGrch37,
-//   path: '',
-//   faiPath: '',
-//   chunkSizeLimit: 1000000
-// };
-// export const indexedFastaGrch37 = new IndexedFasta(configGrch37);
-
-// const fastaGrch38 = new LocalFile(referenceGenomeGrch38FastaFilePath);
-// const faiGrch38 = new LocalFile(referenceGenomeGrch38FaiFilePath);
-// const configGrch38 = {
-//   fasta: fastaGrch38,
-//   fai: faiGrch38,
-//   path: '',
-//   faiPath: '',
-//   chunkSizeLimit: 1000000
-// };
-// export const indexedFastaGrch38 = new IndexedFasta(configGrch38);
 
 // kill [ps_id]
 process.on('SIGTERM', () => {

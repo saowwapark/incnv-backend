@@ -12,14 +12,13 @@ import {
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import * as path from 'path';
 import * as mkdirp from 'mkdirp';
 import fs from 'fs-extra';
 
 // Use Only Dev
 import logger from 'morgan';
-import errorHandler = require('errorhandler');
-import methodOverride = require('method-override');
+import errorHandler from 'errorhandler';
+import methodOverride from 'method-override';
 
 /** My Own Imports **/
 import indexRoute from './routes/routes.index';
