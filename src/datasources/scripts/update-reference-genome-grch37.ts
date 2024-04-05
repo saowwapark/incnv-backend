@@ -24,7 +24,7 @@ export class UpdateReferenceGenomeGrch37 {
   checkShouldUpdateVersion = () => {
     const datasourceVersion = utilityDatasource.getDatasourceVersion();
     const referenceGenomeGrch37Versions =
-      datasourceVersion.referenceGenomeGrch38Versions;
+      datasourceVersion.referenceGenomeGrch37Versions;
 
     let isShouldUpdate: boolean = true;
     for (const referenceGenomeGrch37Version of referenceGenomeGrch37Versions) {
@@ -57,7 +57,7 @@ export class UpdateReferenceGenomeGrch37 {
     return new Promise((resolve, reject) => {
       readStream
         .pipe(unzipper.Extract({ path: DATASOURCES_TMP_DIR_PATH }))
-        .on('error', function(err) {
+        .on('error', function (err) {
           reject(
             new Error('Error!! unzip Reference genome GRCh37\n' + err.stack)
           );
