@@ -1,8 +1,8 @@
 import { DatasourceVersion, TableVersion } from './datasource-version.model';
 import fs from 'fs-extra';
 import * as path from 'path';
-import unzipper from 'unzipper';
-import rimraf from 'rimraf';
+import AdmZip from 'adm-zip';
+
 import {
   DATASOURCES_TMP_DIR_PATH,
   DGV_GRCH37_DIR_PATH,
@@ -53,30 +53,30 @@ export class UpdateDgvAllVariants {
     // /tmp/datasource/db__datasource.zip
     utilityDatasource.saveRetrievedFile(this.expectedZipFilePath, data);
 
-    const readStream = fs.createReadStream(this.expectedZipFilePath);
+    const unZip = new AdmZip(this.expectedZipFilePath);
 
     return new Promise((resolve, reject) => {
-      // extract a zip file and write new files
-      readStream
-        .pipe(unzipper.Extract({ path: DATASOURCES_TMP_DIR_PATH }))
-        .on('error', function(err) {
-          reject(new Error('Error!! unzip DGV all varaint\n' + err.stack));
-        })
-        .on('close', async () => {
-          this.modifyFile();
+      try {
+        // extract a zip file and write new files
+        unZip.extractAllTo(DATASOURCES_TMP_DIR_PATH);
+      } catch (err) {
+        reject(new Error('Error!! unzip DGV all varaint\n' + err));
+      }
 
-          // remove zip file
-          fs.removeSync(this.expectedZipFilePath);
-          // remove extracted directory
-          fs.removeSync(this.tmpExtractedDirPath);
+      this.modifyFile();
 
-          // update DatasourceVersion
-          const updatedDatasourceVersion = this.createDatasourceVersion();
-          utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
-          resolve(
-            '---------------------  Updating DGV all variant SUCCESS!! --------------------'
-          );
-        });
+      // remove zip file
+      fs.removeSync(this.expectedZipFilePath);
+      // remove extracted directory
+      fs.removeSync(this.tmpExtractedDirPath);
+
+      // update DatasourceVersion
+      const updatedDatasourceVersion = this.createDatasourceVersion();
+      utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
+      resolve(
+        '---------------------  Updating DGV all variant SUCCESS!! --------------------'
+      );
+
     });
   };
 

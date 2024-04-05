@@ -1,12 +1,10 @@
-import { bioGrch38Pool, inCnvPool, dbPool } from './config/database.config';
+import { bioGrch38Pool, inCnvPool, dbPool, bioGrch37Pool } from './config/database.config';
 /** Third Party Packages **/
 import http from 'http';
 import express from 'express';
 import { App } from './app';
 import * as config from './db-env';
-import { updateDatasource } from './datasources/scripts/update-datasource';
-import { bioGrch37Pool } from './config/database.config';
-class Server {
+import { updateDatasource } from './datasources/scripts/update-datasource'; class Server {
   port: number;
   hostname: string;
   server: http.Server;
