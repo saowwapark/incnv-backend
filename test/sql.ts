@@ -1,4 +1,3 @@
-import { UserDao } from '../src/databases/incnv/dao/user.dao';
 import * as mysql from 'mysql2/promise';
 import { inCnvPool } from '../src/configs/database';
 
