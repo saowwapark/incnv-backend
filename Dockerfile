@@ -1,4 +1,4 @@
-FROM node:13.14.0-stretch
+FROM node:20-bookworm
 
 RUN mkdir -p /usr/src/app
 
