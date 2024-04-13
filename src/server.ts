@@ -68,6 +68,12 @@ import { updateDatasource } from './datasources/scripts/update-datasource'; clas
 // setting application
 const app: express.Application = App.bootstrap().app;
 
+interface Test {
+  a1?,
+  a2?
+}
+const a: Test = {}
+
 // create server
 export const server = new Server(config.port, config.host, app).server;
 console.log('listen to host: ' + config.host);
