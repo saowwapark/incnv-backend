@@ -2,16 +2,17 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": ">=20.x.x"
+  },
   "main": "./dist/app.js",
   "type": "commonjs",
   "scripts": {
     "build": "tsc",
     "clean": "rimraf ./dist",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
-    "dev_backup": "ts-node --respawn --require dotenv/config ./src/server.ts",
     "dev": "cross-env NODE_ENV=dev nodemon --watch 'src/**/*.ts' --exec 'node --max-old-space-size=4096 -r ts-node/register' src/server.ts",
-    "prod": "tsc && node --max-old-space-size=2048 ./dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prod": "tsc && node --max-old-space-size=2048 ./dist/src/server.js"
   },
   "author": "",
   "license": "ISC",
@@ -34,7 +35,7 @@
     "mkdirp": "^1.0.4",
     "morgan": "^1.9.1",
     "multer": "^1.4.2",
-    "mysql2": "^2.1.0",
+    "mysql2": "^3.9.4",
     "p-limit": "^2.2.2",
     "path": "^0.12.7",
     "readline-sync": "^1.4.10",
@@ -59,24 +60,21 @@
     "@types/mkdirp": "^0.5.2",
     "@types/morgan": "^1.7.37",
     "@types/multer": "^1.3.10",
-    "@types/mysql2": "github:types/mysql2",
     "@types/p-limit": "^2.2.0",
     "@types/rimraf": "^2.0.3",
     "@types/socket.io": "^2.1.4",
     "@types/ssh2": "^0.5.39",
-    "@typescript-eslint/eslint-plugin": "^2.3.3",
-    "@typescript-eslint/parser": "^2.3.3",
-    "@typescript-eslint/typescript-estree": "^2.3.3",
     "cross-env": "^7.0.3",
     "debug": "^4.1.1",
     "dotenv": "^8.2.0",
-    "eslint": "^6.4.0",
-    "eslint-config-google": "^0.14.0",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^7.6.0",
+    "@typescript-eslint/parser": "^7.6.0",
+    "@typescript-eslint/typescript-estree": "^7.6.0",
     "nodemon": "^3.1.0",
     "prettier": "^1.19.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "tslint": "^5.20.0",
-    "typescript": "^3.6.4"
+    "typescript": "^5.3.3"
   }
 }
