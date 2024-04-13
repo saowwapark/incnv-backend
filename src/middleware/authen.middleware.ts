@@ -16,7 +16,7 @@ export class AuthenMiddleware {
       const token = authHeader.split(' ')[1];
       try {
         decodedToken = jwt.verify(token, 'secret_this_should_be_longer');
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
         if (err.name === 'TokenExpiredError') {
           res
