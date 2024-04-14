@@ -3,7 +3,7 @@ import { bioGrch38Pool, inCnvPool, dbPool, bioGrch37Pool } from './config/databa
 import http from 'http';
 import express from 'express';
 import { App } from './app';
-import * as config from './db-env';
+import { envData } from './db-env';
 import { updateDatasource } from './datasources/scripts/update-datasource'; class Server {
   port: number;
   hostname: string;
@@ -75,12 +75,7 @@ interface Test {
 const a: Test = {}
 
 // create server
-export const server = new Server(config.port, config.host, app).server;
-console.log('listen to host: ' + config.host);
-console.log('listen to port: ' + config.port);
-console.log('dbEnv.host: ' + config.dbEnv.host);
-console.log('dbEnv.user: ' + config.dbEnv.user);
-console.log('dbEnv.password: ' + config.dbEnv.password);
+export const server = new Server(envData.port, envData.host, app).server;
 
 // async-await at top level
 (async () => {
