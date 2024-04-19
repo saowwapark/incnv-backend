@@ -56,7 +56,7 @@ export class UpdateReferenceGenomeGrch38 {
     return new Promise((resolve, reject) => {
       readStream
         .pipe(unzipper.Extract({ path: DATASOURCES_TMP_DIR_PATH }))
-        .on('error', function(err) {
+        .on('error', function (err) {
           reject(
             new Error('Error!! unzip Reference genome GRCh38\n' + err.stack)
           );
@@ -73,7 +73,7 @@ export class UpdateReferenceGenomeGrch38 {
           const updatedDatasourceVersion = this.createDatasourceVersion();
           utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
           resolve(
-            '---------------------  Updating Reference genome GRCh38 SUCCESS!! --------------------'
+            '=> Updating Reference genome GRCh38 SUCCESS!!'
           );
         });
     });

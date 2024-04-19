@@ -46,7 +46,7 @@ export class UtilityDatasource {
   };
 
   public getDatasourceVersion = (): DatasourceVersion => {
-    let rawData = fs.readFileSync(DATASOURCES_VERSION_PATH, 'utf8');
+    const rawData = fs.readFileSync(DATASOURCES_VERSION_PATH, 'utf8');
     return JSON.parse(rawData);
   };
 

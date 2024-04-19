@@ -71,7 +71,7 @@ export class UpdateDatabase {
           const updatedDatasourceVersion = this.createUpdatedDatasourceVersion();
           utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
           resolve(
-            '--------------------- Updating Bio DB SUCCESS!! ---------------------'
+            '=> Updating Bio DB SUCCESS!!'
           );
         });
       } catch (err) {
@@ -189,7 +189,7 @@ export class UpdateDatabase {
     let start = 0;
     let end: number;
     const size = 1000;
-    while(start < dataList.length) {
+    while (start < dataList.length) {
       end = start + size;
       const records = dataList.slice(start, end);
       // insert chunck of data into DB

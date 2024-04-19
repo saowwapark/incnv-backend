@@ -74,7 +74,7 @@ export class UpdateReferenceGenomeGrch37 {
           const updatedDatasourceVersion = this.createDatasourceVersion();
           utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
           resolve(
-            '---------------------  Updating Reference Genome GRCh37 SUCCESS!! --------------------'
+            '=> Updating Reference Genome GRCh37 SUCCESS!!'
           );
         });
     });

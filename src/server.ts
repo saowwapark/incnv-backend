@@ -4,7 +4,7 @@ import http from 'http';
 import express from 'express';
 import { App } from './app';
 import { envData } from './db-env';
-import { updateDatasource } from './datasources/scripts/update-datasource'; class Server {
+class Server {
   port: number;
   hostname: string;
   server: http.Server;
@@ -68,26 +68,20 @@ import { updateDatasource } from './datasources/scripts/update-datasource'; clas
 // setting application
 const app: express.Application = App.bootstrap().app;
 
-interface Test {
-  a1?,
-  a2?
-}
-const a: Test = {}
-
 // create server
 export const server = new Server(envData.port, envData.host, app).server;
 
-// async-await at top level
-(async () => {
-  console.log(
-    '\n#################################  CHECKING DATASOURCE VERSION ...  #################################'
-  );
-  await updateDatasource.main();
 
-  console.log(
-    '#################################  CHECKING DATASOURCE VERSION SUCCESS!!  #################################'
-  );
-})();
+// (async () => {
+//   console.log(
+//     '\n#################################  CHECKING DATASOURCE VERSION ...  #################################'
+//   );
+//   await updateDatasource.main();
+
+//   console.log(
+//     '#################################  CHECKING DATASOURCE VERSION SUCCESS!!  #################################'
+//   );
+// })();
 
 // kill [ps_id]
 process.on('SIGTERM', () => {

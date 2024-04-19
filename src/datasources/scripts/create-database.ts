@@ -76,7 +76,7 @@ export class CreateDatabase {
         }
       }
       resolve(
-        '--------------------- Creating DB if not existing SUCCESS!! ---------------------'
+        '=> Creating DB if not existing SUCCESS!!'
       );
     });
   };

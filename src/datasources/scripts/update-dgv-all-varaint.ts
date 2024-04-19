@@ -74,7 +74,7 @@ export class UpdateDgvAllVariants {
       const updatedDatasourceVersion = this.createDatasourceVersion();
       utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
       resolve(
-        '---------------------  Updating DGV all variant SUCCESS!! --------------------'
+        '=> Updating DGV all variant SUCCESS!!'
       );
 
     });
