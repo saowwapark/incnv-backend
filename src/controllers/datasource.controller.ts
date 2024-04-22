@@ -67,7 +67,8 @@ export class DatasourceController {
             console.error(err);
             const originalVersion = utilityDatasource.getDatasourceOriginalVersion();
             utilityDatasource.writeDatasourceVersion(originalVersion);
-            res.write(`data: Some errors happen. Plese check environment configuration.}\n\n`);
+            const url = 'https://github.com/saowwapark/inCNV'
+            res.write(`data: Some errors happen. Plese check environment configuration here, ${url}}\n\n`);
             res.end();
         }
 

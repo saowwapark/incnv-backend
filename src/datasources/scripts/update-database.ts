@@ -45,7 +45,7 @@ export class UpdateDatabase {
     let shouldUpdate: boolean = this.checkShouldUpdateVersion();
     console.log('Should update Bio DB: ' + shouldUpdate);
     if (!shouldUpdate) {
-      return Promise.resolve('--------------------- Bio DB should not be updated --------------------- ');
+      return Promise.resolve('==> Bio DB should not be updated');
     }
     console.log('--------------------- Upadating Bio DB released version XXX ... ')
     const data = await utilityDatasource.getDatasource(
