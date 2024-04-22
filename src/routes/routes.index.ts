@@ -8,13 +8,14 @@ import reformatRoutes from './reformat-cnv-tool-result.route';
 import samplesetRoutes from './sampleset.route';
 import tabFileMappingRoutes from './tab-file-mapping.route';
 import analysisRoutes from './analysis.route';
+import datasourceRoute from './datasource.route';
 
 
-export default function(app: express.Application) {
+export default function (app: express.Application) {
   app.use('/api/ping', ((req, res, next) => {
     return res.status(201).json({
-        message: 'pong'
-      });
+      message: 'pong'
+    });
   }));
   app.use('/api/users', userRoutes);
   app.use(
@@ -34,4 +35,5 @@ export default function(app: express.Application) {
     tabFileMappingRoutes
   );
   app.use('/api/analysises', [AuthenMiddleware.checkAuth], analysisRoutes);
+  app.use('/api/datasource', datasourceRoute)
 }

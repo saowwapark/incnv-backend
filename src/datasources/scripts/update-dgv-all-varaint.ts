@@ -44,7 +44,7 @@ export class UpdateDgvAllVariants {
   main = async (): Promise<string> => {
     let shouldUpdate: boolean = this.checkShouldUpdateVersion();
     if (!shouldUpdate)
-      return Promise.resolve('-> Dgv all varaint should not be updated');
+      return Promise.resolve('==> Dgv all varaint should not be updated');
 
     const data: ArrayBuffer = await utilityDatasource.getDatasource(
       this.url,
@@ -74,7 +74,7 @@ export class UpdateDgvAllVariants {
       const updatedDatasourceVersion = this.createDatasourceVersion();
       utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
       resolve(
-        '---------------------  Updating DGV all variant SUCCESS!! --------------------'
+        '=> Updating DGV all variant SUCCESS!!'
       );
 
     });

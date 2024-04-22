@@ -41,7 +41,7 @@ export class UpdateReferenceGenomeGrch37 {
     let shouldUpdate: boolean = this.checkShouldUpdateVersion();
     if (!shouldUpdate)
       return Promise.resolve(
-        '-> Reference genome GRCh37 should not be updated'
+        '==> Reference genome GRCh37 should not be updated'
       );
 
     const data = await utilityDatasource.getDatasource(
@@ -74,7 +74,7 @@ export class UpdateReferenceGenomeGrch37 {
           const updatedDatasourceVersion = this.createDatasourceVersion();
           utilityDatasource.writeDatasourceVersion(updatedDatasourceVersion);
           resolve(
-            '---------------------  Updating Reference Genome GRCh37 SUCCESS!! --------------------'
+            '=> Updating Reference Genome GRCh37 SUCCESS!!'
           );
         });
     });
