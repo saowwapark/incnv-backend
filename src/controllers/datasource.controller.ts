@@ -17,7 +17,7 @@ export class DatasourceController {
     ) => {
         const originalVersion = utilityDatasource.getDatasourceOriginalVersion();
         const currentVersion = utilityDatasource.getDatasourceVersion();
-        res.status(200).json({ payload: originalVersion !== currentVersion });
+        res.status(200).json({ payload: originalVersion === currentVersion });
     }
 
     public updateDatasource = async (
@@ -68,7 +68,7 @@ export class DatasourceController {
             const originalVersion = utilityDatasource.getDatasourceOriginalVersion();
             utilityDatasource.writeDatasourceVersion(originalVersion);
             const url = 'https://github.com/saowwapark/inCNV'
-            res.write(`data: Some errors happen. Plese check environment configuration here, ${url}}\n\n`);
+            res.write(`data: Some errors happen. Plese check environment configuration here, ${url}\n\n`);
             res.end();
         }
 
