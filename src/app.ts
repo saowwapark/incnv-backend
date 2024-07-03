@@ -23,6 +23,8 @@ import methodOverride from 'method-override';
 /** My Own Imports **/
 import indexRoute from './routes/routes.index';
 import { errorMiddleware } from './middleware/error.middleware';
+import { createDatabase } from './datasources/scripts/create-database';
+import { databases } from './datasources/scripts/database-const';
 
 export class App {
   public app: express.Application;
@@ -46,16 +48,21 @@ export class App {
     // tmp path
     mkdirp.sync(UPLOADED_CNV_RESULTS_TMP_DIR_PATH);
     mkdirp.sync(DATASOURCES_TMP_DIR_PATH);
-    
+
     // volume path
     mkdirp.sync(DATASOURCES_VOLUME_DIR_PATH);
     mkdirp.sync(RESULTS_VOLUME_DIR_PATH);
     mkdirp.sync(REF_GENOME_DIR_PATH);
     mkdirp.sync(DGV_DIR_PATH);
-    if (!fs.existsSync(DATASOURCES_VERSION_PATH) ){
+
+    if (!fs.existsSync(DATASOURCES_VERSION_PATH)) {
+      console.log('It is the first time to run backend server.')
       console.log(`Creating 'datasources_version.json'`)
       fs.copyFileSync(DATASOURCES_ORIGINAL_VERSION_PATH, DATASOURCES_VERSION_PATH);
-    } 
+
+      console.log(`Creating databases and their tables`)
+      createDatabase.crateDb(databases)
+    }
     // use logger middlware
     this.app.use(logger('dev'));
 
@@ -100,7 +107,7 @@ export class App {
     this.app.use(methodOverride());
 
     // catch 404 and forward to error handler
-    this.app.use(function(
+    this.app.use(function (
       err: any,
       req: express.Request,
       res: express.Response,
