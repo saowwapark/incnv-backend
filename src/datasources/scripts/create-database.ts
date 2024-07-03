@@ -62,6 +62,7 @@ export class CreateDatabase {
         const databaseSql = `CREATE DATABASE IF NOT EXISTS ${database.databaseName}`;
         try {
           await dbPool.query(databaseSql);
+          console.log(`>> Checking ${database.databaseName} database`)
         } catch (err) {
           const errMsg = 'Error!! ' + databaseSql + '\n' + err;
           reject(new Error(errMsg));
@@ -69,6 +70,7 @@ export class CreateDatabase {
         for (const dbTable of database.tables) {
           try {
             await dbPool.query(dbTable.createSql);
+            console.log(`>>>> ${dbTable.tableName} table`)
           } catch (err) {
             const errMsg = 'Error!! ' + dbTable.createSql + '\n' + err;
             reject(new Error(errMsg));
