@@ -12,7 +12,9 @@
     "clean": "rimraf ./dist",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "dev": "cross-env NODE_ENV=dev nodemon --watch 'src/**/*.ts' --exec 'node --max-old-space-size=4096 -r ts-node/register' src/server.ts",
-    "prod": "tsc && node --max-old-space-size=2048 ./dist/src/server.js"
+    "prod": "node --max-old-space-size=2048 ./dist/src/server.js",
+    "build-prod": "tsc && npm run prod"
+    
   },
   "author": "",
   "license": "ISC",
