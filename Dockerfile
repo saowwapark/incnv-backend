@@ -13,8 +13,5 @@ RUN npm run build
 # Remove everything except the dist folder
 RUN rm -rf src package-lock.json tsconfig.json
 
-# Copy the dist folder to the root of the image
-COPY dist/ ./dist/
-
 EXPOSE 3000
 CMD ["npm", "run", "prod"]
