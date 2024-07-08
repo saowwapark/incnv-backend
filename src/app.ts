@@ -45,18 +45,19 @@ export class App {
     // add static paths
     this.app.use(express.static(STATIC_DIR_PATH));
 
-    // tmp path
-    mkdirp.sync(UPLOADED_CNV_RESULTS_TMP_DIR_PATH);
-    mkdirp.sync(DATASOURCES_TMP_DIR_PATH);
-
-    // volume path
-    mkdirp.sync(DATASOURCES_VOLUME_DIR_PATH);
-    mkdirp.sync(RESULTS_VOLUME_DIR_PATH);
-    mkdirp.sync(REF_GENOME_DIR_PATH);
-    mkdirp.sync(DGV_DIR_PATH);
-
     if (!fs.existsSync(DATASOURCES_VERSION_PATH)) {
       console.log('It is the first time to run backend server.')
+
+      console.log('Making temporary directories')
+      mkdirp.sync(UPLOADED_CNV_RESULTS_TMP_DIR_PATH);
+      mkdirp.sync(DATASOURCES_TMP_DIR_PATH);
+
+      console.log('Making datasouce volume directories')
+      mkdirp.sync(DATASOURCES_VOLUME_DIR_PATH);
+      mkdirp.sync(RESULTS_VOLUME_DIR_PATH);
+      mkdirp.sync(REF_GENOME_DIR_PATH);
+      mkdirp.sync(DGV_DIR_PATH);
+
       console.log(`Creating 'datasources_version.json'`)
       fs.copyFileSync(DATASOURCES_ORIGINAL_VERSION_PATH, DATASOURCES_VERSION_PATH);
 
